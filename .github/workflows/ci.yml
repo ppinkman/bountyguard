@@ -27,3 +27,5 @@ jobs:
         working-directory: contracts/bounty
       - run: cargo build --locked --target wasm32-unknown-unknown --release
         working-directory: contracts/bounty
+
+# CONTROLLED DEMO: sensitive path touched; all existing jobs remain enabled.
