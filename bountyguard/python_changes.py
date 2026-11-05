@@ -30,3 +30,6 @@ def implementation_changed(before: str, after: str) -> bool:
         except (SyntaxError, ValueError, RecursionError):
             raise GuardError("Python source cannot be structurally compared; automatic acceptance is blocked.") from None
     return trees[0] != trees[1]
+
+# Controlled revision-mutation probe; this commit is archived, not merged.
+TOCTOU_DEMO_MARKER = "unreviewed revision"
