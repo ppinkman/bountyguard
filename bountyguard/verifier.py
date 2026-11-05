@@ -5,7 +5,7 @@ import re
 from .domain import digest
 
 SENSITIVE_NAMES = {"pyproject.toml", "pytest.ini", "tox.ini", "setup.cfg", "setup.py", "conftest.py", "package.json", "package-lock.json", "yarn.lock", "pnpm-lock.yaml", "Cargo.toml", "Cargo.lock", "Makefile", "Dockerfile"}
-INJECTION = re.compile(r"ignore.{0,40}(?:review|previous|instructions)|approve.{0,20}(?:payout|payment)|reveal.{0,20}(?:secret|key)", re.I)
+INJECTION = re.compile(r"\bignore\b.{0,40}\b(?:review|previous)\s+(?:rules|instructions)\b|\bapprove\b.{0,20}\b(?:payout|payment)\b|\breveal\b.{0,20}\b(?:secrets?|keys?)\b", re.I)
 
 
 def hard_checks(bounty, pr, files, issue, workflow, linked, ci):
@@ -36,11 +36,18 @@ def hard_checks(bounty, pr, files, issue, workflow, linked, ci):
         added = [line[1:].strip() for line in patch.splitlines() if line.startswith("+") and line[1:].strip() and not line[1:].lstrip().startswith(("#", "//"))]
         removed = [line[1:].strip() for line in patch.splitlines() if line.startswith("-") and line[1:].strip() and not line[1:].lstrip().startswith(("#", "//"))]
         code_suffixes = {".py", ".rs", ".ts", ".tsx", ".js", ".jsx", ".go", ".java", ".c", ".h", ".cpp", ".sol", ".kt", ".swift", ".vue"}
-        if any(filename.startswith(prefix) for prefix in bounty["source_paths"]) and PurePosixPath(filename).suffix in code_suffixes and added != removed:
+        implementation = file.get("implementation_changed", added != removed)
+        if any(filename.startswith(prefix) for prefix in bounty["source_paths"]) and PurePosixPath(filename).suffix in code_suffixes and implementation:
             source_changed = True
-        if INJECTION.search(patch):
+        # Existing SQL such as INSERT OR IGNORE INTO reviews is not an added
+        # instruction. Signals are conservative hints, not an AI safety proof.
+        # Scope this heuristic to newly added comments/plain-text instructions;
+        # regex definitions and quoted test fixtures are not imperative comments.
+        introduced_lines = [line[1:] for line in patch.splitlines() if line.startswith("+")]
+        introduced = "\n".join(line for line in introduced_lines if line.lstrip().startswith(("#", "//", "/*", "*", "<!--")) or PurePosixPath(filename).suffix in {".md", ".txt"})
+        if INJECTION.search(introduced):
             instructions.append(filename)
-    add("source_change", source_changed, "A non-comment textual change is required under an agreed source path; this is not semantic correctness proof.")
+    add("source_change", source_changed, "An implementation change is required under an agreed source path. Python uses a bounded AST comparison excluding leading docstrings; other supported languages use a textual heuristic. This is not correctness proof.")
     add("sensitive_paths", not sensitive, "Sensitive changes: " + ", ".join(sorted(set(sensitive))) if sensitive else "No sensitive configuration changes.", manual=True)
     add("test_integrity_signal", not removed_assertions, "Removed assertion signals: " + ", ".join(removed_assertions) if removed_assertions else "No removed-assertion signal. Ordinary test additions/changes are listed.", manual=True)
     add("review_manipulation_signal", not instructions, "Potential review-manipulation text: " + ", ".join(instructions) if instructions else "No configured review-manipulation signal; detection is incomplete.", manual=True)

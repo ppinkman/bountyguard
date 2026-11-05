@@ -22,7 +22,7 @@ class Transport:
         if isinstance(request,str):return Response({"data":[{"id":"Qwen/Qwen3.6-35B-A3B-FP8","pricing":{"prompt":self.price,"completion":"0.000001","request":"0"}}]})
         self.calls+=1
         if self.fail:raise TimeoutError()
-        report={"verdict":"PASS","summary":"Bounded review.","findings":[{"path":"src/a.py","quote":self.quote,"severity":"LOW","reason":"Changed return."}]}
+        report={"verdict":"PASS","summary":"Bounded review.","findings":[{"evidence_id":"F1L3" if self.quote=="+return 2" else "unknown-id","severity":"LOW","reason":"Changed return."}]}
         return Response({"model":"test-model","usage":{"total_tokens":42},"choices":[{"finish_reason":"stop","message":{"content":json.dumps(report)}}]})
 
 

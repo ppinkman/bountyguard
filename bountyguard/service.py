@@ -4,7 +4,7 @@ import threading
 import time
 import uuid
 
-from .domain import CreateBounty, GuardError, STORAGE_YOCTO, amount_yocto, canonical, digest, github_url, issue_context
+from .domain import CreateBounty, GuardError, STORAGE_YOCTO, amount_yocto, canonical, digest, diff_digest, github_url, issue_context
 from .identity import Identity
 from .review import Reviewer
 from .verifier import hard_checks
@@ -157,14 +157,14 @@ class Bounties:
             linked = github.closes_issue(repo, pr["number"], bounty["issue_number"])
             ci = github.ci_evidence(repo, pr, bounty["ci"])
             hard = hard_checks(bounty, pr, files, issue, workflow, linked, ci)
-            anchored = {"bounty_id": bounty_id, "terms_hash": bounty["assigned_terms_hash"], "pr_number": pr["number"], "head_sha": pr["head"]["sha"], "base_sha": pr["base"]["sha"], "diff_hash": digest(files)}
+            anchored = {"bounty_id": bounty_id, "terms_hash": bounty["assigned_terms_hash"], "pr_number": pr["number"], "head_sha": pr["head"]["sha"], "base_sha": pr["base"]["sha"], "diff_hash": diff_digest(files)}
             model_fingerprint = digest({**anchored, "issue": bounty["issue"]})
             model = None
             if hard["verdict"] == "PASS" and allow_model:
                 model = self.reviewer.review(model_fingerprint, {"issue": bounty["issue"], **anchored, "files": files})
             fingerprint = digest({**anchored, "ci": ci, "hard": hard, "model": model})
             verdict = hard["verdict"] if hard["verdict"] != "PASS" else model["verdict"] if model else "NEEDS_REVIEW"
-            report = {**anchored, "fingerprint": fingerprint, "verdict": verdict, "hard": hard, "ci": ci, "ai": model, "created_at": int(time.time()), "delivery_hash": digest({"pr_number": pr["number"], "head_sha": pr["head"]["sha"], "diff_hash": digest(files)})}
+            report = {**anchored, "fingerprint": fingerprint, "verdict": verdict, "hard": hard, "ci": ci, "ai": model, "created_at": int(time.time()), "delivery_hash": digest({"pr_number": pr["number"], "head_sha": pr["head"]["sha"], "diff_hash": diff_digest(files)})}
             report["report_hash"] = digest(report)
             with self.store.connection() as db:
                 db.execute("INSERT OR IGNORE INTO reviews VALUES (?,?,?,?)", (fingerprint, bounty_id, canonical(report), report["created_at"]))
@@ -185,7 +185,7 @@ class Bounties:
             if not github_repo.get("permissions", {}).get("push"):
                 raise GuardError("Maintainer repository permission is no longer present.", 403)
             pr, files = github.pr_snapshot(bounty["repo"], bounty["pr_number"])
-            same = pr["head"]["sha"] == report["head_sha"] and digest(files) == report["diff_hash"] and pr["user"]["id"] == bounty["claim"]["actor_id"] and pr["base"]["repo"]["id"] == bounty["repo_id"]
+            same = pr["head"]["sha"] == report["head_sha"] and diff_digest(files) == report["diff_hash"] and pr["user"]["id"] == bounty["claim"]["actor_id"] and pr["base"]["repo"]["id"] == bounty["repo_id"]
             if not same:
                 return self.store.save(bounty, "REVISION_CHANGED", "review_invalidated", {"reviewed_head": report["head_sha"], "current_head": pr["head"]["sha"]})
             if not pr.get("merged") or not pr.get("merged_at") or not pr.get("merged_by"):
