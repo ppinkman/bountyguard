@@ -1,0 +1,29 @@
+name: BountyGuard checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  python:
+    name: Python checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements-dev.txt
+      - run: python -m unittest discover -s tests -v
+      - run: python -m compileall -q bountyguard tools
+  contract:
+    name: Contract checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install stable --profile minimal --target wasm32-unknown-unknown
+      - run: rustup default stable
+      - run: cargo test --locked --lib
+        working-directory: contracts/bounty
+      - run: cargo build --locked --target wasm32-unknown-unknown --release
+        working-directory: contracts/bounty
