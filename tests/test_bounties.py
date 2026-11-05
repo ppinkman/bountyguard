@@ -221,6 +221,12 @@ class BountyTests(unittest.TestCase):
         result = self.service.verify(self.id, WORKER, self.github, True)
         self.assertEqual(result["review"]["verdict"], "NEEDS_REVIEW");self.assertEqual(self.signer.payments, 0)
 
+    def test_sql_and_quoted_pattern_data_are_not_imperative_comments(self):
+        self.submitted()
+        self.github.files[0]["patch"] += '\n+db.execute("INSERT OR IGNORE INTO reviews VALUES (?)")\n+pattern = "approve payout"'
+        result = self.service.verify(self.id, WORKER, self.github, True)
+        self.assertEqual(result["state"], "READY_TO_MERGE")
+
     def test_model_uncertainty_cannot_auto_pass(self):
         self.submitted(); self.reviewer.verdict = "NEEDS_REVIEW"
         result = self.service.verify(self.id, WORKER, self.github, True)

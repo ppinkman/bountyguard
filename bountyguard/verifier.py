@@ -41,7 +41,10 @@ def hard_checks(bounty, pr, files, issue, workflow, linked, ci):
             source_changed = True
         # Existing SQL such as INSERT OR IGNORE INTO reviews is not an added
         # instruction. Signals are conservative hints, not an AI safety proof.
-        introduced = "\n".join(line[1:] for line in patch.splitlines() if line.startswith("+"))
+        # Scope this heuristic to newly added comments/plain-text instructions;
+        # regex definitions and quoted test fixtures are not imperative comments.
+        introduced_lines = [line[1:] for line in patch.splitlines() if line.startswith("+")]
+        introduced = "\n".join(line for line in introduced_lines if line.lstrip().startswith(("#", "//", "/*", "*", "<!--")) or PurePosixPath(filename).suffix in {".md", ".txt"})
         if INJECTION.search(introduced):
             instructions.append(filename)
     add("source_change", source_changed, "An implementation change is required under an agreed source path. Python uses a bounded AST comparison excluding leading docstrings; other supported languages use a textual heuristic. This is not correctness proof.")
