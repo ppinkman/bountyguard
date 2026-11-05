@@ -16,3 +16,10 @@ The current plan is to choose one final hackathon submission, not claim these as
 two unrelated entries. BountyGuard has no runtime Python import from ProofPay.
 `start_dev.ps1 -UseExistingAiCredits` can optionally read its existing encrypted
 provider key; this is a local convenience, not a portable setup requirement.
+
+The browser wallet bundle includes `@hot-labs/near-connect` 0.12.0, published by
+HOT Labs with MIT license metadata. Build tooling uses esbuild 0.28.2. Versions
+and registry integrity values are recorded in package-lock.json. The build makes
+two documented CSP-nonce additions to the connector's style insertion points.
+Meteor/Intear wallet executors remain hosted by their authors and are not
+redistributed as BountyGuard source or assigned BountyGuard's MIT license.

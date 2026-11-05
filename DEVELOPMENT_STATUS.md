@@ -7,7 +7,7 @@ Updated November 5, 2026 (Asia/Shanghai).
 - Public repository: https://github.com/ppinkman/bountyguard. GitHub-hosted
   Python and Rust checks passed for the reviewed PR; Actions are restricted to
   GitHub-owned actions. No workflow receives wallet signing secrets.
-- 82 Python tests and 9 native Rust tests passed locally. The Rust contract was
+- 84 Python tests, 6 JavaScript wallet tests and 9 native Rust tests passed locally. The Rust contract was
   built to WASM, deployed to a separate testnet account, and its live code hash
   independently matched the recorded deployment.
 - A real assigned bounty completed: Issue #1, contributor identity/wallet proofs,
@@ -55,8 +55,12 @@ require an explicit caller, return principal only, and do not return storage/gas
 
 ## Remaining product and submission work
 
-- Wallet-extension signing/connection and hosted GitHub OAuth are not implemented.
-  The current loopback app uses verified token login and local NEP-413 proof import.
+- Browser wallet connection and NEP-413 signing are implemented with a pinned
+  NEAR Connect bundle. The real Intear chooser/cancellation and local GitHub login
+  were inspected. A complete real-owner wallet signature is still unverified;
+  Meteor is untested, and the current OKX adapter has no testnet declaration.
+  Hosted GitHub OAuth is not implemented. The app remains loopback-only, with
+  local/own-token login and advanced signed-proof import available.
 - Browser polling requires an open page and a live maintainer session. There is
   no unattended keeper or independent dispute resolution.
 - No outside contributor or customer acceptance has been demonstrated.

@@ -1,4 +1,6 @@
 from pathlib import Path
+import base64
+import re
 import tempfile
 import time
 import unittest
@@ -9,6 +11,9 @@ from bountyguard.api import create_app
 from bountyguard.auth import Sessions
 from bountyguard.store import Store
 from test_bounties import FakeGitHub, FakeRPC
+from bountyguard.identity import b58encode, nep413_digest
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 
 
 class APITests(unittest.TestCase):
@@ -45,6 +50,37 @@ class APITests(unittest.TestCase):
         bounty=self.client.post('/api/bounties',json=self.create_body(),headers={'X-CSRF-Token':session['csrf']}).json()
         result=self.client.post('/api/bounties/'+bounty['id']+'/wallet/verify',json={'challenge_id':'x','public_key':'x','signature':'x','private_key':'never-accept'},headers={'X-CSRF-Token':session['csrf']})
         self.assertEqual(result.status_code,422)
+
+    def test_wallet_bundle_is_local_and_csp_nonce_is_fresh_and_matches(self):
+        first=self.client.get('/');second=self.client.get('/')
+        nonce=re.search(r'name="bg-csp-nonce" content="([^"]+)"',first.text).group(1)
+        self.assertIn("'nonce-"+nonce+"'",first.headers['content-security-policy'])
+        self.assertIn('nonce="'+nonce+'"',first.text)
+        self.assertNotIn('__CSP_NONCE__',first.text)
+        self.assertNotIn(nonce,second.text)
+        self.assertNotIn("'unsafe-inline'",first.headers['content-security-policy'])
+        self.assertNotIn("'unsafe-eval'",first.headers['content-security-policy'])
+        self.assertEqual(self.client.get('/assets/wallet-bundle.js').status_code,200)
+
+    def test_wallet_binding_status_requires_login_and_only_returns_own_roles(self):
+        session=self.login()
+        bounty=self.client.post('/api/bounties',json=self.create_body(),headers={'X-CSRF-Token':session['csrf']}).json()
+        service=self.client.app.state.service
+        key=Ed25519PrivateKey.generate()
+        public='ed25519:'+b58encode(key.public_key().public_bytes(Encoding.Raw,PublicFormat.Raw))
+        service.rpc.keys[('owner.testnet',public)]='FullAccess'
+        challenge=service.identity.challenge(bounty,session['actor'],'owner.testnet','maintainer')
+        signature=base64.b64encode(key.sign(nep413_digest(challenge['message'],base64.b64decode(challenge['nonce']),challenge['recipient']))).decode()
+        service.identity.verify(challenge['id'],session['actor'],public,signature)
+        path='/api/bounties/'+bounty['id']+'/wallet/status'
+        own=self.client.get(path).json()
+        self.assertEqual(own['maintainer']['account'],'owner.testnet')
+        self.assertIsNone(own['claimant'])
+        self.assertNotIn('signature',own['maintainer'])
+        self.client.post('/api/session',json={'token':'worker-token'})
+        self.assertEqual(self.client.get(path).json(),{'maintainer':None,'claimant':None})
+        self.client.cookies.clear()
+        self.assertEqual(self.client.get(path).status_code,401)
 
 
 if __name__=='__main__':unittest.main()

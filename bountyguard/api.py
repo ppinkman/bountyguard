@@ -1,4 +1,5 @@
 """Loopback-only development API; no public hosting or OAuth app is assumed."""
+import base64
 import json
 import os
 from pathlib import Path
@@ -7,7 +8,7 @@ import time
 from urllib.parse import urlsplit
 
 from fastapi import FastAPI, Request
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import Field
@@ -88,7 +89,9 @@ def create_app(store=None, rpc=None, signer=None, sessions=None, reviewer=None):
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["Referrer-Policy"] = "no-referrer"
-        response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
+        nonce = getattr(request.state, "csp_nonce", None)
+        nonce_source = " 'nonce-" + nonce + "'" if nonce else ""
+        response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'" + nonce_source + "; style-src 'self'" + nonce_source + "; img-src 'self' data:; connect-src 'self' https://raw.githubusercontent.com https://wallet.intear.tech https://mc.meteorwallet.app https://meteor-connect-backend-development.meteorwallet.workers.dev https://rpc.testnet.near.org https://test.rpc.fastnear.com; frame-src 'self' https://wallet.intear.tech https://wallet.meteorwallet.app; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
         return response
 
     def authenticated(request):
@@ -100,8 +103,9 @@ def create_app(store=None, rpc=None, signer=None, sessions=None, reviewer=None):
         return value
 
     @app.get("/")
-    def index():
-        return FileResponse(ROOT / "bountyguard/web/index.html")
+    def index(request: Request):
+        request.state.csp_nonce = base64.b64encode(secrets.token_bytes(24)).decode()
+        return HTMLResponse((ROOT / "bountyguard/web/index.html").read_text(encoding="utf-8").replace("__CSP_NONCE__", request.state.csp_nonce))
 
     @app.get("/api/status")
     def status():
@@ -153,6 +157,19 @@ def create_app(store=None, rpc=None, signer=None, sessions=None, reviewer=None):
     def challenge(identifier: str, body: Challenge, request: Request):
         session = authenticated(request)
         return service.identity.challenge(store.get(identifier), session["actor"], body.account, body.purpose)
+
+    @app.get("/api/bounties/{identifier}/wallet/status")
+    def wallet_status(identifier: str, request: Request):
+        session = authenticated(request); store.get(identifier)
+        result = {}
+        for purpose in ("maintainer", "claimant"):
+            try:
+                binding = store.binding(identifier, session["actor"]["id"], purpose)
+            except GuardError:
+                result[purpose] = None
+            else:
+                result[purpose] = {"account": binding["near_account_id"], "verified_at": binding["verified_at"]}
+        return result
 
     @app.post("/api/bounties/{identifier}/wallet/verify")
     def verify_signature(identifier: str, body: Signature, request: Request):

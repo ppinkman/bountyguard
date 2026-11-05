@@ -147,16 +147,27 @@ chat, Git, screenshots, command arguments or browser local storage.
 
 ### Wallet signing in this preview
 
-Wallet-extension connection is not implemented yet. The UI downloads a standard
-NEP-413 challenge and accepts a signed proof, never a private key. A local test
-account can sign via:
+The browser can connect Meteor/Intear testnet accounts and request a NEP-413
+identity signature, using the locally built NEAR Connect 0.12.0 bundle. The real
+Intear connection chooser and cancellation were checked; **a full personal-wallet
+signature round trip remains unverified**. Meteor is included based on its
+declared capabilities. The current OKX adapter does not declare testnet support.
+See [wallet onboarding](docs/WALLET_ONBOARDING.md) for steps and test boundaries.
+
+This connection signs identity messages only. Funding/settlement still use the
+configured local development signer; hosted OAuth is not implemented. GitHub
+offers one-click local login when enabled and an advanced own-token option.
+
+Advanced proof import remains available. The UI downloads a standard NEP-413
+challenge and accepts a signed proof, never a private key. A local test account
+can sign via:
 
 ```powershell
 .venv/Scripts/python -m bountyguard sign-challenge challenge.json --vault data/testnet/claimant.dpapi
 ```
 
-Paste the returned public proof into the wallet-verification form. This developer
-flow is a stated limitation, not a claim of tested OKX/Wallet Selector support.
+Paste the returned public proof into the advanced wallet-verification form.
+This is not a claim of tested OKX support.
 FullAccess signing must occur locally in a trusted wallet/signing environment.
 
 ## Testnet development

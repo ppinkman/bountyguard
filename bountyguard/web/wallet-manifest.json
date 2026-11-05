@@ -1,0 +1,84 @@
+{
+  "version": "1.1.0",
+  "wallets": [
+    {
+      "id": "meteor-wallet",
+      "name": "Meteor Wallet",
+      "icon": "data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 40 40\"><rect width=\"40\" height=\"40\" rx=\"10\" fill=\"%232d4163\"/></svg>",
+      "description": "The most simple and secure wallet to manage your crypto, access DeFi, and explore Web3",
+      "website": "https://meteorwallet.app/",
+      "version": "1.1.1",
+      "executor": "https://raw.githubusercontent.com/Meteor-Wallet/meteor_wallet_sdk/data-storage/storage/meteor-near-connect-latest.js",
+      "type": "sandbox",
+      "features": {
+        "signMessage": true,
+        "signInWithoutAddKey": true,
+        "signInAndSignMessage": true,
+        "signAndSendTransaction": true,
+        "signAndSendTransactions": true,
+        "signInWithFunctionCallKey": true,
+        "signDelegateActions": true,
+        "mainnet": true,
+        "testnet": true
+      },
+      "platform": {
+        "web": "https://wallet.meteorwallet.app",
+        "chrome": "https://chromewebstore.google.com/detail/meteor-wallet/pcndjhkinnkaohffealmlmhaepkpmgkb",
+        "android": "https://play.google.com/store/apps/details?id=app.meteorwallet.v2",
+        "ios": "https://apps.apple.com/us/app/meteor-wallet/id6739558223"
+      },
+      "permissions": {
+        "storage": true,
+        "allowsOpen": [
+          "https://chromewebstore.google.com",
+          "https://wallet.meteorwallet.app",
+          "https://meteorwallet.app",
+          "meteorwallet://",
+          "meteorwalletdev://"
+        ],
+        "external": [
+          "meteorCom",
+          "meteorComV2"
+        ]
+      }
+    },
+    {
+      "id": "intear-wallet",
+      "name": "Intear Wallet",
+      "icon": "data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 40 40\"><rect width=\"40\" height=\"40\" rx=\"10\" fill=\"%232d4163\"/></svg>",
+      "description": "A fast and secure wallet for everyday interactions with dapps",
+      "website": "https://intea.rs/",
+      "version": "1.0.0",
+      "executor": "https://wallet.intear.tech/near-selector.js",
+      "type": "sandbox",
+      "features": {
+        "signMessage": true,
+        "signTransaction": false,
+        "signAndSendTransaction": true,
+        "signAndSendTransactions": true,
+        "signInWithoutAddKey": true,
+        "verifyOwner": false,
+        "testnet": true,
+        "signDelegateActions": true,
+        "signInAndSignMessage": true,
+        "signInWithFunctionCallKey": true
+      },
+      "platform": {
+        "web": "https://wallet.intear.tech"
+      },
+      "permissions": {
+        "storage": true,
+        "location": true,
+        "allowsOpen": [
+          "https://wallet.intear.tech",
+          "https://staging.wallet.intear.tech",
+          "http://intearwallet.local",
+          "https://intearwallet.local",
+          "http://intearwallet.localhost:3000",
+          "intear://",
+          "https://logout-bridge-service.intear.tech"
+        ]
+      }
+    }
+  ]
+}
