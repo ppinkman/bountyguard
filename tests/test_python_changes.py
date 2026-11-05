@@ -3,6 +3,7 @@ import tempfile
 import unittest
 
 from bountyguard.domain import GuardError
+from bountyguard.domain import diff_digest
 from bountyguard.python_changes import implementation_changed
 
 
@@ -31,6 +32,14 @@ async def async_value():
             target=Path(directory)/'must-not-exist'
             source='from pathlib import Path\nPath('+repr(str(target))+').write_text("executed")'
             self.assertTrue(implementation_changed('',source));self.assertFalse(target.exists())
+
+    def test_delivery_hash_excludes_derived_annotations_and_file_order(self):
+        files=[{'filename':'b.py','patch':'+pass','sha':'a'},{'filename':'a.py','patch':'+x=1','sha':'b'}]
+        original=diff_digest(files)
+        files[0]['implementation_changed']=False
+        self.assertEqual(original,diff_digest(list(reversed(files))))
+        files[0]['patch']='+raise RuntimeError()'
+        self.assertNotEqual(original,diff_digest(files))
 
 
 if __name__=='__main__':unittest.main()

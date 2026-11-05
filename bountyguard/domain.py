@@ -29,6 +29,12 @@ def digest(value) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
+def diff_digest(files) -> str:
+    """Anchor raw GitHub patch fields, not derived AST/policy annotations."""
+    fields = ("filename", "previous_filename", "status", "sha", "patch", "additions", "deletions")
+    return digest([{key: file.get(key) for key in fields} for file in sorted(files, key=lambda item: item["filename"])])
+
+
 def github_url(value: str, kind: str) -> tuple[str, int]:
     url = urlsplit(value)
     match = re.fullmatch(r"/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)/" + kind + r"/([1-9][0-9]*)/?", url.path)
