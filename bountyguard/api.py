@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 import secrets
+import time
 from urllib.parse import urlsplit
 
 from fastapi import FastAPI, Request
@@ -103,7 +104,10 @@ def create_app(store=None, rpc=None, signer=None, sessions=None, reviewer=None):
 
     @app.get("/api/status")
     def status():
-        return {"version": __version__, "network": "testnet", "model_enabled": os.getenv("BOUNTYGUARD_ENABLE_AI") == "1", "signing_enabled": os.getenv("BOUNTYGUARD_ENABLE_TESTNET") == "1" and signer is not None, "local_github_enabled": os.getenv("BOUNTYGUARD_LOCAL_GITHUB") == "1" and bool(os.getenv("GITHUB_TOKEN")), "max_bounty_tnear": "0.01", "storage_charge_tnear": "0.01", "max_funding_intents": 2, "max_model_intents_per_day": 3, "wallet_binding": "NEP-413 + current FullAccess key lookup", "settlement": "Maintainer attestation after reviewed PR merge; contract does not query GitHub."}
+        with store.connection() as db:
+            funding_used = db.execute("SELECT COUNT(*) FROM operations WHERE kind='fund_assigned'").fetchone()[0]
+            model_used = db.execute("SELECT COUNT(*) FROM ai_calls WHERE created_at>=?", (int(time.time())-86400,)).fetchone()[0]
+        return {"version": __version__, "network": "testnet", "model_enabled": os.getenv("BOUNTYGUARD_ENABLE_AI") == "1", "signing_enabled": os.getenv("BOUNTYGUARD_ENABLE_TESTNET") == "1" and signer is not None, "local_github_enabled": os.getenv("BOUNTYGUARD_LOCAL_GITHUB") == "1" and bool(os.getenv("GITHUB_TOKEN")), "max_bounty_tnear": "0.01", "storage_charge_tnear": "0.01", "max_funding_intents": 2, "funding_intents_used": funding_used, "funding_intents_remaining": max(0,2-funding_used), "max_model_intents_per_day": 3, "model_intents_used": model_used, "model_intents_remaining": max(0,3-model_used), "quota_scope": "Development safeguards, not wallet or provider balances. Existing settlement, refunds and cached reviews remain available.", "wallet_binding": "NEP-413 + current FullAccess key lookup", "settlement": "Maintainer attestation after reviewed PR merge; contract does not query GitHub."}
 
     @app.post("/api/session")
     def login(body: Login):

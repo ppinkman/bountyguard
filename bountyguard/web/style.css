@@ -2,3 +2,5 @@
 
 
 @media(max-width:700px){header{padding:18px}.brand{font-size:18px;gap:7px}nav{gap:8px}nav #actor{display:none}nav .pill{font-size:8px;padding:6px 8px}nav button{padding:11px 12px}}
+
+.metrics>div{min-width:0;overflow-wrap:anywhere}@media(max-width:700px){#bounty-list{grid-template-columns:1fr}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:15px}.metrics>div:last-child{grid-column:1/-1}}

@@ -36,7 +36,7 @@ class FakeGitHub:
     def file(self, repo, path, ref): return {"sha": self.workflow_sha, "content": "name: CI\non: pull_request\n"}
     def closes_issue(self, repo, pr, issue): return [{"number": 12, "repository": {"databaseId": 42}}] if self.linked else []
     def pr_snapshot(self, repo, number): return copy.deepcopy(self.pr), copy.deepcopy(self.files)
-    def ci_evidence(self, repo, pr, policy): return {"passed": self.ci_pass, "reason": "unit-test CI evidence", "head_sha": pr["head"]["sha"], "base_sha": pr["base"]["sha"]}
+    def ci_evidence(self, repo, pr, policy, accepted=None): return {"passed": self.ci_pass, "reason": "unit-test CI evidence", "head_sha": pr["head"]["sha"], "base_sha": pr["base"]["sha"]}
     def request(self, path, body=None):
         if path == "/apps/github-actions": return {"id": 15368, "slug": "github-actions"}
         if "/pulls/" in path: return copy.deepcopy(self.pr)

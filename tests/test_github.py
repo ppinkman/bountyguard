@@ -32,5 +32,25 @@ class GitHubTests(unittest.TestCase):
     def test_changed_workflow_path_is_not_accepted(self):self.client.run["path"]=".github/workflows/other.yml";self.assertFalse(self.evidence()["passed"])
     def test_missing_required_check_is_not_success(self):self.client.job["name"]="lint";self.assertFalse(self.evidence()["passed"])
 
+    def test_merged_projection_can_use_the_exact_premerge_run(self):
+        accepted=self.evidence();self.client.run['pull_requests']=[];self.pr['merged']=True
+        self.assertTrue(self.client.ci_evidence('a/b',self.pr,self.policy,accepted=accepted)['passed'])
+
+    def test_empty_projection_before_merge_still_fails(self):
+        accepted=self.evidence();self.client.run['pull_requests']=[]
+        self.assertFalse(self.client.ci_evidence('a/b',self.pr,self.policy,accepted=accepted)['passed'])
+
+    def test_cached_green_cannot_hide_a_new_failure(self):
+        accepted=self.evidence();self.client.run['pull_requests']=[];self.pr['merged']=True;self.client.check['conclusion']='failure'
+        self.assertFalse(self.client.ci_evidence('a/b',self.pr,self.policy,accepted=accepted)['passed'])
+
+    def test_different_attempt_requires_another_review(self):
+        accepted=self.evidence();self.client.run['pull_requests']=[];self.pr['merged']=True;self.client.run['run_attempt']=2
+        self.assertFalse(self.client.ci_evidence('a/b',self.pr,self.policy,accepted=accepted)['passed'])
+
+    def test_a_different_run_cannot_borrow_an_old_association(self):
+        accepted=self.evidence();self.client.run['pull_requests']=[];self.pr['merged']=True;self.client.run['id']=101
+        self.assertFalse(self.client.ci_evidence('a/b',self.pr,self.policy,accepted=accepted)['passed'])
+
 
 if __name__ == "__main__":unittest.main()

@@ -1,0 +1,1070 @@
+{
+  "recorded_at": 1793849154,
+  "scope": "Project-owned, single GitHub operator playing both roles; separate verified testnet wallets. No independent commercial adopter is claimed.",
+  "deployment": {
+    "contract": "bg-c7e1a78e-escrow.testnet",
+    "code_hash": "9Mrqq51mqD24PKTaBDRwdz5tVf6JE2L2qp4StTmecfzN",
+    "wasm_sha256": "7c3577cd93eed6bac8befcb665a30fe880605fb2ec68aa8b34064f2bc763bb9f",
+    "transaction_hash": "FLcJ4apkLk5p3bKo4P7j2VrMM9rRE1w6Xa1ED7GX2TdH",
+    "network": "testnet"
+  },
+  "primary_bounty": {
+    "acceptance_version": "bountyguard/v1",
+    "amount": "0.005",
+    "amount_yocto": "5000000000000000000000",
+    "assigned_terms_hash": "54f5c926eb691e6200d59d2678510c21c830e1bac2e3b78512bfb5e6cf5394fe",
+    "ci": {
+      "app_id": 15368,
+      "required_checks": [
+        "Python checks",
+        "Contract checks"
+      ],
+      "workflow_blob_sha": "9b8d303047d09320793a43a11f038ce0aefbc271",
+      "workflow_id": 407623550,
+      "workflow_path": ".github/workflows/ci.yml"
+    },
+    "claim": {
+      "actor_id": 100271001,
+      "binding_hash": "ccda8222412ec5f268f1fbb904484a737f6005bd9decb444d180b986e6b8f228",
+      "bounty_id": "9fd0d1c519c44efe915684335a0bf4b5",
+      "id": "5d9d0790a0bf4921bb0fca20ba1b7334",
+      "login": "ppinkman",
+      "near_account_id": "bg-c7e1a78e-worker.testnet"
+    },
+    "created_at": 1793845850,
+    "creator_id": 100271001,
+    "creator_login": "ppinkman",
+    "deadline": 1793849447,
+    "funding_receipt": {
+      "contract": "bg-c7e1a78e-escrow.testnet",
+      "explorer_url": "https://testnet.nearblocks.io/txns/DUx1s1g3oB45hfwuCdFPU1CNu6LRrmzPLKPh2GDHgrih",
+      "final_execution_status": "FINAL",
+      "network": "testnet",
+      "status": {
+        "SuccessValue": "eyJpZCI6IjlmZDBkMWM1MTljNDRlZmU5MTU2ODQzMzVhMGJmNGI1IiwibWFpbnRhaW5lciI6ImJnLWM3ZTFhNzhlLW93bmVyLnRlc3RuZXQiLCJjbGFpbWFudCI6ImJnLWM3ZTFhNzhlLXdvcmtlci50ZXN0bmV0IiwiZ2l0aHViX3VzZXJfaWQiOiIxMDAyNzEwMDEiLCJyZXBvX2lkIjoiMTQ0NjQzMzI0NSIsImlzc3VlX251bWJlciI6MSwidGVybXNfaGFzaCI6IjU0ZjVjOTI2ZWI2OTFlNjIwMGQ1OWQyNjc4NTEwYzIxYzgzMGUxYmFjMmUzYjc4NTEyYmZiNWU2Y2Y1Mzk0ZmUiLCJhbW91bnQiOiI1MDAwMDAwMDAwMDAwMDAwMDAwMDAwIiwiZGVhZGxpbmVfbnMiOiIxNzkzODQ5NDQ3MDAwMDAwMDAwIiwiZGVsaXZlcnlfaGFzaCI6bnVsbCwicmVwb3J0X2hhc2giOm51bGwsInN0YXR1cyI6IkZ1bmRlZCIsInRyYW5zZmVyX25vbmNlIjoiMCJ9"
+      },
+      "transaction_hash": "DUx1s1g3oB45hfwuCdFPU1CNu6LRrmzPLKPh2GDHgrih"
+    },
+    "id": "9fd0d1c519c44efe915684335a0bf4b5",
+    "issue": {
+      "body": "The current source-change gate compares changed text lines. A PR can therefore edit only a Python docstring and still satisfy the implementation-change requirement.\n\nAcceptance:\n- Compare bounded Python source structurally without executing it.\n- Ignore comments, formatting and leading module/class/function docstrings when deciding whether implementation changed.\n- Preserve real executable or signature changes as implementation changes.\n- Missing, oversized, binary or invalid source must not become an automatic pass.\n- Keep ordinary added regression tests permitted, and retain the existing protected-path policy.\n- Add regressions for docstring-only, formatting-only and actual behavior changes.\n\nThis is a real issue in BountyGuard's development preview. Its bounty demonstration is operated by the project author/agent using free tNEAR; it is not evidence of independent commercial adoption.",
+      "number": 1,
+      "repo_id": 1446433245,
+      "title": "Reject Python docstring-only edits as implementation changes"
+    },
+    "issue_hash": "5b971eee35ffeee016b046f4476422f1e19e5f6afd6bd03cad7ad5fea9bc58df",
+    "issue_number": 1,
+    "issue_url": "https://github.com/ppinkman/bountyguard/issues/1",
+    "maintainer_account": "bg-c7e1a78e-owner.testnet",
+    "merge_evidence": {
+      "ci": {
+        "association_source": "pinned pre-merge association; matching immutable run/attempt/checks",
+        "base_sha": "f5cb85859129a13390cb7289415e76ad6ce8e937",
+        "checks": [
+          {
+            "app_id": 15368,
+            "app_slug": "github-actions",
+            "check_run_id": 127020919476,
+            "conclusion": "success",
+            "job_id": 127020919476,
+            "job_passed": true,
+            "name": "Python checks",
+            "status": "completed",
+            "suite_id": 113698770582,
+            "tested_sha": "17e1da79b199fcaf5890ac5f725c501e1b3548f8"
+          },
+          {
+            "app_id": 15368,
+            "app_slug": "github-actions",
+            "check_run_id": 127020919098,
+            "conclusion": "success",
+            "job_id": 127020919098,
+            "job_passed": true,
+            "name": "Contract checks",
+            "status": "completed",
+            "suite_id": 113698770582,
+            "tested_sha": "17e1da79b199fcaf5890ac5f725c501e1b3548f8"
+          }
+        ],
+        "head_sha": "17e1da79b199fcaf5890ac5f725c501e1b3548f8",
+        "passed": true,
+        "reason": "Trusted workflow evidence passed.",
+        "run_attempt": 1,
+        "run_id": 41959096811
+      },
+      "head_sha": "17e1da79b199fcaf5890ac5f725c501e1b3548f8",
+      "merge_commit_sha": "633697027e7e0636b7d845c15510e6db7389d889",
+      "merged_at": "2026-11-05T03:12:50Z",
+      "merged_by_id": 100271001
+    },
+    "network": "testnet",
+    "payment_receipt": {
+      "contract": "bg-c7e1a78e-escrow.testnet",
+      "explorer_url": "https://testnet.nearblocks.io/txns/B35cMBZLzvYjpBVEF24isUd9HAr4tTa596fGv771XYQt",
+      "final_execution_status": "FINAL",
+      "network": "testnet",
+      "status": {
+        "SuccessValue": "dHJ1ZQ=="
+      },
+      "transaction_hash": "B35cMBZLzvYjpBVEF24isUd9HAr4tTa596fGv771XYQt"
+    },
+    "pr_number": 3,
+    "pr_url": "https://github.com/ppinkman/bountyguard/pull/3",
+    "repo": "ppinkman/bountyguard",
+    "repo_id": 1446433245,
+    "require_merge": true,
+    "review": {
+      "ai": {
+        "estimate_usd": "0.01319894",
+        "findings": [],
+        "fingerprint": "1dbdbf6129bf253ec2e5b802c8abe245e8e79765a7b3c7b480ec2c24f05e2bad",
+        "limits": "Advisory review; not proof of correctness or absence of backdoors. Provider usage is not reversed by escrow refunds.",
+        "output_sha256": "ab200e7233dd5a7b325424cb68b2a0c88d3b9b9f5cdbc334518100493711ea47",
+        "provider": "NEAR AI Cloud",
+        "provider_model": "Qwen/Qwen3.6-35B-A3B-FP8",
+        "provider_request_id": "fb611c84-bf5a-51c1-9fc4-02806384e5b9",
+        "requested_model": "Qwen/Qwen3.6-35B-A3B-FP8",
+        "review_protocol": "issued-evidence-ids/v2",
+        "summary": "The change implements bounded AST comparison for Python files, correctly ignoring docstrings and formatting while detecting structural changes. It introduces evidence IDs for AI grounding, restricts injection detection to comments/text, and adds comprehensive tests. No security risks or blocking issues found.",
+        "usage": {
+          "completion_tokens": 73,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          },
+          "prompt_tokens": 16036,
+          "prompt_tokens_details": null,
+          "reasoning_tokens": 0,
+          "total_tokens": 16109
+        },
+        "verdict": "PASS"
+      },
+      "base_sha": "f5cb85859129a13390cb7289415e76ad6ce8e937",
+      "bounty_id": "9fd0d1c519c44efe915684335a0bf4b5",
+      "ci": {
+        "base_sha": "f5cb85859129a13390cb7289415e76ad6ce8e937",
+        "checks": [
+          {
+            "app_id": 15368,
+            "app_slug": "github-actions",
+            "check_run_id": 127020919476,
+            "conclusion": "success",
+            "job_id": 127020919476,
+            "job_passed": true,
+            "name": "Python checks",
+            "status": "completed",
+            "suite_id": 113698770582,
+            "tested_sha": "17e1da79b199fcaf5890ac5f725c501e1b3548f8"
+          },
+          {
+            "app_id": 15368,
+            "app_slug": "github-actions",
+            "check_run_id": 127020919098,
+            "conclusion": "success",
+            "job_id": 127020919098,
+            "job_passed": true,
+            "name": "Contract checks",
+            "status": "completed",
+            "suite_id": 113698770582,
+            "tested_sha": "17e1da79b199fcaf5890ac5f725c501e1b3548f8"
+          }
+        ],
+        "head_sha": "17e1da79b199fcaf5890ac5f725c501e1b3548f8",
+        "passed": true,
+        "reason": "Trusted workflow evidence passed.",
+        "run_attempt": 1,
+        "run_id": 41959096811
+      },
+      "created_at": 1793848065,
+      "delivery_hash": "56b54fb7407a6d3becd83906a91971702d81f729755dadaa3ce3ae5637989d93",
+      "diff_hash": "c4d5c4ad78ea4877cda1ecffdcedce742386ce750ba62294fa79526a688a5469",
+      "fingerprint": "39c83373d48b8a6a9108758230258d61c52d818abcf1f5fad25715f655b86cf2",
+      "hard": {
+        "checks": [
+          {
+            "detail": "PR base repository must match the funded repository; forks are allowed.",
+            "manual": false,
+            "name": "repository",
+            "passed": true
+          },
+          {
+            "detail": "PR author numeric GitHub ID must match the assigned claimant.",
+            "manual": false,
+            "name": "author",
+            "passed": true
+          },
+          {
+            "detail": "Issue title/body must match the agreed terms.",
+            "manual": false,
+            "name": "issue_context",
+            "passed": true
+          },
+          {
+            "detail": "GitHub closing-Issue references must include this Issue.",
+            "manual": false,
+            "name": "issue_link",
+            "passed": true
+          },
+          {
+            "detail": "Draft pull requests cannot authorize payment.",
+            "manual": false,
+            "name": "not_draft",
+            "passed": true
+          },
+          {
+            "detail": "Trusted workflow content must still match the agreed source.",
+            "manual": false,
+            "name": "workflow_source",
+            "passed": true
+          },
+          {
+            "detail": "An implementation change is required under an agreed source path. Python uses a bounded AST comparison excluding leading docstrings; other supported languages use a textual heuristic. This is not correctness proof.",
+            "manual": false,
+            "name": "source_change",
+            "passed": true
+          },
+          {
+            "detail": "No sensitive configuration changes.",
+            "manual": true,
+            "name": "sensitive_paths",
+            "passed": true
+          },
+          {
+            "detail": "No removed-assertion signal. Ordinary test additions/changes are listed.",
+            "manual": true,
+            "name": "test_integrity_signal",
+            "passed": true
+          },
+          {
+            "detail": "No configured review-manipulation signal; detection is incomplete.",
+            "manual": true,
+            "name": "review_manipulation_signal",
+            "passed": true
+          },
+          {
+            "detail": "Trusted workflow evidence passed.",
+            "manual": false,
+            "name": "trusted_ci",
+            "passed": true
+          }
+        ],
+        "test_changes": [
+          "tests/test_bounties.py",
+          "tests/test_python_changes.py",
+          "tests/test_review.py",
+          "tests/test_verifier_signals.py"
+        ],
+        "verdict": "PASS"
+      },
+      "head_sha": "17e1da79b199fcaf5890ac5f725c501e1b3548f8",
+      "pr_number": 3,
+      "report_hash": "49c731a9e66f93948c70b657f5772991d32558de475fa8ae3c0cf1d04506f709",
+      "terms_hash": "54f5c926eb691e6200d59d2678510c21c830e1bac2e3b78512bfb5e6cf5394fe",
+      "verdict": "PASS"
+    },
+    "source_paths": [
+      "bountyguard/"
+    ],
+    "state": "PAID",
+    "terms_hash": "3f8458f10b2827045f5736ed5df6b6dc11a9284d68cad84bab2d7daef60de337",
+    "version": 14,
+    "events": [
+      {
+        "id": 1,
+        "bounty_id": "9fd0d1c519c44efe915684335a0bf4b5",
+        "kind": "assigned",
+        "document": {
+          "assigned_terms_hash": "54f5c926eb691e6200d59d2678510c21c830e1bac2e3b78512bfb5e6cf5394fe",
+          "claim_id": "5d9d0790a0bf4921bb0fca20ba1b7334"
+        },
+        "created_at": 1793845887
+      },
+      {
+        "id": 2,
+        "bounty_id": "9fd0d1c519c44efe915684335a0bf4b5",
+        "kind": "funded",
+        "document": {
+          "contract": "bg-c7e1a78e-escrow.testnet",
+          "explorer_url": "https://testnet.nearblocks.io/txns/DUx1s1g3oB45hfwuCdFPU1CNu6LRrmzPLKPh2GDHgrih",
+          "final_execution_status": "FINAL",
+          "network": "testnet",
+          "status": {
+            "SuccessValue": "eyJpZCI6IjlmZDBkMWM1MTljNDRlZmU5MTU2ODQzMzVhMGJmNGI1IiwibWFpbnRhaW5lciI6ImJnLWM3ZTFhNzhlLW93bmVyLnRlc3RuZXQiLCJjbGFpbWFudCI6ImJnLWM3ZTFhNzhlLXdvcmtlci50ZXN0bmV0IiwiZ2l0aHViX3VzZXJfaWQiOiIxMDAyNzEwMDEiLCJyZXBvX2lkIjoiMTQ0NjQzMzI0NSIsImlzc3VlX251bWJlciI6MSwidGVybXNfaGFzaCI6IjU0ZjVjOTI2ZWI2OTFlNjIwMGQ1OWQyNjc4NTEwYzIxYzgzMGUxYmFjMmUzYjc4NTEyYmZiNWU2Y2Y1Mzk0ZmUiLCJhbW91bnQiOiI1MDAwMDAwMDAwMDAwMDAwMDAwMDAwIiwiZGVhZGxpbmVfbnMiOiIxNzkzODQ5NDQ3MDAwMDAwMDAwIiwiZGVsaXZlcnlfaGFzaCI6bnVsbCwicmVwb3J0X2hhc2giOm51bGwsInN0YXR1cyI6IkZ1bmRlZCIsInRyYW5zZmVyX25vbmNlIjoiMCJ9"
+          },
+          "transaction_hash": "DUx1s1g3oB45hfwuCdFPU1CNu6LRrmzPLKPh2GDHgrih"
+        },
+        "created_at": 1793845933
+      },
+      {
+        "id": 5,
+        "bounty_id": "9fd0d1c519c44efe915684335a0bf4b5",
+        "kind": "pr_submitted",
+        "document": {
+          "head_sha": "0b6538d54a276a13eddafcd93fda52845037989e",
+          "number": 4
+        },
+        "created_at": 1793846090
+      },
+      {
+        "id": 6,
+        "bounty_id": "9fd0d1c519c44efe915684335a0bf4b5",
+        "kind": "reviewed",
+        "document": {
+          "head_sha": "0b6538d54a276a13eddafcd93fda52845037989e",
+          "report_hash": "470a42be50ca527ec23a5a66079dcc259ca760e9948a75fc4ec99869d53be728",
+          "verdict": "NEEDS_REVIEW"
+        },
+        "created_at": 1793846131
+      },
+      {
+        "id": 7,
+        "bounty_id": "9fd0d1c519c44efe915684335a0bf4b5",
+        "kind": "pr_submitted",
+        "document": {
+          "head_sha": "7b9d2f190ec6d8141c1f841b16dab9b1f69626c9",
+          "number": 3
+        },
+        "created_at": 1793846202
+      },
+      {
+        "id": 8,
+        "bounty_id": "9fd0d1c519c44efe915684335a0bf4b5",
+        "kind": "reviewed",
+        "document": {
+          "head_sha": "7b9d2f190ec6d8141c1f841b16dab9b1f69626c9",
+          "report_hash": "f72837c30d88391282b5981f90ec0996c614c983523d92bb77cde952e52993a2",
+          "verdict": "NEEDS_REVIEW"
+        },
+        "created_at": 1793846239
+      },
+      {
+        "id": 10,
+        "bounty_id": "9fd0d1c519c44efe915684335a0bf4b5",
+        "kind": "pr_submitted",
+        "document": {
+          "head_sha": "0b6538d54a276a13eddafcd93fda52845037989e",
+          "number": 4
+        },
+        "created_at": 1793846677
+      },
+      {
+        "id": 11,
+        "bounty_id": "9fd0d1c519c44efe915684335a0bf4b5",
+        "kind": "reviewed",
+        "document": {
+          "head_sha": "0b6538d54a276a13eddafcd93fda52845037989e",
+          "report_hash": "470a42be50ca527ec23a5a66079dcc259ca760e9948a75fc4ec99869d53be728",
+          "verdict": "NEEDS_REVIEW"
+        },
+        "created_at": 1793846694
+      },
+      {
+        "id": 12,
+        "bounty_id": "9fd0d1c519c44efe915684335a0bf4b5",
+        "kind": "pr_submitted",
+        "document": {
+          "head_sha": "1944056c0f1f816f031061522e55f8e07370b908",
+          "number": 3
+        },
+        "created_at": 1793846700
+      },
+      {
+        "id": 13,
+        "bounty_id": "9fd0d1c519c44efe915684335a0bf4b5",
+        "kind": "reviewed",
+        "document": {
+          "head_sha": "17e1da79b199fcaf5890ac5f725c501e1b3548f8",
+          "report_hash": "298217ea42cb003f3a8f4cdc35ea1fe9da70e63bcaa47d0acdeb743e4fc16435",
+          "verdict": "PASS"
+        },
+        "created_at": 1793847474
+      },
+      {
+        "id": 14,
+        "bounty_id": "9fd0d1c519c44efe915684335a0bf4b5",
+        "kind": "review_invalidated",
+        "document": {
+          "current_head": "c7863c13362c411055d2662c83edcb3d014eb5fd",
+          "reviewed_head": "17e1da79b199fcaf5890ac5f725c501e1b3548f8"
+        },
+        "created_at": 1793847695
+      },
+      {
+        "id": 15,
+        "bounty_id": "9fd0d1c519c44efe915684335a0bf4b5",
+        "kind": "reviewed",
+        "document": {
+          "head_sha": "17e1da79b199fcaf5890ac5f725c501e1b3548f8",
+          "report_hash": "49c731a9e66f93948c70b657f5772991d32558de475fa8ae3c0cf1d04506f709",
+          "verdict": "PASS"
+        },
+        "created_at": 1793848065
+      },
+      {
+        "id": 16,
+        "bounty_id": "9fd0d1c519c44efe915684335a0bf4b5",
+        "kind": "reviewed",
+        "document": {
+          "head_sha": "17e1da79b199fcaf5890ac5f725c501e1b3548f8",
+          "report_hash": "49c731a9e66f93948c70b657f5772991d32558de475fa8ae3c0cf1d04506f709",
+          "verdict": "PASS"
+        },
+        "created_at": 1793848268
+      },
+      {
+        "id": 17,
+        "bounty_id": "9fd0d1c519c44efe915684335a0bf4b5",
+        "kind": "paid",
+        "document": {
+          "claimant": "bg-c7e1a78e-worker.testnet",
+          "delivery_hash": "56b54fb7407a6d3becd83906a91971702d81f729755dadaa3ce3ae5637989d93",
+          "report_hash": "49c731a9e66f93948c70b657f5772991d32558de475fa8ae3c0cf1d04506f709"
+        },
+        "created_at": 1793848891
+      }
+    ],
+    "operations": [
+      {
+        "id": "9fd0d1c519c44efe915684335a0bf4b5:fund",
+        "kind": "fund_assigned",
+        "state": "CONFIRMED",
+        "intent_hash": "03b3d83cea657d24259657118771acb83fd8af27a8b9b05f57d492ce2d7cd2e4",
+        "transaction_hash": "DUx1s1g3oB45hfwuCdFPU1CNu6LRrmzPLKPh2GDHgrih",
+        "receipt": {
+          "contract": "bg-c7e1a78e-escrow.testnet",
+          "explorer_url": "https://testnet.nearblocks.io/txns/DUx1s1g3oB45hfwuCdFPU1CNu6LRrmzPLKPh2GDHgrih",
+          "final_execution_status": "FINAL",
+          "network": "testnet",
+          "status": {
+            "SuccessValue": "eyJpZCI6IjlmZDBkMWM1MTljNDRlZmU5MTU2ODQzMzVhMGJmNGI1IiwibWFpbnRhaW5lciI6ImJnLWM3ZTFhNzhlLW93bmVyLnRlc3RuZXQiLCJjbGFpbWFudCI6ImJnLWM3ZTFhNzhlLXdvcmtlci50ZXN0bmV0IiwiZ2l0aHViX3VzZXJfaWQiOiIxMDAyNzEwMDEiLCJyZXBvX2lkIjoiMTQ0NjQzMzI0NSIsImlzc3VlX251bWJlciI6MSwidGVybXNfaGFzaCI6IjU0ZjVjOTI2ZWI2OTFlNjIwMGQ1OWQyNjc4NTEwYzIxYzgzMGUxYmFjMmUzYjc4NTEyYmZiNWU2Y2Y1Mzk0ZmUiLCJhbW91bnQiOiI1MDAwMDAwMDAwMDAwMDAwMDAwMDAwIiwiZGVhZGxpbmVfbnMiOiIxNzkzODQ5NDQ3MDAwMDAwMDAwIiwiZGVsaXZlcnlfaGFzaCI6bnVsbCwicmVwb3J0X2hhc2giOm51bGwsInN0YXR1cyI6IkZ1bmRlZCIsInRyYW5zZmVyX25vbmNlIjoiMCJ9"
+          },
+          "transaction_hash": "DUx1s1g3oB45hfwuCdFPU1CNu6LRrmzPLKPh2GDHgrih"
+        }
+      },
+      {
+        "id": "9fd0d1c519c44efe915684335a0bf4b5:review:49c731a9e66f93948c70b657f5772991d32558de475fa8ae3c0cf1d04506f709",
+        "kind": "record_review",
+        "state": "CONFIRMED",
+        "intent_hash": "80832985ea3f9606dbc08d4e647918ad06177ade3c6fab356bc919bc95c54325",
+        "transaction_hash": "KFyEQecGPYeFaDuLoTYW1E8AaWk6q4CE3LVVYrJi6xU",
+        "receipt": {
+          "contract": "bg-c7e1a78e-escrow.testnet",
+          "explorer_url": "https://testnet.nearblocks.io/txns/KFyEQecGPYeFaDuLoTYW1E8AaWk6q4CE3LVVYrJi6xU",
+          "final_execution_status": "FINAL",
+          "network": "testnet",
+          "status": {
+            "SuccessValue": "eyJpZCI6IjlmZDBkMWM1MTljNDRlZmU5MTU2ODQzMzVhMGJmNGI1IiwibWFpbnRhaW5lciI6ImJnLWM3ZTFhNzhlLW93bmVyLnRlc3RuZXQiLCJjbGFpbWFudCI6ImJnLWM3ZTFhNzhlLXdvcmtlci50ZXN0bmV0IiwiZ2l0aHViX3VzZXJfaWQiOiIxMDAyNzEwMDEiLCJyZXBvX2lkIjoiMTQ0NjQzMzI0NSIsImlzc3VlX251bWJlciI6MSwidGVybXNfaGFzaCI6IjU0ZjVjOTI2ZWI2OTFlNjIwMGQ1OWQyNjc4NTEwYzIxYzgzMGUxYmFjMmUzYjc4NTEyYmZiNWU2Y2Y1Mzk0ZmUiLCJhbW91bnQiOiI1MDAwMDAwMDAwMDAwMDAwMDAwMDAwIiwiZGVhZGxpbmVfbnMiOiIxNzkzODQ5NDQ3MDAwMDAwMDAwIiwiZGVsaXZlcnlfaGFzaCI6IjU2YjU0ZmI3NDA3YTZkM2JlY2Q4MzkwNmE5MTk3MTcwMmQ4MWY3Mjk3NTVkYWRhYTNjZTNhZTU2Mzc5ODlkOTMiLCJyZXBvcnRfaGFzaCI6IjQ5YzczMWE5ZTY2ZjkzOTQ4YzcwYjY1N2Y1NzcyOTkxZDMyNTU4ZGU0NzVmYThhZTNjMGNmMWQwNDUwNmY3MDkiLCJzdGF0dXMiOiJSZXZpZXdlZCIsInRyYW5zZmVyX25vbmNlIjoiMCJ9"
+          },
+          "transaction_hash": "KFyEQecGPYeFaDuLoTYW1E8AaWk6q4CE3LVVYrJi6xU"
+        }
+      },
+      {
+        "id": "9fd0d1c519c44efe915684335a0bf4b5:pay:1",
+        "kind": "pay",
+        "state": "CONFIRMED",
+        "intent_hash": "597696cb4d65ad71d46c31e0f7d3a5899609b722543836f1bbd077d059a01dfc",
+        "transaction_hash": "B35cMBZLzvYjpBVEF24isUd9HAr4tTa596fGv771XYQt",
+        "receipt": {
+          "contract": "bg-c7e1a78e-escrow.testnet",
+          "explorer_url": "https://testnet.nearblocks.io/txns/B35cMBZLzvYjpBVEF24isUd9HAr4tTa596fGv771XYQt",
+          "final_execution_status": "FINAL",
+          "network": "testnet",
+          "status": {
+            "SuccessValue": "dHJ1ZQ=="
+          },
+          "transaction_hash": "B35cMBZLzvYjpBVEF24isUd9HAr4tTa596fGv771XYQt"
+        }
+      }
+    ]
+  },
+  "refunded_bounty": {
+    "acceptance_version": "bountyguard/v1",
+    "amount": "0.005",
+    "amount_yocto": "5000000000000000000000",
+    "assigned_terms_hash": "a058ec39e96b75e2816155bf7558a7658f27c07c5105f469ce349d442549c002",
+    "ci": {
+      "app_id": 15368,
+      "required_checks": [
+        "Python checks",
+        "Contract checks"
+      ],
+      "workflow_blob_sha": "9b8d303047d09320793a43a11f038ce0aefbc271",
+      "workflow_id": 407623550,
+      "workflow_path": ".github/workflows/ci.yml"
+    },
+    "claim": {
+      "actor_id": 100271001,
+      "binding_hash": "49888aaac6b599882820e5c25e4c13dba3c372f68756df973296e4d45fd7bd7c",
+      "bounty_id": "9d457f0925c64e5a8571501058a58820",
+      "id": "60bb10c02b8d4bf39851b9be0ece442e",
+      "login": "ppinkman",
+      "near_account_id": "bg-c7e1a78e-worker.testnet"
+    },
+    "created_at": 1793845935,
+    "creator_id": 100271001,
+    "creator_login": "ppinkman",
+    "deadline": 1793846412,
+    "funding_receipt": {
+      "contract": "bg-c7e1a78e-escrow.testnet",
+      "explorer_url": "https://testnet.nearblocks.io/txns/4pmeGbsEiJVwgU4aQhYB5zM73QjaUZTx2iZPSVt3rc19",
+      "final_execution_status": "FINAL",
+      "network": "testnet",
+      "status": {
+        "SuccessValue": "eyJpZCI6IjlkNDU3ZjA5MjVjNjRlNWE4NTcxNTAxMDU4YTU4ODIwIiwibWFpbnRhaW5lciI6ImJnLWM3ZTFhNzhlLW93bmVyLnRlc3RuZXQiLCJjbGFpbWFudCI6ImJnLWM3ZTFhNzhlLXdvcmtlci50ZXN0bmV0IiwiZ2l0aHViX3VzZXJfaWQiOiIxMDAyNzEwMDEiLCJyZXBvX2lkIjoiMTQ0NjQzMzI0NSIsImlzc3VlX251bWJlciI6MiwidGVybXNfaGFzaCI6ImEwNThlYzM5ZTk2Yjc1ZTI4MTYxNTViZjc1NThhNzY1OGYyN2MwN2M1MTA1ZjQ2OWNlMzQ5ZDQ0MjU0OWMwMDIiLCJhbW91bnQiOiI1MDAwMDAwMDAwMDAwMDAwMDAwMDAwIiwiZGVhZGxpbmVfbnMiOiIxNzkzODQ2NDEyMDAwMDAwMDAwIiwiZGVsaXZlcnlfaGFzaCI6bnVsbCwicmVwb3J0X2hhc2giOm51bGwsInN0YXR1cyI6IkZ1bmRlZCIsInRyYW5zZmVyX25vbmNlIjoiMCJ9"
+      },
+      "transaction_hash": "4pmeGbsEiJVwgU4aQhYB5zM73QjaUZTx2iZPSVt3rc19"
+    },
+    "id": "9d457f0925c64e5a8571501058a58820",
+    "issue": {
+      "body": "Project-owned testnet acceptance scenario. This Issue is reserved for a short-lived assigned bounty that intentionally receives no PR, so its original maintainer can trigger the expiry refund.\n\nNo outside work is requested. The amount is free tNEAR with no monetary value. The evidence must show that only the reward principal returns, storage/gas do not, and repeating the refund does not create another transfer.\n\nThis is an explicit test scenario, not a customer request or commercial order.",
+      "number": 2,
+      "repo_id": 1446433245,
+      "title": "[Controlled demo] Expiry refund acceptance; no contributor work requested"
+    },
+    "issue_hash": "26ba8bf3aaf5daf9df5efe04b09e3587f0f6283360ea37f1e78899444d8d6231",
+    "issue_number": 2,
+    "issue_url": "https://github.com/ppinkman/bountyguard/issues/2",
+    "maintainer_account": "bg-c7e1a78e-owner.testnet",
+    "network": "testnet",
+    "refund_receipt": {
+      "contract": "bg-c7e1a78e-escrow.testnet",
+      "explorer_url": "https://testnet.nearblocks.io/txns/GWtzhGA7PTGgBK8CXLnkkeqV1pKRUedT2xVZ3VZyrDq9",
+      "final_execution_status": "FINAL",
+      "network": "testnet",
+      "status": {
+        "SuccessValue": "dHJ1ZQ=="
+      },
+      "transaction_hash": "GWtzhGA7PTGgBK8CXLnkkeqV1pKRUedT2xVZ3VZyrDq9"
+    },
+    "repo": "ppinkman/bountyguard",
+    "repo_id": 1446433245,
+    "require_merge": true,
+    "source_paths": [
+      "bountyguard/"
+    ],
+    "state": "REFUNDED",
+    "terms_hash": "94ae9654400ed3ded902634be44079d0293d3de101c08c9f673462dc5644923c",
+    "version": 3,
+    "events": [
+      {
+        "id": 3,
+        "bounty_id": "9d457f0925c64e5a8571501058a58820",
+        "kind": "assigned",
+        "document": {
+          "assigned_terms_hash": "a058ec39e96b75e2816155bf7558a7658f27c07c5105f469ce349d442549c002",
+          "claim_id": "60bb10c02b8d4bf39851b9be0ece442e"
+        },
+        "created_at": 1793845974
+      },
+      {
+        "id": 4,
+        "bounty_id": "9d457f0925c64e5a8571501058a58820",
+        "kind": "funded",
+        "document": {
+          "contract": "bg-c7e1a78e-escrow.testnet",
+          "explorer_url": "https://testnet.nearblocks.io/txns/4pmeGbsEiJVwgU4aQhYB5zM73QjaUZTx2iZPSVt3rc19",
+          "final_execution_status": "FINAL",
+          "network": "testnet",
+          "status": {
+            "SuccessValue": "eyJpZCI6IjlkNDU3ZjA5MjVjNjRlNWE4NTcxNTAxMDU4YTU4ODIwIiwibWFpbnRhaW5lciI6ImJnLWM3ZTFhNzhlLW93bmVyLnRlc3RuZXQiLCJjbGFpbWFudCI6ImJnLWM3ZTFhNzhlLXdvcmtlci50ZXN0bmV0IiwiZ2l0aHViX3VzZXJfaWQiOiIxMDAyNzEwMDEiLCJyZXBvX2lkIjoiMTQ0NjQzMzI0NSIsImlzc3VlX251bWJlciI6MiwidGVybXNfaGFzaCI6ImEwNThlYzM5ZTk2Yjc1ZTI4MTYxNTViZjc1NThhNzY1OGYyN2MwN2M1MTA1ZjQ2OWNlMzQ5ZDQ0MjU0OWMwMDIiLCJhbW91bnQiOiI1MDAwMDAwMDAwMDAwMDAwMDAwMDAwIiwiZGVhZGxpbmVfbnMiOiIxNzkzODQ2NDEyMDAwMDAwMDAwIiwiZGVsaXZlcnlfaGFzaCI6bnVsbCwicmVwb3J0X2hhc2giOm51bGwsInN0YXR1cyI6IkZ1bmRlZCIsInRyYW5zZmVyX25vbmNlIjoiMCJ9"
+          },
+          "transaction_hash": "4pmeGbsEiJVwgU4aQhYB5zM73QjaUZTx2iZPSVt3rc19"
+        },
+        "created_at": 1793846083
+      },
+      {
+        "id": 9,
+        "bounty_id": "9d457f0925c64e5a8571501058a58820",
+        "kind": "refunded",
+        "document": {
+          "principal_yocto": "5000000000000000000000",
+          "storage_and_gas_refunded": false
+        },
+        "created_at": 1793846575
+      }
+    ],
+    "operations": [
+      {
+        "id": "9d457f0925c64e5a8571501058a58820:fund",
+        "kind": "fund_assigned",
+        "state": "CONFIRMED",
+        "intent_hash": "7d0b94f93a219e6e5181b1541face5a8cdd37d94c325f5700d183843110bfef7",
+        "transaction_hash": "4pmeGbsEiJVwgU4aQhYB5zM73QjaUZTx2iZPSVt3rc19",
+        "receipt": {
+          "contract": "bg-c7e1a78e-escrow.testnet",
+          "explorer_url": "https://testnet.nearblocks.io/txns/4pmeGbsEiJVwgU4aQhYB5zM73QjaUZTx2iZPSVt3rc19",
+          "final_execution_status": "FINAL",
+          "network": "testnet",
+          "status": {
+            "SuccessValue": "eyJpZCI6IjlkNDU3ZjA5MjVjNjRlNWE4NTcxNTAxMDU4YTU4ODIwIiwibWFpbnRhaW5lciI6ImJnLWM3ZTFhNzhlLW93bmVyLnRlc3RuZXQiLCJjbGFpbWFudCI6ImJnLWM3ZTFhNzhlLXdvcmtlci50ZXN0bmV0IiwiZ2l0aHViX3VzZXJfaWQiOiIxMDAyNzEwMDEiLCJyZXBvX2lkIjoiMTQ0NjQzMzI0NSIsImlzc3VlX251bWJlciI6MiwidGVybXNfaGFzaCI6ImEwNThlYzM5ZTk2Yjc1ZTI4MTYxNTViZjc1NThhNzY1OGYyN2MwN2M1MTA1ZjQ2OWNlMzQ5ZDQ0MjU0OWMwMDIiLCJhbW91bnQiOiI1MDAwMDAwMDAwMDAwMDAwMDAwMDAwIiwiZGVhZGxpbmVfbnMiOiIxNzkzODQ2NDEyMDAwMDAwMDAwIiwiZGVsaXZlcnlfaGFzaCI6bnVsbCwicmVwb3J0X2hhc2giOm51bGwsInN0YXR1cyI6IkZ1bmRlZCIsInRyYW5zZmVyX25vbmNlIjoiMCJ9"
+          },
+          "transaction_hash": "4pmeGbsEiJVwgU4aQhYB5zM73QjaUZTx2iZPSVt3rc19"
+        }
+      },
+      {
+        "id": "9d457f0925c64e5a8571501058a58820:refund:1",
+        "kind": "refund_expired",
+        "state": "CONFIRMED",
+        "intent_hash": "fd907b11572e12af4f2373887d2514e610769da7784d388f48c748e3449d9849",
+        "transaction_hash": "GWtzhGA7PTGgBK8CXLnkkeqV1pKRUedT2xVZ3VZyrDq9",
+        "receipt": {
+          "contract": "bg-c7e1a78e-escrow.testnet",
+          "explorer_url": "https://testnet.nearblocks.io/txns/GWtzhGA7PTGgBK8CXLnkkeqV1pKRUedT2xVZ3VZyrDq9",
+          "final_execution_status": "FINAL",
+          "network": "testnet",
+          "status": {
+            "SuccessValue": "dHJ1ZQ=="
+          },
+          "transaction_hash": "GWtzhGA7PTGgBK8CXLnkkeqV1pKRUedT2xVZ3VZyrDq9"
+        }
+      }
+    ]
+  },
+  "identity_proofs": {
+    "9fd0d1c519c44efe915684335a0bf4b5": {
+      "maintainer": {
+        "bounty_id": "9fd0d1c519c44efe915684335a0bf4b5",
+        "callback_url": null,
+        "expires_at": 1793846154,
+        "github_user_id": 100271001,
+        "id": "6012519911354f309e1ed0d9549a86ca",
+        "message": "{\"application\":\"BountyGuard\",\"bounty_id\":\"9fd0d1c519c44efe915684335a0bf4b5\",\"challenge_id\":\"6012519911354f309e1ed0d9549a86ca\",\"expires_at\":1793846154,\"github_user_id\":100271001,\"issue_number\":1,\"near_account_id\":\"bg-c7e1a78e-owner.testnet\",\"network\":\"testnet\",\"purpose\":\"maintainer\",\"repo\":\"ppinkman/bountyguard\",\"repo_id\":1446433245,\"terms_hash\":\"3f8458f10b2827045f5736ed5df6b6dc11a9284d68cad84bab2d7daef60de337\",\"version\":1}",
+        "near_account_id": "bg-c7e1a78e-owner.testnet",
+        "nonce": "tOhbxkejbj/dEac9NzLcxVgWEHBxS19zocwu7i+VeFA=",
+        "purpose": "maintainer",
+        "recipient": "bountyguard.local",
+        "public_key": "ed25519:87bBzYpdWEnDrd9m6xBK5trHZ2ua52TGtoRNJAvsADLn",
+        "signature": "g+zkQrpOJq1UiSxfEAn5wmvq17Pupy8JV1t4OptWQQ2gBznYelh2vAkT5phyP5T7W42Jwohx41Lho9ai4+YzCQ==",
+        "verified_at": 1793845863,
+        "key_block_hash": "Dfj6dmwugNdu5VRKCU9paU68ZSy25xASarzVBTEuCsLb",
+        "key_block_height": 276281439
+      },
+      "claimant": {
+        "bounty_id": "9fd0d1c519c44efe915684335a0bf4b5",
+        "callback_url": null,
+        "expires_at": 1793846163,
+        "github_user_id": 100271001,
+        "id": "c6598a33872d466dbb779b2625aa92c7",
+        "message": "{\"application\":\"BountyGuard\",\"bounty_id\":\"9fd0d1c519c44efe915684335a0bf4b5\",\"challenge_id\":\"c6598a33872d466dbb779b2625aa92c7\",\"expires_at\":1793846163,\"github_user_id\":100271001,\"issue_number\":1,\"near_account_id\":\"bg-c7e1a78e-worker.testnet\",\"network\":\"testnet\",\"purpose\":\"claimant\",\"repo\":\"ppinkman/bountyguard\",\"repo_id\":1446433245,\"terms_hash\":\"3f8458f10b2827045f5736ed5df6b6dc11a9284d68cad84bab2d7daef60de337\",\"version\":1}",
+        "near_account_id": "bg-c7e1a78e-worker.testnet",
+        "nonce": "RyguakM6um5iPQPHP1RI2UycTLZbXYpAo4FQVsyjSZU=",
+        "purpose": "claimant",
+        "recipient": "bountyguard.local",
+        "public_key": "ed25519:DFo2NnHrshRE8rX7gtGvVviML9SqBCe87cGi2wswR1tZ",
+        "signature": "hvvfaRSyr2EroTjj19zjvNF9c8rtl8DmrEzZDiNGQnkM91bDsTM+DQ6bNhoGzypsM0WT/X7hOCribl1vIV0lCQ==",
+        "verified_at": 1793845871,
+        "key_block_hash": "FDJh3yMqxg5eyjSjX9M2VK5eVUGZ9To62Z3eXGo4K9iH",
+        "key_block_height": 276281453
+      }
+    },
+    "9d457f0925c64e5a8571501058a58820": {
+      "maintainer": {
+        "bounty_id": "9d457f0925c64e5a8571501058a58820",
+        "callback_url": null,
+        "expires_at": 1793846242,
+        "github_user_id": 100271001,
+        "id": "1f0c9b9079084882b7dabb70885acd33",
+        "message": "{\"application\":\"BountyGuard\",\"bounty_id\":\"9d457f0925c64e5a8571501058a58820\",\"challenge_id\":\"1f0c9b9079084882b7dabb70885acd33\",\"expires_at\":1793846242,\"github_user_id\":100271001,\"issue_number\":2,\"near_account_id\":\"bg-c7e1a78e-owner.testnet\",\"network\":\"testnet\",\"purpose\":\"maintainer\",\"repo\":\"ppinkman/bountyguard\",\"repo_id\":1446433245,\"terms_hash\":\"94ae9654400ed3ded902634be44079d0293d3de101c08c9f673462dc5644923c\",\"version\":1}",
+        "near_account_id": "bg-c7e1a78e-owner.testnet",
+        "nonce": "GkTEqVGUYT4DejUonn/nXhWVkB8Dh/Lhl6AF+hUGr3Q=",
+        "purpose": "maintainer",
+        "recipient": "bountyguard.local",
+        "public_key": "ed25519:87bBzYpdWEnDrd9m6xBK5trHZ2ua52TGtoRNJAvsADLn",
+        "signature": "o2cGAjJXwaGqkZ1JZ44uNJ8pYX+oOKfD6/J9YUUXu5KR9rGIdDBm4+Vo//ffUhfLoNhdRPPL6E3XY3XVLFMtDA==",
+        "verified_at": 1793845950,
+        "key_block_hash": "6v36xtLMKmgZN2gmujn6toMnwnBnzEn3Du2kdLDJECJ7",
+        "key_block_height": 276281587
+      },
+      "claimant": {
+        "bounty_id": "9d457f0925c64e5a8571501058a58820",
+        "callback_url": null,
+        "expires_at": 1793846250,
+        "github_user_id": 100271001,
+        "id": "f4f064241fce46cfaf90530b0607ac39",
+        "message": "{\"application\":\"BountyGuard\",\"bounty_id\":\"9d457f0925c64e5a8571501058a58820\",\"challenge_id\":\"f4f064241fce46cfaf90530b0607ac39\",\"expires_at\":1793846250,\"github_user_id\":100271001,\"issue_number\":2,\"near_account_id\":\"bg-c7e1a78e-worker.testnet\",\"network\":\"testnet\",\"purpose\":\"claimant\",\"repo\":\"ppinkman/bountyguard\",\"repo_id\":1446433245,\"terms_hash\":\"94ae9654400ed3ded902634be44079d0293d3de101c08c9f673462dc5644923c\",\"version\":1}",
+        "near_account_id": "bg-c7e1a78e-worker.testnet",
+        "nonce": "9ElSFAoUlgbMWMVLL7nCJA9/s4jgiHvEqa4ohujV3Yw=",
+        "purpose": "claimant",
+        "recipient": "bountyguard.local",
+        "public_key": "ed25519:DFo2NnHrshRE8rX7gtGvVviML9SqBCe87cGi2wswR1tZ",
+        "signature": "Hm16qzZ9nba9E/5SG8cZD2PFzPiOvgcTIHmzMUIL120KttunIY49oBvJhFFiM/74rKRYh1l/CngTLO0ZlMRiDA==",
+        "verified_at": 1793845958,
+        "key_block_hash": "BWanWGa1KMhyrU1i6RGm9WYRkDMhg1kWV9Lp1TH9X9Ub",
+        "key_block_height": 276281600
+      }
+    }
+  },
+  "adversarial": {
+    "url": "https://github.com/ppinkman/bountyguard/pull/4",
+    "merged": false,
+    "observation": {
+      "phase": "review",
+      "at": 1793846694,
+      "state": "REVIEW_REQUIRED",
+      "pr_number": 4,
+      "review": {
+        "ai": null,
+        "base_sha": "f5cb85859129a13390cb7289415e76ad6ce8e937",
+        "bounty_id": "9fd0d1c519c44efe915684335a0bf4b5",
+        "ci": {
+          "base_sha": "f5cb85859129a13390cb7289415e76ad6ce8e937",
+          "checks": [
+            {
+              "app_id": 15368,
+              "app_slug": "github-actions",
+              "check_run_id": 127009896429,
+              "conclusion": "success",
+              "job_id": 127009896429,
+              "job_passed": true,
+              "name": "Python checks",
+              "status": "completed",
+              "suite_id": 113689809384,
+              "tested_sha": "0b6538d54a276a13eddafcd93fda52845037989e"
+            },
+            {
+              "app_id": 15368,
+              "app_slug": "github-actions",
+              "check_run_id": 127009896611,
+              "conclusion": "success",
+              "job_id": 127009896611,
+              "job_passed": true,
+              "name": "Contract checks",
+              "status": "completed",
+              "suite_id": 113689809384,
+              "tested_sha": "0b6538d54a276a13eddafcd93fda52845037989e"
+            }
+          ],
+          "head_sha": "0b6538d54a276a13eddafcd93fda52845037989e",
+          "passed": true,
+          "reason": "Trusted workflow evidence passed.",
+          "run_attempt": 1,
+          "run_id": 41955683567
+        },
+        "created_at": 1793846131,
+        "delivery_hash": "ada63fe05196d1bba1355e8b2861396b233679b6e635e52bde602ab18f2a94c4",
+        "diff_hash": "13b9abbbdfc696cb4b7e421493c34840398eb1c3531e9e767fd4e6208c51a685",
+        "fingerprint": "1f5f8ac528f46b4ffac905a009868577167a4e4638ba1017301231495565a7fa",
+        "hard": {
+          "checks": [
+            {
+              "detail": "PR base repository must match the funded repository; forks are allowed.",
+              "manual": false,
+              "name": "repository",
+              "passed": true
+            },
+            {
+              "detail": "PR author numeric GitHub ID must match the assigned claimant.",
+              "manual": false,
+              "name": "author",
+              "passed": true
+            },
+            {
+              "detail": "Issue title/body must match the agreed terms.",
+              "manual": false,
+              "name": "issue_context",
+              "passed": true
+            },
+            {
+              "detail": "GitHub closing-Issue references must include this Issue.",
+              "manual": false,
+              "name": "issue_link",
+              "passed": true
+            },
+            {
+              "detail": "Draft pull requests cannot authorize payment.",
+              "manual": false,
+              "name": "not_draft",
+              "passed": true
+            },
+            {
+              "detail": "Trusted workflow content must still match the agreed source.",
+              "manual": false,
+              "name": "workflow_source",
+              "passed": true
+            },
+            {
+              "detail": "An implementation change is required under an agreed source path. Python uses a bounded AST comparison excluding leading docstrings; other supported languages use a textual heuristic. This is not correctness proof.",
+              "manual": false,
+              "name": "source_change",
+              "passed": true
+            },
+            {
+              "detail": "Sensitive changes: .github/workflows/ci.yml",
+              "manual": true,
+              "name": "sensitive_paths",
+              "passed": false
+            },
+            {
+              "detail": "No removed-assertion signal. Ordinary test additions/changes are listed.",
+              "manual": true,
+              "name": "test_integrity_signal",
+              "passed": true
+            },
+            {
+              "detail": "Potential review-manipulation text: bountyguard/adversarial_example.py",
+              "manual": true,
+              "name": "review_manipulation_signal",
+              "passed": false
+            },
+            {
+              "detail": "Trusted workflow evidence passed.",
+              "manual": false,
+              "name": "trusted_ci",
+              "passed": true
+            }
+          ],
+          "test_changes": [],
+          "verdict": "NEEDS_REVIEW"
+        },
+        "head_sha": "0b6538d54a276a13eddafcd93fda52845037989e",
+        "pr_number": 4,
+        "report_hash": "470a42be50ca527ec23a5a66079dcc259ca760e9948a75fc4ec99869d53be728",
+        "terms_hash": "54f5c926eb691e6200d59d2678510c21c830e1bac2e3b78512bfb5e6cf5394fe",
+        "verdict": "NEEDS_REVIEW"
+      }
+    }
+  },
+  "revision_change": {
+    "probe": {
+      "bounty_id": "9fd0d1c519c44efe915684335a0bf4b5",
+      "reviewed_head": "17e1da79b199fcaf5890ac5f725c501e1b3548f8",
+      "original_report_hash": "298217ea42cb003f3a8f4cdc35ea1fe9da70e63bcaa47d0acdeb743e4fc16435",
+      "archive_branch": "codex/toctou-probe",
+      "probe_head": "c7863c13362c411055d2662c83edcb3d014eb5fd",
+      "pr_branch_restored_to_reviewed_head": true,
+      "probe_preserved_in_archive_branch": true
+    },
+    "observation": {
+      "phase": "sync",
+      "at": 1793847695,
+      "state": "REVISION_CHANGED",
+      "pr_number": 3,
+      "review": {
+        "ai": {
+          "estimate_usd": "0.01319894",
+          "findings": [],
+          "fingerprint": "1dbdbf6129bf253ec2e5b802c8abe245e8e79765a7b3c7b480ec2c24f05e2bad",
+          "limits": "Advisory review; not proof of correctness or absence of backdoors. Provider usage is not reversed by escrow refunds.",
+          "output_sha256": "ab200e7233dd5a7b325424cb68b2a0c88d3b9b9f5cdbc334518100493711ea47",
+          "provider": "NEAR AI Cloud",
+          "provider_model": "Qwen/Qwen3.6-35B-A3B-FP8",
+          "provider_request_id": "fb611c84-bf5a-51c1-9fc4-02806384e5b9",
+          "requested_model": "Qwen/Qwen3.6-35B-A3B-FP8",
+          "review_protocol": "issued-evidence-ids/v2",
+          "summary": "The change implements bounded AST comparison for Python files, correctly ignoring docstrings and formatting while detecting structural changes. It introduces evidence IDs for AI grounding, restricts injection detection to comments/text, and adds comprehensive tests. No security risks or blocking issues found.",
+          "usage": {
+            "completion_tokens": 73,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            },
+            "prompt_tokens": 16036,
+            "prompt_tokens_details": null,
+            "reasoning_tokens": 0,
+            "total_tokens": 16109
+          },
+          "verdict": "PASS"
+        },
+        "base_sha": "f5cb85859129a13390cb7289415e76ad6ce8e937",
+        "bounty_id": "9fd0d1c519c44efe915684335a0bf4b5",
+        "ci": {
+          "base_sha": "f5cb85859129a13390cb7289415e76ad6ce8e937",
+          "checks": [
+            {
+              "app_id": 15368,
+              "app_slug": "github-actions",
+              "check_run_id": 127016249599,
+              "conclusion": "success",
+              "job_id": 127016249599,
+              "job_passed": true,
+              "name": "Python checks",
+              "status": "completed",
+              "suite_id": 113694904094,
+              "tested_sha": "17e1da79b199fcaf5890ac5f725c501e1b3548f8"
+            },
+            {
+              "app_id": 15368,
+              "app_slug": "github-actions",
+              "check_run_id": 127016249951,
+              "conclusion": "success",
+              "job_id": 127016249951,
+              "job_passed": true,
+              "name": "Contract checks",
+              "status": "completed",
+              "suite_id": 113694904094,
+              "tested_sha": "17e1da79b199fcaf5890ac5f725c501e1b3548f8"
+            }
+          ],
+          "head_sha": "17e1da79b199fcaf5890ac5f725c501e1b3548f8",
+          "passed": true,
+          "reason": "Trusted workflow evidence passed.",
+          "run_attempt": 1,
+          "run_id": 41957634936
+        },
+        "created_at": 1793847474,
+        "delivery_hash": "56b54fb7407a6d3becd83906a91971702d81f729755dadaa3ce3ae5637989d93",
+        "diff_hash": "c4d5c4ad78ea4877cda1ecffdcedce742386ce750ba62294fa79526a688a5469",
+        "fingerprint": "13948626eb9c7e1f174bdc46bf7e3ef2e93cc3a495bfd08e85d356014aab6a13",
+        "hard": {
+          "checks": [
+            {
+              "detail": "PR base repository must match the funded repository; forks are allowed.",
+              "manual": false,
+              "name": "repository",
+              "passed": true
+            },
+            {
+              "detail": "PR author numeric GitHub ID must match the assigned claimant.",
+              "manual": false,
+              "name": "author",
+              "passed": true
+            },
+            {
+              "detail": "Issue title/body must match the agreed terms.",
+              "manual": false,
+              "name": "issue_context",
+              "passed": true
+            },
+            {
+              "detail": "GitHub closing-Issue references must include this Issue.",
+              "manual": false,
+              "name": "issue_link",
+              "passed": true
+            },
+            {
+              "detail": "Draft pull requests cannot authorize payment.",
+              "manual": false,
+              "name": "not_draft",
+              "passed": true
+            },
+            {
+              "detail": "Trusted workflow content must still match the agreed source.",
+              "manual": false,
+              "name": "workflow_source",
+              "passed": true
+            },
+            {
+              "detail": "An implementation change is required under an agreed source path. Python uses a bounded AST comparison excluding leading docstrings; other supported languages use a textual heuristic. This is not correctness proof.",
+              "manual": false,
+              "name": "source_change",
+              "passed": true
+            },
+            {
+              "detail": "No sensitive configuration changes.",
+              "manual": true,
+              "name": "sensitive_paths",
+              "passed": true
+            },
+            {
+              "detail": "No removed-assertion signal. Ordinary test additions/changes are listed.",
+              "manual": true,
+              "name": "test_integrity_signal",
+              "passed": true
+            },
+            {
+              "detail": "No configured review-manipulation signal; detection is incomplete.",
+              "manual": true,
+              "name": "review_manipulation_signal",
+              "passed": true
+            },
+            {
+              "detail": "Trusted workflow evidence passed.",
+              "manual": false,
+              "name": "trusted_ci",
+              "passed": true
+            }
+          ],
+          "test_changes": [
+            "tests/test_bounties.py",
+            "tests/test_python_changes.py",
+            "tests/test_review.py",
+            "tests/test_verifier_signals.py"
+          ],
+          "verdict": "PASS"
+        },
+        "head_sha": "17e1da79b199fcaf5890ac5f725c501e1b3548f8",
+        "pr_number": 3,
+        "report_hash": "298217ea42cb003f3a8f4cdc35ea1fe9da70e63bcaa47d0acdeb743e4fc16435",
+        "terms_hash": "54f5c926eb691e6200d59d2678510c21c830e1bac2e3b78512bfb5e6cf5394fe",
+        "verdict": "PASS"
+      }
+    }
+  },
+  "mcp": {
+    "transport": "real MCP stdio",
+    "bounty_id": "9fd0d1c519c44efe915684335a0bf4b5",
+    "head_sha": "17e1da79b199fcaf5890ac5f725c501e1b3548f8",
+    "report_hash": "49c731a9e66f93948c70b657f5772991d32558de475fa8ae3c0cf1d04506f709",
+    "state": "READY_TO_MERGE",
+    "model_intents_before": 3,
+    "model_intents_after": 3,
+    "cached_exact_revision": true,
+    "operator": "same project GitHub identity; separate test wallets"
+  },
+  "model_calls": [
+    {
+      "fingerprint": "2ac80413c87f963b046afc50d1d231d060db1a06797f432532cfd783addcf87a",
+      "state": "COMPLETE",
+      "usage": {
+        "completion_tokens": 271,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "prompt_tokens": 2681,
+        "prompt_tokens_details": null,
+        "reasoning_tokens": 0,
+        "total_tokens": 2952
+      },
+      "provider_model": "Qwen/Qwen3.6-35B-A3B-FP8",
+      "verdict": "PASS",
+      "estimate_usd": "0.00404580",
+      "invalid_response_content": null
+    },
+    {
+      "fingerprint": "6601055e013da87ed95ae06f247b987eda50c7e87a9c271ebcfa83d32ffd99fe",
+      "state": "UNKNOWN_OR_INVALID",
+      "usage": {
+        "completion_tokens": 751,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "prompt_tokens": 5378,
+        "prompt_tokens_details": null,
+        "reasoning_tokens": 0,
+        "total_tokens": 6129
+      },
+      "provider_model": "Qwen/Qwen3.6-35B-A3B-FP8",
+      "verdict": null,
+      "estimate_usd": "0.00575940",
+      "invalid_response_content": "{\n\"verdict\": \"PASS\",\n\"summary\": \"The patch implements bounded AST-based structural comparison for Python files to distinguish docstring-only edits from actual implementation changes, as requested in the issue. It introduces a new `python_changes.py` module with size/complexity limits and a `WithoutDocstrings` AST transformer. The `github.py` module integrates this check into the PR snapshot process, enforcing a source budget. The `verifier.py` module updates the source-change signal to use the new AST result for Python files while retaining textual diff for others. The `domain.py` and `service.py` modules update the diff hash calculation to exclude derived annotations (like `implementation_changed`) and file order, ensuring the hash is stable and reproducible. Tests cover docstring-only changes, formatting, real behavior changes, and injection signal refinements. No exfiltration, removed safeguards, or review manipulation patterns were found.\",\n\"findings\": [\n{\n\"path\": \"bountyguard/python_changes.py\",\n\"quote\": \"class WithoutDocstrings(ast.NodeTransformer): ... def body(self, node): ... if node.body and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Constant) and isinstance(node.body[0].value.value, str): node.body = node.body[1:]\",\n\"severity\": \"LOW\",\n\"reason\": \"The implementation correctly strips leading docstrings from module, class, and function definitions to ensure they do not count as implementation changes. It also includes bounds checking for source size and AST node count to prevent DoS.\"\n},\n{\n\"path\": \"bountyguard/github.py\",\n\"quote\": \"file[\\\"implementation_changed\\\"] = implementation_changed(before, after)\",\n\"severity\": \"LOW\",\n\"reason\": \"The new `implementation_changed` function is called for each Python file in the PR, and the result is attached to the file metadata. This data is used by the verifier but excluded from the diff hash.\"\n},\n{\n\"path\": \"bountyguard/domain.py\",\n\"quote\": \"fields = (\\\"filename\\\", \\\"previous_filename\\\", \\\"status\\\", \\\"sha\\\", \\\"patch\\\", \\\"additions\\\", \\\"deletions\\\")\",\n\"severity\": \"LOW\",\n\"reason\": \"The `diff_digest` function explicitly excludes the `implementation_changed` field from the hash calculation, ensuring that the hash is based on raw GitHub patch fields and is stable regardless of the derived annotation.\"\n},\n{\n\"path\": \"bountyguard/verifier.py\",\n\"quote\": \"implementation = file.get(\\\"implementation_changed\\\", added != removed)\",\n\"severity\": \"LOW\",\n\"reason\": \"The verifier now uses the AST-derived `implementation_changed` flag for Python files, falling back to textual diff for other languages. This satisfies the requirement to treat docstring-only edits as non-changes for Python.\"\n},\n{\n\"path\": \"bountyguard/verifier.py\",\n\"quote\": \"INJECTION = re.compile(r\\\"\\\\bignore\\\\b.{0,40}\\\\b(?:review|previous)\\\\s+(?:rules|instructions)\\\\b|\\\\bapprove\\\\b.{0,20}\\\\b(?:payout|payment)\\\\b|\\\\breveal\\\\b.{0,20}\\\\b(?:secrets?|keys?)\\\\b\\\", re.I)\",\n\"severity\": \"LOW\",\n\"reason\": \"The injection regex is tightened to require word boundaries and specific phrasing, reducing false positives from SQL statements or quoted strings, as noted in the comments.\"\n}\n]\n}"
+    },
+    {
+      "fingerprint": "1dbdbf6129bf253ec2e5b802c8abe245e8e79765a7b3c7b480ec2c24f05e2bad",
+      "state": "COMPLETE",
+      "usage": {
+        "completion_tokens": 73,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "prompt_tokens": 16036,
+        "prompt_tokens_details": null,
+        "reasoning_tokens": 0,
+        "total_tokens": 16109
+      },
+      "provider_model": "Qwen/Qwen3.6-35B-A3B-FP8",
+      "verdict": "PASS",
+      "estimate_usd": "0.01319894",
+      "invalid_response_content": null
+    }
+  ],
+  "replay_check": {
+    "payment_receipt_unchanged": true,
+    "refund_receipt_unchanged": true,
+    "operation_counts_after_repeat": {
+      "fund_assigned": 2,
+      "pay": 1,
+      "record_review": 1,
+      "refund_expired": 1
+    },
+    "all_operations_confirmed": true,
+    "scope": "Repeated sync after PAID and repeated refund after REFUNDED returned original receipts; five persisted chain intents total."
+  }
+}

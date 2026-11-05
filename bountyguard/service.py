@@ -200,7 +200,7 @@ class Bounties:
             if digest(issue_context(issue, bounty["repo_id"])) != bounty["issue_hash"]:
                 raise GuardError("Issue terms changed after review.")
             ci_pr = {**pr, "base": {**pr["base"], "sha": report["base_sha"]}}
-            ci = github.ci_evidence(bounty["repo"], ci_pr, bounty["ci"])
+            ci = github.ci_evidence(bounty["repo"], ci_pr, bounty["ci"], accepted=report["ci"])
             if not ci["passed"]:
                 raise GuardError("Trusted CI is no longer passing; settlement is blocked.")
             if time.time() >= bounty["deadline"]:

@@ -7,6 +7,40 @@ and NEAR testnet settlement after a maintainer merges the reviewed PR.
 [NOTICE](NOTICE.md) describes its relationship to the earlier ProofPay prototype.
 The submission plan is to select one final project.
 
+## Live demonstration
+
+The public, project-operated demonstration completed on November 5, 2026:
+
+| Scenario | Observed result |
+| --- | --- |
+| [Issue #1](https://github.com/ppinkman/bountyguard/issues/1) → [PR #3](https://github.com/ppinkman/bountyguard/pull/3) → trusted CI → NEAR AI review → merge | **Paid 0.005 tNEAR** to the assigned contributor ([transaction](https://testnet.nearblocks.io/txns/B35cMBZLzvYjpBVEF24isUd9HAr4tTa596fGv771XYQt)) |
+| [Adversarial PR #4](https://github.com/ppinkman/bountyguard/pull/4), with genuinely green CI | **NEEDS_REVIEW**, no payment: protected workflow modification and review-manipulation text |
+| A new commit pushed after a successful review | **REVISION_CHANGED**, no settlement against the old report; probe retained on `codex/toctou-probe` |
+| [Issue #2](https://github.com/ppinkman/bountyguard/issues/2), intentionally without delivery | **Refunded 0.005 tNEAR principal** ([transaction](https://testnet.nearblocks.io/txns/GWtzhGA7PTGgBK8CXLnkkeqV1pKRUedT2xVZ3VZyrDq9)); storage/gas not returned |
+| Repeated settlement/refund requests | Original receipts returned; only one pay and one refund intent |
+| Real MCP stdio review of the same accepted revision | Cached result reused; model request count stayed at three |
+
+Both GitHub roles were operated by **the same project developer**, with distinct
+NEP-413-verified testnet wallets. These are controlled acceptance tests, not
+independent customers or paid production activity. No mainnet funds or recharge
+were used. Three actual NEAR AI requests reported 25,190 total tokens; one
+response failed grounding validation and did not authorize payment. Token usage
+and catalog estimates do not establish the provider's actual bill.
+
+The [public evidence bundle](deployments/live-acceptance.json) includes wallet
+proofs, revision-bound reports, CI identifiers, operation receipts and rejection
+records. Check current chain state and public GitHub facts without private keys
+or another model call:
+
+```powershell
+.venv/Scripts/python tools/verify_acceptance.py
+```
+
+The verifier needs public GitHub/testnet RPC access. An optional `GITHUB_TOKEN`
+increases GitHub's rate allowance. It verifies recorded signatures and **current**
+key membership; it cannot independently reconstruct historical challenge use,
+prove the model's conclusions, or prove commercial adoption.
+
 ## Start locally
 
 Python 3.11+:
@@ -143,9 +177,13 @@ This server does not write GitHub issues, comments or PRs.
 - The contract cannot read GitHub or verify AI reasoning. The maintainer-owned
   signer attests to off-chain evidence; hashes prevent substituting that evidence.
 - CI success and an AI PASS do not prove correctness or absence of a backdoor.
-  AI findings must quote existing patch text; uncertainty does not authorize pay.
+  Model findings select server-issued evidence IDs that resolve to exact patch
+  text; uncertainty or invalid evidence does not authorize pay.
 - An app name/green badge is insufficient: policy binds app ID, workflow ID/path,
   workflow blob, run head/base association, suite, named jobs and check status.
+  After merge, GitHub may clear a run's PR association. Only the previously
+  accepted association for the identical run, attempt, head/base and checks can
+  be reused; current CI success and merge ancestry are still required.
 - Review size is bounded (40 files, 48 KB JSON patches, 24 KB per patch); missing,
   binary or incomplete patches stop automatic acceptance. No PR code is executed
   by this server, and no signing secret is sent to a CI job.

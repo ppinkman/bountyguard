@@ -130,7 +130,7 @@ class GitHub:
             file["implementation_changed"] = implementation_changed(before, after)
         return pr, sorted(patches, key=lambda item: item["filename"])
 
-    def ci_evidence(self, repo, pr, policy):
+    def ci_evidence(self, repo, pr, policy, accepted=None):
         head = pr["head"]["sha"]
         path = f"/repos/{repo}/actions/workflows/{policy['workflow_id']}/runs?event=pull_request&head_sha={head}"
         runs = self.pages(path, "workflow_runs", max_items=100)
@@ -151,7 +151,14 @@ class GitHub:
                 raise GuardError("Missing check-run binding.")
             check = self.request(f"/repos/{repo}/check-runs/{check_id}")
             checks.append({"name": name, "job_id": job["id"], "check_run_id": int(check_id), "app_id": check.get("app", {}).get("id"), "app_slug": check.get("app", {}).get("slug"), "suite_id": check.get("check_suite", {}).get("id"), "tested_sha": check.get("head_sha"), "status": check["status"], "conclusion": check.get("conclusion"), "job_passed": job["status"] == "completed" and job.get("conclusion") == "success"})
+        association_source = "live PR head/base association"
+        if not associated and pr.get("merged") and accepted:
+            # GitHub clears run.pull_requests after merge. Only the exact
+            # previously accepted run/attempt/checks may retain its association.
+            # The settlement caller separately verifies merge parent ancestry.
+            associated = bool(accepted.get("passed") and accepted.get("run_id") == run["id"] and accepted.get("run_attempt") == run.get("run_attempt") and accepted.get("head_sha") == head and accepted.get("base_sha") == pr["base"]["sha"] and accepted.get("checks") == checks)
+            association_source = "pinned pre-merge association; matching immutable run/attempt/checks"
         passed = associated and run["status"] == "completed" and run.get("conclusion") == "success" and all(c["job_passed"] and c["app_id"] == policy["app_id"] and c["app_slug"] == "github-actions" and c["suite_id"] == run["check_suite_id"] and c["status"] == "completed" and c["conclusion"] == "success" for c in checks)
         # check-run head_sha may be a GitHub-generated merge commit. The workflow
         # run, suite, job and PR head/base association must all agree instead.
-        return {"passed": passed, "reason": "Trusted workflow evidence passed." if passed else "Workflow/commit association or required checks did not pass.", "run_id": run["id"], "run_attempt": run.get("run_attempt"), "head_sha": head, "base_sha": pr["base"]["sha"], "checks": checks}
+        return {"passed": passed, "reason": "Trusted workflow evidence passed." if passed else "Workflow/commit association or required checks did not pass.", "association_source": association_source, "run_id": run["id"], "run_attempt": run.get("run_attempt"), "head_sha": head, "base_sha": pr["base"]["sha"], "checks": checks}

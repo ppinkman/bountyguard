@@ -2,41 +2,57 @@
 
 Updated November 5, 2026 (Asia/Shanghai).
 
-## Implemented locally
+## Completed and observed
 
-- Independent Python package/database, loopback API, English-first bilingual web
-  board, and five MCP tools. GitHub tokens stay in session memory; cookies are
-  HttpOnly/SameSite and cookie mutations require a session confirmation token.
-- Assigned-bounty terms, numeric GitHub identities, NEP-413 nonces, current
-  FullAccess ownership check, fixed recipient, repository permission check.
-- Version-bound PR/Issue/workflow/run/job/check verification; immutable review
-  records, bounded model review with code-quote grounding, no paid unknown retry.
-- New Rust testnet contract with assigned GitHub references, evidence-bound
-  maintainer payment, callback nonces, failed-transfer restoration and expiry.
-- Separate encrypted development signer and original-transaction reconciliation.
-- Windows startup helpers, public-PR inspection and testnet setup/deployment tools.
+- Public repository: https://github.com/ppinkman/bountyguard. GitHub-hosted
+  Python and Rust checks passed for the reviewed PR; Actions are restricted to
+  GitHub-owned actions. No workflow receives wallet signing secrets.
+- 73 Python tests and 9 native Rust tests passed locally. The Rust contract was
+  built to WASM, deployed to a separate testnet account, and its live code hash
+  independently matched the recorded deployment.
+- A real assigned bounty completed: Issue #1, contributor identity/wallet proofs,
+  funding, PR #3, exact-revision CI and NEAR AI review, maintainer merge, then
+  0.005 tNEAR payment. A separate expired bounty returned 0.005 tNEAR principal.
+  Both transfers have public receipts in `deployments/live-acceptance.json`.
+- The controlled adversarial PR #4 had successful CI but failed protected-path
+  and manipulation-signal checks. It was closed without merging or payment.
+- Pushing a new revision after review caused REVISION_CHANGED. The probe remains
+  on `codex/toctou-probe`; the PR was restored to the exact reviewed revision,
+  retested, reviewed from cache and merged.
+- Real MCP stdio clients exercised tool listing, denial of unauthorized writes,
+  authenticated review and exact-revision model-cache reuse.
+- Repeated settlement/refund requests returned the original receipts. The chain
+  journal contains two funding intents, one review recording, one payment and
+  one refund, all confirmed. No extra transfer was created by replay checks.
+- Three actual NEAR AI requests reported 25,190 tokens total: public Flask PR
+  read-only inspection (2,952), a rejected invalid-grounding response (6,129),
+  and an accepted evidence-ID review (16,109). Invalid output was retained and
+  never silently replaced by a fabricated approval or automatically retried.
 
-## Observed evidence so far
+## What this evidence means
 
-- 49 Python tests passed locally: identity, replay, author, changed revision,
-  trusted CI, protected changes, model controls, API auth and duplicate payment.
-  Unit adapters are explicit fixtures, not external customers or chain proof.
-- New contract compiled to WASM. Native Rust tests are being validated separately;
-  no hosted CI result is claimed until GitHub actually runs it.
-- Read the existing public Flask PR #6176 through GitHub: one complete changed
-  file at head `bfc8f983871dcadf0492578d9ab72d951b34c19c`.
-- One actual NEAR AI review returned PASS, reporting 2,681 prompt + 271 completion
-  tokens (2,952 total). This was read-only inspection of that public PR, not a
-  funded bounty, linked-Issue acceptance or proof that Flask endorses this app.
+The demonstration uses real GitHub APIs, hosted CI, NEAR AI and NEAR testnet,
+not generated transaction fixtures. Both GitHub roles nevertheless use the same
+project operator, with distinct verified test wallets. It proves controlled
+integration behavior; it does not establish independent users, production
+security, model correctness, provider billing, or a probability of winning.
 
-## Remaining before an end-to-end demo
+The chain records maintainer attestations of off-chain evidence. It cannot read
+GitHub or judge code. Merge remains the maintainer's acceptance action. Refunds
+require an explicit caller, return principal only, and do not return storage/gas.
 
-- Verify account/faucet, contract deployment and its code hash; record actual
-  funding/payment/refund evidence separately from unit fixtures.
-- Publish a reviewed demonstration repository only after publication is approved;
-  create a controlled Issue/PR/CI demonstration and disclose project ownership.
-- Exercise the complete authenticated browser/MCP journey. Wallet extensions and
-  hosted OAuth are not implemented; local NEP-413 proof import is the current path.
-- Clean-environment hosted CI, original-transaction recovery acceptance and final
-  submission/demo materials remain required. No public repository/submission or
-  independent commercial use is claimed.
+## Remaining product and submission work
+
+- Wallet-extension signing/connection and hosted GitHub OAuth are not implemented.
+  The current loopback app uses verified token login and local NEP-413 proof import.
+- Browser polling requires an open page and a live maintainer session. There is
+  no unattended keeper or independent dispute resolution.
+- No outside contributor or customer acceptance has been demonstrated.
+- Video, social post, deployment hosting and formal competition submission remain
+  separate work. The user has deferred video; nothing has been formally submitted.
+- ProofPay is preserved separately as an earlier prototype; choose one final
+  submission rather than presenting shared components as two independent entries.
+
+Public evidence can be checked with `python tools/verify_acceptance.py` without
+a model request, signer vault or transaction. Unit adapters are explicitly
+fixtures; they are not included as claims of external adoption.
