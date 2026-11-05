@@ -7,7 +7,7 @@ Updated November 5, 2026 (Asia/Shanghai).
 - Public repository: https://github.com/ppinkman/bountyguard. GitHub-hosted
   Python and Rust checks passed for the reviewed PR; Actions are restricted to
   GitHub-owned actions. No workflow receives wallet signing secrets.
-- 73 Python tests and 9 native Rust tests passed locally. The Rust contract was
+- 82 Python tests and 9 native Rust tests passed locally. The Rust contract was
   built to WASM, deployed to a separate testnet account, and its live code hash
   independently matched the recorded deployment.
 - A real assigned bounty completed: Issue #1, contributor identity/wallet proofs,
@@ -21,13 +21,25 @@ Updated November 5, 2026 (Asia/Shanghai).
   retested, reviewed from cache and merged.
 - Real MCP stdio clients exercised tool listing, denial of unauthorized writes,
   authenticated review and exact-revision model-cache reuse.
+- A subsequent coding-agent run completed Issue #5 / PR #6. Codex used real MCP
+  calls to read, claim, submit, review and obtain a 0.005 tNEAR paid receipt. It
+  implemented the session-expiry fix between claim and submission; seven new
+  regression tests failed before and passed after the fix. Maintainer assignment,
+  funding and merge were separate authorized operator actions. This is a coding
+  assistant session, not an unattended agent runtime or independent adopter.
 - Repeated settlement/refund requests returned the original receipts. The chain
   journal contains two funding intents, one review recording, one payment and
   one refund, all confirmed. No extra transfer was created by replay checks.
+  After the separate agent run: three funding intents, two review recordings,
+  two payments and one refund, all confirmed. Repeating the new settlement also
+  returned its original receipt. Default limits remain 2/3; this run explicitly
+  used limits of 3 funding intents and 4 rolling-day model intents in the same DB.
 - Three actual NEAR AI requests reported 25,190 tokens total: public Flask PR
   read-only inspection (2,952), a rejected invalid-grounding response (6,129),
   and an accepted evidence-ID review (16,109). Invalid output was retained and
   never silently replaced by a fabricated approval or automatically retried.
+  The later PR #6 review used 5,862 tokens, passed, and brought the record to
+  four model requests / 31,052 tokens. No recharge or mainnet transaction occurred.
 
 ## What this evidence means
 
@@ -56,3 +68,5 @@ require an explicit caller, return principal only, and do not return storage/gas
 Public evidence can be checked with `python tools/verify_acceptance.py` without
 a model request, signer vault or transaction. Unit adapters are explicitly
 fixtures; they are not included as claims of external adoption.
+Use `--receipt deployments/agent-acceptance.json` to include the later coding-agent
+run. See `docs/AGENT_WALKTHROUGH.md` for the exact role boundary and sequence.

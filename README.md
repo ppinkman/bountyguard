@@ -15,6 +15,16 @@ the remaining agent-workflow and signing-authority gaps.
 
 The public, project-operated demonstration completed on November 5, 2026:
 
+**Coding-agent run:** Codex read and claimed [Issue #5](https://github.com/ppinkman/bountyguard/issues/5)
+through MCP, fixed the expired-session bug in [PR #6](https://github.com/ppinkman/bountyguard/pull/6),
+submitted it through MCP, obtained passing CI and advisory review, then read its
+**0.005 tNEAR [payment receipt](https://testnet.nearblocks.io/txns/EHb7dgpu3ZTJdp5edLdPd5fq7yYkr3tkRrdKXR76A6Yg)**
+through MCP after the maintainer merged the reviewed revision. The [walkthrough](docs/AGENT_WALKTHROUGH.md)
+identifies the coding agent, separate review model and every maintainer action.
+The [extended evidence bundle](deployments/agent-acceptance.json) includes all five
+MCP calls and the earlier acceptance cases. Verify it with
+`python tools/verify_acceptance.py --receipt deployments/agent-acceptance.json`.
+
 | Scenario | Observed result |
 | --- | --- |
 | [Issue #1](https://github.com/ppinkman/bountyguard/issues/1) → [PR #3](https://github.com/ppinkman/bountyguard/pull/3) → trusted CI → NEAR AI review → merge | **Paid 0.005 tNEAR** to the assigned contributor ([transaction](https://testnet.nearblocks.io/txns/B35cMBZLzvYjpBVEF24isUd9HAr4tTa596fGv771XYQt)) |
@@ -27,9 +37,12 @@ The public, project-operated demonstration completed on November 5, 2026:
 Both GitHub roles were operated by **the same project developer**, with distinct
 NEP-413-verified testnet wallets. These are controlled acceptance tests, not
 independent customers or paid production activity. No mainnet funds or recharge
-were used. Three actual NEAR AI requests reported 25,190 total tokens; one
+were used. The initial three NEAR AI requests reported 25,190 total tokens; one
 response failed grounding validation and did not authorize payment. Token usage
 and catalog estimates do not establish the provider's actual bill.
+The subsequent coding-agent run used one additional request (5,862 tokens),
+bringing the recorded total to four requests and 31,052 tokens. There was no
+recharge. Local Python coverage is now 82 passing tests; the Rust suite has nine.
 
 The [public evidence bundle](deployments/live-acceptance.json) includes wallet
 proofs, revision-bound reports, CI identifiers, operation receipts and rejection
@@ -55,6 +68,8 @@ prove the model's conclusions, or prove commercial adoption.
    Expect JSON with `verified: true`, current chain states `Paid` and `Refunded`,
    four verified wallet signatures, and PR #3's exact reviewed head. A mismatch
    exits with an error. Network/RPC access is required; no transaction is sent.
+   With `--receipt deployments/agent-acceptance.json`, expect an additional paid
+   bounty for PR #6 and six verified wallet signatures.
 3. Install `requirements-dev.txt` and run `python -m unittest discover -s tests`.
    Expect `OK`. These tests use labelled fixtures and require no model spending.
    Rust users can separately run `cargo test --locked --lib` in `contracts/bounty`.

@@ -3,6 +3,12 @@
 Reviewed November 5, 2026 (Asia/Shanghai), after the first live demonstration.
 This is an implementation assessment, not an organizer-issued score or prize forecast.
 
+Follow-up: the [coding-agent walkthrough](AGENT_WALKTHROUGH.md) now records an
+actual MCP claim → code fix → PR → review → merged testnet payment → MCP receipt
+run. The assessment below describes the gaps observed before that follow-up;
+scoped settlement authority, wallet connection and independent onboarding remain
+unimplemented. The agent run does not establish independent commercial use.
+
 ## Sources read
 
 The following official files were read in full, not only their search snippets:
