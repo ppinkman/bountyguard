@@ -7,6 +7,7 @@ import time
 import uuid
 
 from .domain import GuardError, canonical, digest
+from .limits import development_limit
 
 
 class Store:
@@ -105,8 +106,8 @@ class Store:
                     db.execute("UPDATE operations SET state='PREPARED' WHERE id=?", (operation_id,))
                     return dict(row), True
                 return dict(row), False
-            if kind == "fund_assigned" and db.execute("SELECT COUNT(*) FROM operations WHERE kind='fund_assigned'").fetchone()[0] >= 2:
-                raise GuardError("This independent project's two funding-intent development limit was reached.")
+            if kind == "fund_assigned" and db.execute("SELECT COUNT(*) FROM operations WHERE kind='fund_assigned'").fetchone()[0] >= development_limit("funding"):
+                raise GuardError("This project's configured funding-intent development limit was reached.")
             pending = db.execute("SELECT id FROM operations WHERE state IN ('PREPARED','SUBMITTED','UNKNOWN') AND json_extract(document,'$.intent.signer')=?", (intent.get("signer"),)).fetchone()
             if pending:
                 raise GuardError("Reconcile the signer's original pending operation first: " + pending[0])

@@ -7,6 +7,10 @@ and NEAR testnet settlement after a maintainer merges the reviewed PR.
 [NOTICE](NOTICE.md) describes its relationship to the earlier ProofPay prototype.
 The submission plan is to select one final project.
 
+The [official prompt alignment review](docs/OFFICIAL_PROMPT_ALIGNMENT.md)
+records the track examples we read, how the current implementation fits, and
+the remaining agent-workflow and signing-authority gaps.
+
 ## Live demonstration
 
 The public, project-operated demonstration completed on November 5, 2026:
@@ -41,6 +45,25 @@ increases GitHub's rate allowance. It verifies recorded signatures and **current
 key membership; it cannot independently reconstruct historical challenge use,
 prove the model's conclusions, or prove commercial adoption.
 
+### Judge walkthrough: no wallet or model key required
+
+1. Create the Python environment and install dependencies using **Start locally**
+   below. Open `deployments/live-acceptance.json`: the primary bounty is `PAID`,
+   the expiry bounty is `REFUNDED`, and the adversarial report is `NEEDS_REVIEW`.
+   These are recorded observations; the next step queries their public sources.
+2. Run `python tools/verify_acceptance.py` with that environment activated.
+   Expect JSON with `verified: true`, current chain states `Paid` and `Refunded`,
+   four verified wallet signatures, and PR #3's exact reviewed head. A mismatch
+   exits with an error. Network/RPC access is required; no transaction is sent.
+3. Install `requirements-dev.txt` and run `python -m unittest discover -s tests`.
+   Expect `OK`. These tests use labelled fixtures and require no model spending.
+   Rust users can separately run `cargo test --locked --lib` in `contracts/bounty`.
+4. Start the local service and open port 8766. Expect the English interface with
+   a Chinese toggle and an empty board on a fresh checkout. Historical receipts
+   remain in the public bundle; the private development database and wallets are
+   intentionally not shipped. Creating a new funded bounty is a separate workflow
+   requiring both participants' identity proofs and explicit testnet configuration.
+
 ## Start locally
 
 Python 3.11+:
@@ -55,6 +78,11 @@ Open **http://127.0.0.1:8766/**. English is the default; the top-right button
 switches to Chinese. The board starts empty. No model call or transaction is
 sent at startup. This is a loopback development application, not a hosted OAuth
 service; do not expose it to the public internet.
+
+On Linux/macOS, use `.venv/bin/python -m pip install -r requirements.txt` and
+`.venv/bin/python -m bountyguard serve --port 8766` after creating the environment.
+The key-free inspection/verification path is cross-platform; the current local
+development transaction signer requires Windows DPAPI.
 
 For the existing local development machine:
 
@@ -142,6 +170,13 @@ Reading and verifying public data is cross-platform.
 | Model estimate | Conservative public-catalog estimate ≤ $0.02 per request |
 | Unknown outcome | Retain the original intent/hash; query it, never replace payment |
 
+Defaults above can be explicitly raised by the local operator through
+`start_dev.ps1 -FundingIntentLimit 3 -ModelIntentLimit 4`, for one additional
+acceptance run after the initial two funded orders and three model calls.
+Usage stays in the same journal; restarting or lowering a limit does not reset
+it. The helper permits at most four funding intents and six rolling-day model
+intents. Reward/storage bounds and the $0.02 estimate check remain unchanged.
+
 The price estimate is not a provider-enforced billing cap. Model usage is
 separate from tNEAR payments and is not reversed by a bounty refund. No mainnet
 transaction, currency conversion, recharge or live paid bounty is claimed.
@@ -171,6 +206,15 @@ existing PR and review its revision. Writes require operator environment flag
 Model use additionally requires `BOUNTYGUARD_MCP_ALLOW_MODEL=1` and backend
 credit permission. Funding and payment are not exposed as MCP tools in v0.1.
 This server does not write GitHub issues, comments or PRs.
+
+`tools/agent_client.py` is a real stdio client for coding agents. It can read
+terms, claim, submit an existing PR, request review and read the paid receipt.
+For example, after participant wallet binding, with `GITHUB_TOKEN` in the process
+environment: `python tools/agent_client.py claim BOUNTY_ID --allow-writes`.
+Use `get` or `receipt` without write permission. An optional `--output` path
+records public tool arguments/results, never a session or signing key. Code
+editing, GitHub PR creation, maintainer assignment/merge and funding remain
+separate steps; this client does not itself implement an autonomous coder.
 
 ## Security boundaries
 

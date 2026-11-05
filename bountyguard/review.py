@@ -9,6 +9,7 @@ from pydantic import Field, ValidationError
 
 from .domain import GuardError, StrictModel, canonical, digest
 from .github import opener
+from .limits import development_limit
 
 
 class Finding(StrictModel):
@@ -59,8 +60,8 @@ class Reviewer:
             raise GuardError("Could not verify model availability and pricing; no inference was sent.") from None
         with self.store.connection() as db:
             db.execute("BEGIN IMMEDIATE")
-            if db.execute("SELECT COUNT(*) FROM ai_calls WHERE created_at>=?", (int(time.time()) - 86400,)).fetchone()[0] >= 3:
-                raise GuardError("Three model-request intents per rolling day are allowed in this development release.")
+            if db.execute("SELECT COUNT(*) FROM ai_calls WHERE created_at>=?", (int(time.time()) - 86400,)).fetchone()[0] >= development_limit("model"):
+                raise GuardError("The configured rolling-day model-intent development limit was reached.")
             if db.execute("SELECT 1 FROM ai_calls WHERE fingerprint=?", (fingerprint,)).fetchone():
                 raise GuardError("The same review is already in progress.")
             db.execute("INSERT INTO ai_calls VALUES (?,?,'STARTED',?)", (fingerprint, int(time.time()), canonical({"model": model, "estimate_usd": str(estimate)})))

@@ -3,16 +3,20 @@ param(
     [switch]$UseGitHubLogin,
     [switch]$UseExistingAiCredits,
     [switch]$EnableTestnet,
-    [switch]$DirectNetwork
+    [switch]$DirectNetwork,
+    [ValidateRange(2,4)][int]$FundingIntentLimit = 2,
+    [ValidateRange(3,6)][int]$ModelIntentLimit = 3
 )
 $ErrorActionPreference = 'Stop'
-$taskNames = @('GITHUB_TOKEN','NEAR_AI_API_KEY','BOUNTYGUARD_LOCAL_GITHUB','BOUNTYGUARD_ENABLE_AI','BOUNTYGUARD_ENABLE_TESTNET','BOUNTYGUARD_CONTRACT','BOUNTYGUARD_CODE_HASH','BOUNTYGUARD_VAULT','BOUNTYGUARD_DIRECT_NETWORK','HTTP_PROXY','HTTPS_PROXY','ALL_PROXY','NO_PROXY')
+$taskNames = @('GITHUB_TOKEN','NEAR_AI_API_KEY','BOUNTYGUARD_LOCAL_GITHUB','BOUNTYGUARD_ENABLE_AI','BOUNTYGUARD_ENABLE_TESTNET','BOUNTYGUARD_CONTRACT','BOUNTYGUARD_CODE_HASH','BOUNTYGUARD_VAULT','BOUNTYGUARD_DIRECT_NETWORK','BOUNTYGUARD_FUNDING_INTENT_LIMIT','BOUNTYGUARD_MODEL_INTENT_LIMIT','HTTP_PROXY','HTTPS_PROXY','ALL_PROXY','NO_PROXY')
 $taskPrevious = @{}
 foreach ($taskName in $taskNames) { $taskPrevious[$taskName] = [Environment]::GetEnvironmentVariable($taskName,'Process') }
 $taskSecureKey = $null
 $taskPointer = [IntPtr]::Zero
 Push-Location -LiteralPath $PSScriptRoot
 try {
+    $env:BOUNTYGUARD_FUNDING_INTENT_LIMIT=[string]$FundingIntentLimit
+    $env:BOUNTYGUARD_MODEL_INTENT_LIMIT=[string]$ModelIntentLimit
     if ($DirectNetwork) {
         $env:BOUNTYGUARD_DIRECT_NETWORK='1'
         $env:NO_PROXY='*'
@@ -41,7 +45,7 @@ try {
         $env:BOUNTYGUARD_VAULT=Join-Path $PSScriptRoot 'data\testnet\maintainer.dpapi'
     }
     Write-Host "BountyGuard: http://127.0.0.1:$Port/"
-    Write-Host 'Startup sends no completion or transaction. New project limits: 2 funding intents; 3 model intents per rolling day.'
+    Write-Host "Startup sends no completion or transaction. Configured limits: $FundingIntentLimit funding intents; $ModelIntentLimit model intents per rolling day. Existing usage is retained."
     & (Join-Path $PSScriptRoot '.venv\Scripts\python.exe') -m bountyguard serve --port $Port
 } finally {
     if ($taskPointer -ne [IntPtr]::Zero) { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($taskPointer) }
