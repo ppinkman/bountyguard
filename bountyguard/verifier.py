@@ -36,11 +36,12 @@ def hard_checks(bounty, pr, files, issue, workflow, linked, ci):
         added = [line[1:].strip() for line in patch.splitlines() if line.startswith("+") and line[1:].strip() and not line[1:].lstrip().startswith(("#", "//"))]
         removed = [line[1:].strip() for line in patch.splitlines() if line.startswith("-") and line[1:].strip() and not line[1:].lstrip().startswith(("#", "//"))]
         code_suffixes = {".py", ".rs", ".ts", ".tsx", ".js", ".jsx", ".go", ".java", ".c", ".h", ".cpp", ".sol", ".kt", ".swift", ".vue"}
-        if any(filename.startswith(prefix) for prefix in bounty["source_paths"]) and PurePosixPath(filename).suffix in code_suffixes and added != removed:
+        implementation = file.get("implementation_changed", added != removed)
+        if any(filename.startswith(prefix) for prefix in bounty["source_paths"]) and PurePosixPath(filename).suffix in code_suffixes and implementation:
             source_changed = True
         if INJECTION.search(patch):
             instructions.append(filename)
-    add("source_change", source_changed, "A non-comment textual change is required under an agreed source path; this is not semantic correctness proof.")
+    add("source_change", source_changed, "An implementation change is required under an agreed source path. Python uses a bounded AST comparison excluding leading docstrings; other supported languages use a textual heuristic. This is not correctness proof.")
     add("sensitive_paths", not sensitive, "Sensitive changes: " + ", ".join(sorted(set(sensitive))) if sensitive else "No sensitive configuration changes.", manual=True)
     add("test_integrity_signal", not removed_assertions, "Removed assertion signals: " + ", ".join(removed_assertions) if removed_assertions else "No removed-assertion signal. Ordinary test additions/changes are listed.", manual=True)
     add("review_manipulation_signal", not instructions, "Potential review-manipulation text: " + ", ".join(instructions) if instructions else "No configured review-manipulation signal; detection is incomplete.", manual=True)

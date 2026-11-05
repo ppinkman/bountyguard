@@ -7,6 +7,7 @@ import urllib.parse
 import urllib.request
 
 from .domain import GuardError, github_url
+from .python_changes import implementation_changed
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -63,7 +64,7 @@ class GitHub:
     def file(self, repo, path, ref):
         result = self.request(f"/repos/{repo}/contents/{urllib.parse.quote(path, safe='/')}?ref={urllib.parse.quote(ref, safe='')}")
         if result.get("type") != "file" or result.get("encoding") != "base64" or result.get("size", 999999) > 100_000:
-            raise GuardError("The selected workflow must be an ordinary, bounded repository file.")
+            raise GuardError("The selected source must be an ordinary, bounded repository file.")
         content = base64.b64decode(result["content"], validate=False)
         return {"sha": result["sha"], "content": content.decode("utf-8")}
 
@@ -117,6 +118,16 @@ class GitHub:
         after = self.request(f"/repos/{repo}/pulls/{number}")
         if after["head"]["sha"] != pr["head"]["sha"] or after["base"]["sha"] != pr["base"]["sha"]:
             raise GuardError("PR changed while collecting evidence. Recheck its new revision.")
+        source_bytes = 0
+        for file in patches:
+            if not file["filename"].endswith(".py"):
+                continue
+            before = "" if file["status"] == "added" else self.file(repo, file.get("previous_filename") or file["filename"], pr["base"]["sha"])["content"]
+            after = "" if file["status"] == "removed" else self.file(pr["head"]["repo"]["full_name"], file["filename"], pr["head"]["sha"])["content"]
+            source_bytes += len(before.encode("utf-8")) + len(after.encode("utf-8"))
+            if source_bytes > 400_000:
+                raise GuardError("Combined Python source exceeds the review budget.")
+            file["implementation_changed"] = implementation_changed(before, after)
         return pr, sorted(patches, key=lambda item: item["filename"])
 
     def ci_evidence(self, repo, pr, policy):
