@@ -24,7 +24,7 @@ class Backend:
         self.base = base.rstrip("/"); self.session = None
         self.opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
 
-    def call(self, path, body=None):
+    def call(self, path, body=None, _retry_auth=True):
         if not path.startswith("/api/") or ".." in path or "?" in path:
             raise ToolError("Invalid API path.")
         headers = {"Content-Type": "application/json"}
@@ -46,6 +46,15 @@ class Backend:
                 detail = json.load(exc).get("detail", "Request refused.")
             except ValueError:
                 detail = "Request refused."
+            finally:
+                exc.close()
+            if exc.code == 401 and "Authorization" in headers:
+                # This API checks authentication before any bounty mutation.
+                # Only an explicit unauthenticated response permits one replay;
+                # unknown transport outcomes and other failures are not retried.
+                self.session = None
+                if _retry_auth:
+                    return self.call(path, body, _retry_auth=False)
             raise ToolError("BountyGuard: " + str(detail)) from None
 
 
