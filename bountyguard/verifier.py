@@ -5,7 +5,7 @@ import re
 from .domain import digest
 
 SENSITIVE_NAMES = {"pyproject.toml", "pytest.ini", "tox.ini", "setup.cfg", "setup.py", "conftest.py", "package.json", "package-lock.json", "yarn.lock", "pnpm-lock.yaml", "Cargo.toml", "Cargo.lock", "Makefile", "Dockerfile"}
-INJECTION = re.compile(r"ignore.{0,40}(?:review|previous|instructions)|approve.{0,20}(?:payout|payment)|reveal.{0,20}(?:secret|key)", re.I)
+INJECTION = re.compile(r"\bignore\b.{0,40}\b(?:review|previous)\s+(?:rules|instructions)\b|\bapprove\b.{0,20}\b(?:payout|payment)\b|\breveal\b.{0,20}\b(?:secrets?|keys?)\b", re.I)
 
 
 def hard_checks(bounty, pr, files, issue, workflow, linked, ci):
@@ -39,7 +39,10 @@ def hard_checks(bounty, pr, files, issue, workflow, linked, ci):
         implementation = file.get("implementation_changed", added != removed)
         if any(filename.startswith(prefix) for prefix in bounty["source_paths"]) and PurePosixPath(filename).suffix in code_suffixes and implementation:
             source_changed = True
-        if INJECTION.search(patch):
+        # Existing SQL such as INSERT OR IGNORE INTO reviews is not an added
+        # instruction. Signals are conservative hints, not an AI safety proof.
+        introduced = "\n".join(line[1:] for line in patch.splitlines() if line.startswith("+"))
+        if INJECTION.search(introduced):
             instructions.append(filename)
     add("source_change", source_changed, "An implementation change is required under an agreed source path. Python uses a bounded AST comparison excluding leading docstrings; other supported languages use a textual heuristic. This is not correctness proof.")
     add("sensitive_paths", not sensitive, "Sensitive changes: " + ", ".join(sorted(set(sensitive))) if sensitive else "No sensitive configuration changes.", manual=True)
