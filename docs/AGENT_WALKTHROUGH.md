@@ -5,6 +5,9 @@ NEAR AI Cloud and NEAR testnet. The coding agent is **Codex in the development
 session**; the separate advisory review model is **Qwen/Qwen3.6-35B-A3B-FP8**
 through NEAR AI Cloud. The MCP client is a tool adapter, not another coding model.
 
+The separate [single-bounty machine-account runner](AGENT_DEMO.md) has local
+fixture coverage. This walkthrough records the earlier development-session run.
+
 ## Task and acceptance
 
 [Issue #5](https://github.com/ppinkman/bountyguard/issues/5) describes an actual

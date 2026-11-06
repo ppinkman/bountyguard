@@ -25,6 +25,10 @@ The [extended evidence bundle](deployments/agent-acceptance.json) includes all f
 MCP calls and the earlier acceptance cases. Verify it with
 `python tools/verify_acceptance.py --receipt deployments/agent-acceptance.json`.
 
+The [single-bounty runner](docs/AGENT_DEMO.md) adds a separate machine-account
+workflow. Its local tests use fixtures. A live machine-account run and receipt
+are pending.
+
 | Scenario | Observed result |
 | --- | --- |
 | [Issue #1](https://github.com/ppinkman/bountyguard/issues/1) → [PR #3](https://github.com/ppinkman/bountyguard/pull/3) → trusted CI → NEAR AI review → merge | **Paid 0.005 tNEAR** to the assigned contributor ([transaction](https://testnet.nearblocks.io/txns/B35cMBZLzvYjpBVEF24isUd9HAr4tTa596fGv771XYQt)) |
@@ -42,15 +46,21 @@ response failed grounding validation and did not authorize payment. Token usage
 and catalog estimates do not establish the provider's actual bill.
 The subsequent coding-agent run used one additional request (5,862 tokens),
 bringing the recorded total to four requests and 31,052 tokens. There was no
-recharge. Local Python coverage is now 82 passing tests; the Rust suite has nine.
+recharge. The local Python suite runs 108 tests (107 passed and one optional
+Docker probe skipped); the Rust suite has nine.
 
 The [public evidence bundle](deployments/live-acceptance.json) includes wallet
 proofs, revision-bound reports, CI identifiers, operation receipts and rejection
 records. Check current chain state and public GitHub facts without private keys
 or another model call:
 
-```powershell
-.venv/Scripts/python tools/verify_acceptance.py
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements-dev.txt
+python tools/verify_acceptance.py
+python tools/verify_acceptance.py --receipt deployments/agent-acceptance.json
+python -m unittest discover -s tests
 ```
 
 The verifier needs public GitHub/testnet RPC access. An optional `GITHUB_TOKEN`
@@ -83,6 +93,12 @@ prove the model's conclusions, or prove commercial adoption.
 
 Python 3.11+:
 
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+bash start.sh
+```
+
 ```powershell
 python -m venv .venv
 .venv/Scripts/python -m pip install -r requirements.txt
@@ -94,8 +110,6 @@ switches to Chinese. The board starts empty. No model call or transaction is
 sent at startup. This is a loopback development application, not a hosted OAuth
 service; do not expose it to the public internet.
 
-On Linux/macOS, use `.venv/bin/python -m pip install -r requirements.txt` and
-`.venv/bin/python -m bountyguard serve --port 8766` after creating the environment.
 The key-free inspection/verification path is cross-platform; the current local
 development transaction signer requires Windows DPAPI.
 
