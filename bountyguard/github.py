@@ -9,6 +9,12 @@ import urllib.request
 from .domain import GuardError, github_url
 from .python_changes import implementation_changed
 
+REVISION_JOB_DECLARATION = (
+    '    name: "${{ github.event_name == \'pull_request\' && '
+    "format('BountyGuard PR {0} base {1}', github.event.pull_request.number, github.event.pull_request.base.sha) "
+    '|| \'Push metadata\' }}"'
+)
+
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
@@ -130,6 +136,49 @@ class GitHub:
             file["implementation_changed"] = implementation_changed(before, after)
         return pr, sorted(patches, key=lambda item: item["filename"])
 
+    def job_check(self, repo, job):
+        check_id = job.get("check_run_url", "").rsplit("/", 1)[-1]
+        if not check_id.isdigit():
+            raise GuardError("Missing check-run binding.")
+        check = self.request(f"/repos/{repo}/check-runs/{check_id}")
+        return {"name": job["name"], "job_id": job["id"], "check_run_id": int(check_id),
+                "app_id": check.get("app", {}).get("id"), "app_slug": check.get("app", {}).get("slug"),
+                "suite_id": check.get("check_suite", {}).get("id"), "tested_sha": check.get("head_sha"),
+                "status": check["status"], "conclusion": check.get("conclusion"),
+                "job_passed": job["status"] == "completed" and job.get("conclusion") == "success"}
+
+    def fork_revision_job(self, repo, pr, policy, run, jobs):
+        base_repo = (pr["base"].get("repo") or {}).get("id")
+        head_repo = pr["head"].get("repo") or {}
+        if (not base_repo or not head_repo.get("id") or head_repo["id"] == base_repo
+                or (run.get("repository") or {}).get("id") != base_repo
+                or (run.get("head_repository") or {}).get("id") != head_repo["id"]
+                or not policy.get("workflow_blob_sha")):
+            return None
+        name = f"BountyGuard PR {pr['number']} base {pr['base']['sha']}"
+        matches = [job for job in jobs if job["name"] == name]
+        if len(matches) != 1:
+            return None
+        job = matches[0]
+        head = pr["head"]["sha"]
+        if job.get("run_id") != run["id"] or job.get("head_sha") != head:
+            return None
+        evidence = self.job_check(repo, job)
+        if evidence["tested_sha"] != head or not successful_job(evidence, run, policy):
+            return None
+
+        # With identical pinned blobs on both sides, the candidate cannot supply
+        # its own definition of the job that binds the PR event to this base.
+        workflow = policy["workflow_path"]
+        base_file = self.file(repo, workflow, pr["base"]["sha"])
+        if (base_file["sha"] != policy["workflow_blob_sha"]
+                or REVISION_JOB_DECLARATION not in base_file["content"].splitlines()):
+            return None
+        head_file = self.file(head_repo["full_name"], workflow, head)
+        if head_file["sha"] != base_file["sha"]:
+            return None
+        return evidence
+
     def ci_evidence(self, repo, pr, policy, accepted=None):
         head = pr["head"]["sha"]
         path = f"/repos/{repo}/actions/workflows/{policy['workflow_id']}/runs?event=pull_request&head_sha={head}"
@@ -139,26 +188,44 @@ class GitHub:
             return {"passed": False, "reason": "No matching trusted pull_request workflow run.", "runs": []}
         run = max(candidates, key=lambda r: r["id"])
         associated = any(p["number"] == pr["number"] and p["head"]["sha"] == head and p["base"]["sha"] == pr["base"]["sha"] for p in run.get("pull_requests", []))
-        jobs = self.pages(f"/repos/{repo}/actions/runs/{run['id']}/jobs?filter=latest", "jobs", max_items=100)
+        jobs = self.pages(f"/repos/{repo}/actions/runs/{run['id']}/attempts/{run['run_attempt']}/jobs", "jobs", max_items=100)
         checks = []
         for name in policy["required_checks"]:
             matches = [j for j in jobs if j["name"] == name]
             if len(matches) != 1:
                 return {"passed": False, "reason": "Required check missing or ambiguous: " + name, "run_id": run["id"]}
-            job = matches[0]
-            check_id = job.get("check_run_url", "").rsplit("/", 1)[-1]
-            if not check_id.isdigit():
-                raise GuardError("Missing check-run binding.")
-            check = self.request(f"/repos/{repo}/check-runs/{check_id}")
-            checks.append({"name": name, "job_id": job["id"], "check_run_id": int(check_id), "app_id": check.get("app", {}).get("id"), "app_slug": check.get("app", {}).get("slug"), "suite_id": check.get("check_suite", {}).get("id"), "tested_sha": check.get("head_sha"), "status": check["status"], "conclusion": check.get("conclusion"), "job_passed": job["status"] == "completed" and job.get("conclusion") == "success"})
+            checks.append(self.job_check(repo, matches[0]))
+        checks_passed = (run["status"] == "completed" and run.get("conclusion") == "success"
+                         and all(successful_job(check, run, policy) for check in checks))
         association_source = "live PR head/base association"
-        if not associated and pr.get("merged") and accepted:
+        revision_job = None
+        if not associated and checks_passed and not run.get("pull_requests") and not pr.get("merged"):
+            revision_job = self.fork_revision_job(repo, pr, policy, run, jobs)
+            if revision_job:
+                associated = True
+                association_source = "pinned workflow job with PR event number and base SHA"
+        if pr.get("merged") and accepted and (not associated or accepted.get("revision_job")):
             # GitHub clears run.pull_requests after merge. Only the exact
             # previously accepted run/attempt/checks may retain its association.
             # The settlement caller separately verifies merge parent ancestry.
             associated = bool(accepted.get("passed") and accepted.get("run_id") == run["id"] and accepted.get("run_attempt") == run.get("run_attempt") and accepted.get("head_sha") == head and accepted.get("base_sha") == pr["base"]["sha"] and accepted.get("checks") == checks)
             association_source = "pinned pre-merge association; matching immutable run/attempt/checks"
-        passed = associated and run["status"] == "completed" and run.get("conclusion") == "success" and all(c["job_passed"] and c["app_id"] == policy["app_id"] and c["app_slug"] == "github-actions" and c["suite_id"] == run["check_suite_id"] and c["status"] == "completed" and c["conclusion"] == "success" for c in checks)
+            if associated and accepted.get("revision_job"):
+                revision_job = self.fork_revision_job(repo, pr, policy, run, jobs)
+                associated = revision_job == accepted["revision_job"]
+        passed = associated and checks_passed
         # check-run head_sha may be a GitHub-generated merge commit. The workflow
         # run, suite, job and PR head/base association must all agree instead.
-        return {"passed": passed, "reason": "Trusted workflow evidence passed." if passed else "Workflow/commit association or required checks did not pass.", "association_source": association_source, "run_id": run["id"], "run_attempt": run.get("run_attempt"), "head_sha": head, "base_sha": pr["base"]["sha"], "checks": checks}
+        evidence = {"passed": passed, "reason": "Trusted workflow evidence passed." if passed else "Workflow/commit association or required checks did not pass.", "association_source": association_source, "run_id": run["id"], "run_attempt": run.get("run_attempt"), "head_sha": head, "base_sha": pr["base"]["sha"], "checks": checks}
+        if revision_job:
+            evidence["revision_job"] = revision_job
+        if checks_passed and not associated and not run.get("pull_requests") and not pr.get("merged"):
+            evidence["association_missing"] = True
+            evidence["reason"] = "GitHub reported passing checks without linking the run to the PR and its reviewed base."
+        return evidence
+
+
+def successful_job(check, run, policy):
+    return (check["job_passed"] and check["app_id"] == policy["app_id"] and check["app_slug"] == "github-actions"
+            and check["suite_id"] == run["check_suite_id"] and check["status"] == "completed"
+            and check["conclusion"] == "success")

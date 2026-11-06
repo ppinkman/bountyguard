@@ -1,5 +1,6 @@
 from pathlib import Path
 import base64
+import json
 import re
 import tempfile
 import time
@@ -31,6 +32,29 @@ class APITests(unittest.TestCase):
         self.assertIn('<html lang="en">',page.text)
         self.assertIn('Content-Security-Policy',page.headers)
         self.assertEqual(self.client.get('/assets/app.js').status_code,200)
+
+    def test_public_demo_links_to_recorded_evidence(self):
+        root = Path(__file__).resolve().parents[1]
+        evidence = json.loads((root / "deployments/live-acceptance.json").read_text(encoding="utf-8"))
+        self.assertIn('href="/assets/demo.html"', self.client.get("/").text)
+        demo = self.client.get("/assets/demo.html")
+        self.assertEqual(demo.status_code, 200)
+        self.assertEqual(self.client.get("/assets/demo.css").status_code, 200)
+        paid = evidence["primary_bounty"]
+        rejected = evidence["adversarial"]
+        rejected_review = rejected["observation"]["review"]
+        revision = evidence["revision_change"]
+        refund = evidence["refunded_bounty"]
+        self.assertTrue(rejected_review["ci"]["passed"])
+        self.assertEqual(rejected_review["verdict"], "NEEDS_REVIEW")
+        self.assertEqual(revision["observation"]["state"], "REVISION_CHANGED")
+        self.assertEqual(refund["state"], "REFUNDED")
+        for value in (paid["payment_receipt"]["explorer_url"], paid["review"]["head_sha"], rejected["url"],
+                      str(rejected_review["ci"]["run_id"]), rejected_review["head_sha"],
+                      revision["probe"]["probe_head"], refund["refund_receipt"]["explorer_url"]):
+            self.assertIn(value, demo.text)
+        self.assertNotIn("<script", demo.text)
+        self.assertEqual(self.client.get("/api/bounties").json(), [])
     def test_unauthenticated_mutation_is_refused(self):self.assertEqual(self.client.post('/api/bounties',json=self.create_body()).status_code,401)
     def test_cookie_write_needs_csrf_and_origin(self):
         session=self.login()

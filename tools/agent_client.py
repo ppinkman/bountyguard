@@ -12,6 +12,23 @@ from mcp import Client, StdioServerParameters
 ROOT = Path(__file__).resolve().parents[1]
 
 
+async def call_tool(name, arguments, *, token=None, allow_writes=False, allow_model=False):
+    allowed = {"SYSTEMROOT", "WINDIR", "PATH", "PATHEXT", "TEMP", "TMP", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "PYTHONUTF8"}
+    env = {key: value for key, value in os.environ.items() if key.upper() in allowed}
+    if token:
+        env["GITHUB_TOKEN"] = token
+    env["BOUNTYGUARD_MCP_ALLOW_WRITES"] = "1" if allow_writes else "0"
+    env["BOUNTYGUARD_MCP_ALLOW_MODEL"] = "1" if allow_model else "0"
+    parameters = StdioServerParameters(command=sys.executable, args=["-m", "bountyguard.mcp_server"], cwd=str(ROOT), env=env)
+    async with Client(parameters) as client:
+        result = await client.call_tool(name, arguments)
+    if result.is_error:
+        raise RuntimeError("MCP refused the action: " + str(result.content))
+    if result.structured_content is not None:
+        return result.structured_content
+    return json.loads(next(block.text for block in result.content if block.type == "text"))
+
+
 async def run(args):
     names = {"get": "get_bounty", "claim": "request_claim", "submit": "submit_pull_request", "review": "review_pull_request", "receipt": "get_bounty"}
     arguments = {"bounty_id": args.bounty_id}
@@ -25,20 +42,11 @@ async def run(args):
         raise SystemExit("This action requires --allow-writes and GITHUB_TOKEN in the process environment.")
     if args.use_model and not args.allow_model:
         raise SystemExit("Model use requires --allow-model as well as --use-model.")
-    # Only the GitHub actor's credential is needed by this MCP child. In
-    # particular, it receives no model provider or development signing key.
-    allowed = {"SYSTEMROOT", "WINDIR", "PATH", "PATHEXT", "TEMP", "TMP", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "PYTHONUTF8", "GITHUB_TOKEN"}
-    env = {key: value for key, value in os.environ.items() if key.upper() in allowed}
-    env["BOUNTYGUARD_MCP_ALLOW_WRITES"] = "1" if args.allow_writes else "0"
-    env["BOUNTYGUARD_MCP_ALLOW_MODEL"] = "1" if args.allow_model else "0"
-    parameters = StdioServerParameters(command=sys.executable, args=["-m", "bountyguard.mcp_server"], cwd=str(ROOT), env=env)
-    async with Client(parameters) as client:
-        result = await client.call_tool(names[args.command], arguments)
-    if result.is_error:
-        raise SystemExit("MCP refused the action: " + str(result.content))
-    body = result.structured_content
-    if body is None:
-        body = json.loads(next(block.text for block in result.content if block.type == "text"))
+    try:
+        body = await call_tool(names[args.command], arguments, token=os.getenv("GITHUB_TOKEN"),
+                               allow_writes=args.allow_writes, allow_model=args.allow_model)
+    except RuntimeError as exc:
+        raise SystemExit(str(exc)) from None
     record = {"transport": "MCP stdio", "tool": names[args.command], "arguments": arguments, "at": int(time.time()), "result": body}
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)

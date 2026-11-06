@@ -1,8 +1,31 @@
 # BountyGuard
 
-Assigned GitHub bounties with verified claimant identity, revision-bound review,
-and NEAR testnet settlement after a maintainer merges the reviewed PR.
+**Both pull requests passed CI. Only one earned the bounty.** BountyGuard
+releases a GitHub bounty on NEAR testnet when the assigned contributor's
+reviewed commit is the one the maintainer merges. It holds payment on a
+protected-workflow change or when the reviewed revision changes.
 
+## Try it in 30 seconds
+
+1. Open the [public read-only demo](https://ppinkman.github.io/bountyguard/).
+   The four cases need no account, wallet, model key, or Docker. You can also open
+   [the same page](bountyguard/web/demo.html) from a checkout or the repository ZIP.
+2. Click **Open NEAR payment** on the left to see the actual testnet payment.
+   Click **Inspect flagged changes** on the right to see why green CI was
+   insufficient for the other PR. Below, compare the two commits from the
+   post-review change and open the expired bounty's refund transaction.
+
+Run `./demo.sh` for the judge checks. Expect **8/8 verification checks as
+expected**. Python 3.11+ and Bash are required. The command prepares a virtual
+environment and may download dependencies on the first run. See the
+[behavior-to-test map](AGENTS.md).
+
+For public GitHub and on-chain verification, run
+`python tools/verify_acceptance.py` with network access. Expect
+`verified: true` and both `Paid` and `Refunded` on-chain states.
+
+The testnet funding workflow below is for operators who want to create a new
+bounty. Maintainers and contributors use their existing GitHub identities.
 **Development preview, not an audited service.** This repository is a new project;
 [NOTICE](NOTICE.md) describes its relationship to the earlier ProofPay prototype.
 The submission plan is to select one final project.
@@ -42,15 +65,21 @@ response failed grounding validation and did not authorize payment. Token usage
 and catalog estimates do not establish the provider's actual bill.
 The subsequent coding-agent run used one additional request (5,862 tokens),
 bringing the recorded total to four requests and 31,052 tokens. There was no
-recharge. Local Python coverage is now 82 passing tests; the Rust suite has nine.
+recharge. The local Python suite runs 109 tests (108 passed and one optional
+Docker probe skipped); the Rust suite has nine.
 
 The [public evidence bundle](deployments/live-acceptance.json) includes wallet
 proofs, revision-bound reports, CI identifiers, operation receipts and rejection
 records. Check current chain state and public GitHub facts without private keys
 or another model call:
 
-```powershell
-.venv/Scripts/python tools/verify_acceptance.py
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements-dev.txt
+python tools/verify_acceptance.py
+python tools/verify_acceptance.py --receipt deployments/agent-acceptance.json
+python -m unittest discover -s tests
 ```
 
 The verifier needs public GitHub/testnet RPC access. An optional `GITHUB_TOKEN`
@@ -58,30 +87,15 @@ increases GitHub's rate allowance. It verifies recorded signatures and **current
 key membership; it cannot independently reconstruct historical challenge use,
 prove the model's conclusions, or prove commercial adoption.
 
-### Judge walkthrough: no wallet or model key required
-
-1. Create the Python environment and install dependencies using **Start locally**
-   below. Open `deployments/live-acceptance.json`: the primary bounty is `PAID`,
-   the expiry bounty is `REFUNDED`, and the adversarial report is `NEEDS_REVIEW`.
-   These are recorded observations; the next step queries their public sources.
-2. Run `python tools/verify_acceptance.py` with that environment activated.
-   Expect JSON with `verified: true`, current chain states `Paid` and `Refunded`,
-   four verified wallet signatures, and PR #3's exact reviewed head. A mismatch
-   exits with an error. Network/RPC access is required; no transaction is sent.
-   With `--receipt deployments/agent-acceptance.json`, expect an additional paid
-   bounty for PR #6 and six verified wallet signatures.
-3. Install `requirements-dev.txt` and run `python -m unittest discover -s tests`.
-   Expect `OK`. These tests use labelled fixtures and require no model spending.
-   Rust users can separately run `cargo test --locked --lib` in `contracts/bounty`.
-4. Start the local service and open port 8766. Expect the English interface with
-   a Chinese toggle and an empty board on a fresh checkout. Historical receipts
-   remain in the public bundle; the private development database and wallets are
-   intentionally not shipped. Creating a new funded bounty is a separate workflow
-   requiring both participants' identity proofs and explicit testnet configuration.
-
 ## Start locally
 
 Python 3.11+:
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+bash start.sh
+```
 
 ```powershell
 python -m venv .venv
@@ -94,8 +108,6 @@ switches to Chinese. The board starts empty. No model call or transaction is
 sent at startup. This is a loopback development application, not a hosted OAuth
 service; do not expose it to the public internet.
 
-On Linux/macOS, use `.venv/bin/python -m pip install -r requirements.txt` and
-`.venv/bin/python -m bountyguard serve --port 8766` after creating the environment.
 The key-free inspection/verification path is cross-platform; the current local
 development transaction signer requires Windows DPAPI.
 

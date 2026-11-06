@@ -10,7 +10,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
-from bountyguard.domain import digest,diff_digest,github_url,issue_context
+from bountyguard.domain import digest,diff_digest,github_url,issue_context,testnet_account
 from bountyguard.github import GitHub
 from bountyguard.identity import b58decode,nep413_digest
 from bountyguard.near import NearRPC
@@ -20,10 +20,59 @@ def require(value,message):
     if not value:raise SystemExit('Verification failed: '+message)
 
 
+def verify_agent_demo(receipt, rpc, github):
+    deployment = json.loads((ROOT / 'deployments/testnet.json').read_text(encoding='utf-8'))
+    contract = receipt['contract']
+    require(contract == deployment['contract'] and rpc.account(contract)['code_hash'] == deployment['code_hash'],
+            'unexpected testnet contract or code hash')
+    identifier = receipt['bounty_id']
+    chain = rpc.view(contract, 'get_bounty', {'id': identifier})
+    expected = {
+        'status': 'Paid', 'claimant': receipt['claimant'], 'maintainer': receipt['maintainer'],
+        'github_user_id': str(receipt['actor_id']), 'repo_id': str(receipt['repo_id']),
+        'amount': receipt['amount_yocto'], 'terms_hash': receipt['assigned_terms_hash'],
+        'delivery_hash': receipt['delivery_hash'], 'report_hash': receipt['report_hash'],
+    }
+    require(chain and all(chain.get(key) == value for key, value in expected.items()), 'on-chain bounty differs')
+    tx = rpc.call('tx', {'tx_hash': receipt['transaction_hash'], 'sender_account_id': testnet_account(receipt['maintainer']),
+                        'wait_until': 'FINAL'})
+    transaction = tx['transaction']
+    require(tx['final_execution_status'] == 'FINAL' and 'SuccessValue' in tx['status']
+            and transaction['hash'] == receipt['transaction_hash']
+            and transaction['signer_id'] == receipt['maintainer'] and transaction['receiver_id'] == contract
+            and len(transaction['actions']) == 1, 'payment transaction did not finalize as recorded')
+    call = transaction['actions'][0]['FunctionCall']
+    require(call['method_name'] == 'pay' and json.loads(base64.b64decode(call['args'], validate=True)) == {
+        'id': identifier, 'expected_delivery_hash': receipt['delivery_hash'], 'expected_report_hash': receipt['report_hash'],
+    }, 'payment transaction was for different evidence')
+    repo, pr_number = github_url(receipt['pr_url'], 'pull')
+    issue_repo, issue_number = github_url(receipt['issue_url'], 'issues')
+    require(repo.lower() == issue_repo.lower() and str(issue_number) == chain['issue_number']
+            and receipt['actor_id'] != receipt['maintainer_id'], 'issue or distinct account evidence differs')
+    issue = github.issue(repo, issue_number)
+    require(digest(issue_context(issue, receipt['repo_id'])) == receipt['issue_hash'], 'Issue terms changed')
+    pr, files = github.pr_snapshot(repo, pr_number)
+    head = receipt['head_sha']
+    require(pr['merged'] and pr['user']['id'] == receipt['actor_id']
+            and pr['base']['repo']['id'] == receipt['repo_id'] and pr['head']['sha'] == head
+            and pr['merge_commit_sha'] == receipt['merge_sha'], 'PR author, revision or merge differs')
+    require(digest({'pr_number': pr_number, 'head_sha': head, 'diff_hash': diff_digest(files)})
+            == receipt['delivery_hash'], 'PR diff differs from paid delivery')
+    run = github.request(f"/repos/{repo}/actions/runs/{int(receipt['ci_run_id'])}/attempts/{int(receipt['run_attempt'])}")
+    require(run['head_sha'] == head and run['workflow_id'] == receipt['workflow_id']
+            and run['event'] == 'pull_request' and run['status'] == 'completed'
+            and run['conclusion'] == 'success', 'recorded CI attempt differs')
+    print(json.dumps({'verified': True, 'bounty_id': identifier, 'pr_url': receipt['pr_url'],
+                      'head_sha': head, 'transaction_hash': receipt['transaction_hash'],
+                      'scope': 'Public revision, CI attempt, final payment and chain state. Local runner events are operator records.'}))
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--receipt',type=Path,default=ROOT/'deployments/live-acceptance.json')
     args=parser.parse_args();receipt=json.loads(args.receipt.read_text(encoding='utf-8'))
+    if receipt.get('schema') == 'bountyguard/agent-demo/v1':
+        return verify_agent_demo(receipt, NearRPC(), GitHub(os.getenv('GITHUB_TOKEN')))
     deployment=receipt['deployment'];rpc=NearRPC();account=rpc.account(deployment['contract'])
     require(account['code_hash']==deployment['code_hash'],'contract code hash changed')
     chains={};verified_revisions=[]
