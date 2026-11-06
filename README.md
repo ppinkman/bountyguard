@@ -8,23 +8,24 @@ protected-workflow change or when the reviewed revision changes.
 ## Try it in 30 seconds
 
 1. Open the [public read-only demo](https://ppinkman.github.io/bountyguard/).
-   The two cases need no account, wallet, model key, or Docker. You can also open
+   The four cases need no account, wallet, model key, or Docker. You can also open
    [the same page](bountyguard/web/demo.html) from a checkout or the repository ZIP.
 2. Click **Open NEAR payment** on the left to see the actual testnet payment.
    Click **Inspect flagged changes** on the right to see why green CI was
-   insufficient for the other PR.
+   insufficient for the other PR. Below, compare the two commits from the
+   post-review change and open the expired bounty's refund transaction.
 
-For a reproducible code check, install `requirements-dev.txt` and run
-`python -m unittest discover -s tests -p test_github.py -v`. The fixture tests
-show that a green run cannot be reused for a changed head or base or a
-different CI application. For public GitHub and on-chain verification, run
+Run `./demo.sh` for the judge checks. Expect **8/8 verification checks as
+expected**. Python 3.11+ and Bash are required. The command prepares a virtual
+environment and may download dependencies on the first run. See the
+[behavior-to-test map](AGENTS.md).
+
+For public GitHub and on-chain verification, run
 `python tools/verify_acceptance.py` with network access. Expect
 `verified: true` and both `Paid` and `Refunded` on-chain states.
 
 The testnet funding workflow below is for operators who want to create a new
 bounty. Maintainers and contributors use their existing GitHub identities.
-The separate machine account is used in the optional Agent runner walkthrough.
-
 **Development preview, not an audited service.** This repository is a new project;
 [NOTICE](NOTICE.md) describes its relationship to the earlier ProofPay prototype.
 The submission plan is to select one final project.
@@ -46,10 +47,6 @@ identifies the coding agent, separate review model and every maintainer action.
 The [extended evidence bundle](deployments/agent-acceptance.json) includes all five
 MCP calls and the earlier acceptance cases. Verify it with
 `python tools/verify_acceptance.py --receipt deployments/agent-acceptance.json`.
-
-The [single-bounty runner](docs/AGENT_DEMO.md) adds a separate machine-account
-workflow. Its local tests use fixtures. A live machine-account run and receipt
-are pending.
 
 | Scenario | Observed result |
 | --- | --- |

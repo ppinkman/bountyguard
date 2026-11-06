@@ -52,6 +52,34 @@
           <code>0b6538d54a276a13eddafcd93fda52845037989e</code>
         </details>
       </article>
+      <article class="case held" aria-labelledby="changed-title">
+        <div class="case-top"><span>03 / New commit after review</span><span class="status">Revision changed</span></div>
+        <h2 id="changed-title">Old approval could not pay</h2>
+        <p>After PR #3 passed review, a different commit was pushed. BountyGuard returned <code>REVISION_CHANGED</code> and held settlement for that attempt.</p>
+        <div class="links">
+          <a class="primary" href="https://github.com/ppinkman/bountyguard/compare/17e1da79b199fcaf5890ac5f725c501e1b3548f8...c7863c13362c411055d2662c83edcb3d014eb5fd">Compare the commits ↗</a>
+          <a href="https://github.com/ppinkman/bountyguard/tree/codex/toctou-probe">Archived probe ↗</a>
+        </div>
+        <details>
+          <summary>Show the revision that was blocked</summary>
+          <code>c7863c13362c411055d2662c83edcb3d014eb5fd</code>
+          <p>PR #3 was restored to the reviewed commit before the payment shown above.</p>
+        </details>
+      </article>
+
+      <article class="case paid" aria-labelledby="refund-title">
+        <div class="case-top"><span>04 / Expired bounty</span><span class="status">Refunded</span></div>
+        <h2 id="refund-title">0.005 tNEAR returned</h2>
+        <p>No work was accepted before the deadline. An expiry transaction returned the bounty principal to the maintainer on NEAR testnet.</p>
+        <div class="links">
+          <a class="primary" href="https://testnet.nearblocks.io/txns/GWtzhGA7PTGgBK8CXLnkkeqV1pKRUedT2xVZ3VZyrDq9">Open NEAR refund ↗</a>
+          <a href="https://github.com/ppinkman/bountyguard/issues/2">Issue #2 ↗</a>
+        </div>
+        <details>
+          <summary>What was returned?</summary>
+          <p>The refund covered the reward principal. The storage charge and spent gas stayed separate.</p>
+        </details>
+      </article>
     </div>
 
     <footer>

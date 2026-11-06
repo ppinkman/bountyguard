@@ -10,8 +10,9 @@ from .domain import GuardError, github_url
 from .python_changes import implementation_changed
 
 REVISION_JOB_DECLARATION = (
-    '    name: "BountyGuard PR ${{ github.event.pull_request.number }} '
-    'base ${{ github.event.pull_request.base.sha }}"'
+    '    name: "${{ github.event_name == \'pull_request\' && '
+    "format('BountyGuard PR {0} base {1}', github.event.pull_request.number, github.event.pull_request.base.sha) "
+    '|| \'Push metadata\' }}"'
 )
 
 
