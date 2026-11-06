@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="See why BountyGuard paid one GitHub pull request and held another with passing CI.">
+  <title>BountyGuard · Payout evidence</title>
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+  <main>
+    <header>
+      <p class="brand">◈ BountyGuard <span>Recorded testnet demo</span></p>
+      <h1>Both PRs passed CI.<br>Only one earned the bounty.</h1>
+      <p class="intro">BountyGuard checks who submitted the work, which revision passed review, and what the maintainer merged before releasing a GitHub bounty on NEAR.</p>
+    </header>
+
+    <div class="cases">
+      <article class="case paid" aria-labelledby="paid-title">
+        <div class="case-top"><span>01 / Accepted fix</span><span class="status">Paid</span></div>
+        <h2 id="paid-title">0.005 tNEAR paid</h2>
+        <p>GitHub Actions passed, NEAR AI review cleared the change, and the maintainer merged the reviewed revision.</p>
+        <ul>
+          <li>Contributor matched the assigned GitHub identity.</li>
+          <li>Reviewed commit matched the merged delivery.</li>
+        </ul>
+        <div class="links">
+          <a class="primary" href="https://testnet.nearblocks.io/txns/B35cMBZLzvYjpBVEF24isUd9HAr4tTa596fGv771XYQt">Open NEAR payment ↗</a>
+          <a href="https://github.com/ppinkman/bountyguard/pull/3">PR #3 ↗</a>
+          <a href="https://github.com/ppinkman/bountyguard/actions/runs/41959096811">CI run ↗</a>
+        </div>
+        <details>
+          <summary>Show reviewed commit</summary>
+          <code>17e1da79b199fcaf5890ac5f725c501e1b3548f8</code>
+        </details>
+      </article>
+
+      <article class="case held" aria-labelledby="held-title">
+        <div class="case-top"><span>02 / Adversarial fix</span><span class="status">Needs review</span></div>
+        <h2 id="held-title">Payment blocked</h2>
+        <p>GitHub Actions also passed here. BountyGuard flagged a change to the protected workflow and text attempting to influence the review.</p>
+        <ul>
+          <li>Protected path changed: <code>.github/workflows/ci.yml</code></li>
+          <li>Review manipulation signal detected.</li>
+        </ul>
+        <div class="links">
+          <a class="primary" href="https://github.com/ppinkman/bountyguard/pull/4/files">Inspect flagged changes ↗</a>
+          <a href="https://github.com/ppinkman/bountyguard/actions/runs/41955683567">Passing CI ↗</a>
+        </div>
+        <details>
+          <summary>Show flagged commit</summary>
+          <code>0b6538d54a276a13eddafcd93fda52845037989e</code>
+        </details>
+      </article>
+    </div>
+
+    <footer>
+      <p>These are recorded outcomes from a controlled run by the project operator using real GitHub PRs and NEAR testnet. This page displays evidence and performs no actions.</p>
+      <a href="https://github.com/ppinkman/bountyguard/blob/e994e434e78e3a218796c89e0e2c83fd8cf825d7/deployments/live-acceptance.json">Open original evidence JSON ↗</a>
+    </footer>
+  </main>
+</body>
+</html>
