@@ -1,7 +1,29 @@
 # BountyGuard
 
-Assigned GitHub bounties with verified claimant identity, revision-bound review,
-and NEAR testnet settlement after a maintainer merges the reviewed PR.
+**Both pull requests passed CI. Only one earned the bounty.** BountyGuard
+releases a GitHub bounty on NEAR testnet when the assigned contributor's
+reviewed commit is the one the maintainer merges. It holds payment on a
+protected-workflow change or when the reviewed revision changes.
+
+## Try it in 30 seconds
+
+1. Open the [public read-only demo](https://ppinkman.github.io/bountyguard/).
+   The two cases need no account, wallet, model key, or Docker. You can also open
+   [the same page](bountyguard/web/demo.html) from a checkout or the repository ZIP.
+2. Click **Open NEAR payment** on the left to see the actual testnet payment.
+   Click **Inspect flagged changes** on the right to see why green CI was
+   insufficient for the other PR.
+
+For a reproducible code check, install `requirements-dev.txt` and run
+`python -m unittest discover -s tests -p test_github.py -v`. The fixture tests
+show that a green run cannot be reused for a changed head or base or a
+different CI application. For public GitHub and on-chain verification, run
+`python tools/verify_acceptance.py` with network access. Expect
+`verified: true` and both `Paid` and `Refunded` on-chain states.
+
+The testnet funding workflow below is for operators who want to create a new
+bounty. Maintainers and contributors use their existing GitHub identities.
+The separate machine account is used in the optional Agent runner walkthrough.
 
 **Development preview, not an audited service.** This repository is a new project;
 [NOTICE](NOTICE.md) describes its relationship to the earlier ProofPay prototype.
@@ -46,7 +68,7 @@ response failed grounding validation and did not authorize payment. Token usage
 and catalog estimates do not establish the provider's actual bill.
 The subsequent coding-agent run used one additional request (5,862 tokens),
 bringing the recorded total to four requests and 31,052 tokens. There was no
-recharge. The local Python suite runs 108 tests (107 passed and one optional
+recharge. The local Python suite runs 109 tests (108 passed and one optional
 Docker probe skipped); the Rust suite has nine.
 
 The [public evidence bundle](deployments/live-acceptance.json) includes wallet
@@ -67,27 +89,6 @@ The verifier needs public GitHub/testnet RPC access. An optional `GITHUB_TOKEN`
 increases GitHub's rate allowance. It verifies recorded signatures and **current**
 key membership; it cannot independently reconstruct historical challenge use,
 prove the model's conclusions, or prove commercial adoption.
-
-### Judge walkthrough: no wallet or model key required
-
-1. Create the Python environment and install dependencies using **Start locally**
-   below. Open `deployments/live-acceptance.json`: the primary bounty is `PAID`,
-   the expiry bounty is `REFUNDED`, and the adversarial report is `NEEDS_REVIEW`.
-   These are recorded observations; the next step queries their public sources.
-2. Run `python tools/verify_acceptance.py` with that environment activated.
-   Expect JSON with `verified: true`, current chain states `Paid` and `Refunded`,
-   four verified wallet signatures, and PR #3's exact reviewed head. A mismatch
-   exits with an error. Network/RPC access is required; no transaction is sent.
-   With `--receipt deployments/agent-acceptance.json`, expect an additional paid
-   bounty for PR #6 and six verified wallet signatures.
-3. Install `requirements-dev.txt` and run `python -m unittest discover -s tests`.
-   Expect `OK`. These tests use labelled fixtures and require no model spending.
-   Rust users can separately run `cargo test --locked --lib` in `contracts/bounty`.
-4. Start the local service and open port 8766. Expect the English interface with
-   a Chinese toggle and an empty board on a fresh checkout. Historical receipts
-   remain in the public bundle; the private development database and wallets are
-   intentionally not shipped. Creating a new funded bounty is a separate workflow
-   requiring both participants' identity proofs and explicit testnet configuration.
 
 ## Start locally
 
