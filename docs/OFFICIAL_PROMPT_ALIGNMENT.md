@@ -5,9 +5,13 @@ This is an implementation assessment, not an organizer-issued score or prize for
 
 Follow-up: the [coding-agent walkthrough](AGENT_WALKTHROUGH.md) now records an
 actual MCP claim → code fix → PR → review → merged testnet payment → MCP receipt
-run. The assessment below describes the gaps observed before that follow-up;
-scoped settlement authority, wallet connection and independent onboarding remain
-unimplemented. The agent run does not establish independent commercial use.
+run. Subsequent updates added [browser wallet identity connection](WALLET_ONBOARDING.md),
+[fork CI revision binding and a single-bounty runner](AGENT_DEMO.md), and a
+key-free [four-case public replay](../bountyguard/web/demo.html) with `./demo.sh`.
+The assessment below preserves the November 5 baseline review; scoped on-chain
+settlement authority, a full real-owner browser wallet signature round trip, and
+a live second-GitHub-account run remain outside the verified live scope. The
+agent run does not establish independent commercial use.
 
 ## Sources read
 

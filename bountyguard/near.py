@@ -70,6 +70,9 @@ def load_vault(path):
 
 
 class NearRPC:
+    def __init__(self):
+        self._testnet = False
+
     def call(self, method, params):
         request = urllib.request.Request(RPC_URL, data=canonical({"jsonrpc": "2.0", "id": "bountyguard", "method": method, "params": params}).encode(), headers={"Content-Type": "application/json"})
         try:
@@ -85,8 +88,10 @@ class NearRPC:
             raise GuardError("Testnet result is unavailable. Reconcile the original operation; do not recreate payment.", 502) from None
 
     def assert_testnet(self):
-        if self.call("status", [])["chain_id"] != "testnet":
-            raise GuardError("Signing is restricted to the testnet network.")
+        if not self._testnet:
+            if self.call("status", [])["chain_id"] != "testnet":
+                raise GuardError("Signing is restricted to the testnet network.")
+            self._testnet = True
 
     def access_key(self, account, public_key):
         self.assert_testnet()

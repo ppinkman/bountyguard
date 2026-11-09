@@ -75,7 +75,7 @@ def main():
         return verify_agent_demo(receipt, NearRPC(), GitHub(os.getenv('GITHUB_TOKEN')))
     deployment=receipt['deployment'];rpc=NearRPC();account=rpc.account(deployment['contract'])
     require(account['code_hash']==deployment['code_hash'],'contract code hash changed')
-    chains={};verified_revisions=[]
+    chains={};verified_revisions=[];checked_keys={}
     targets=[('primary_bounty','Paid'),('refunded_bounty','Refunded')]
     if 'agent_bounty' in receipt:targets.append(('agent_bounty','Paid'))
     github=GitHub(os.getenv('GITHUB_TOKEN'))
@@ -94,7 +94,10 @@ def main():
             expected_account=bounty['maintainer_account'] if role=='maintainer' else bounty['claim']['near_account_id']
             require(context['bounty_id']==bounty['id'] and context['github_user_id']==expected_id and context['near_account_id']==expected_account and context['purpose']==role and context['repo']==bounty['repo'] and context['repo_id']==bounty['repo_id'] and context['issue_number']==bounty['issue_number'] and context['terms_hash']==bounty['terms_hash'] and context['network']=='testnet' and context['application']=='BountyGuard','wallet proof context mismatch')
             Ed25519PublicKey.from_public_bytes(b58decode(proof['public_key'].split(':')[1])).verify(base64.b64decode(proof['signature'],validate=True),nep413_digest(proof['message'],base64.b64decode(proof['nonce']),proof['recipient'],proof.get('callback_url')))
-            require(rpc.access_key(expected_account,proof['public_key'])['permission']=='FullAccess','proof key is not currently on the account')
+            key_pair=(expected_account,proof['public_key'])
+            if key_pair not in checked_keys:
+                checked_keys[key_pair]=rpc.access_key(*key_pair)
+            require(checked_keys[key_pair]['permission']=='FullAccess','proof key is not currently on the account')
         chains[key]={'id':bounty['id'],'status':chain['status'],'transfer_nonce':chain['transfer_nonce'],'amount':chain['amount']}
         if state=='Paid':
             report=bounty['review']

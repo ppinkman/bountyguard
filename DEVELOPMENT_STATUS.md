@@ -1,15 +1,24 @@
 # BountyGuard development status
 
-Updated November 5, 2026 (Asia/Shanghai).
+Updated November 9, 2026 (Asia/Shanghai).
 
 ## Completed and observed
 
-- Public repository: https://github.com/ppinkman/bountyguard. GitHub-hosted
-  Python and Rust checks passed for the reviewed PR; Actions are restricted to
-  GitHub-owned actions. No workflow receives wallet signing secrets.
-- 84 Python tests, 6 JavaScript wallet tests and 9 native Rust tests passed locally. The Rust contract was
-  built to WASM, deployed to a separate testnet account, and its live code hash
-  independently matched the recorded deployment.
+- Public repository: https://github.com/ppinkman/bountyguard and read-only four-case
+  replay page: https://ppinkman.github.io/bountyguard/ (`bountyguard/web/demo.html`).
+  GitHub-hosted Python and Rust checks passed for the reviewed PRs; Actions are
+  restricted to GitHub-owned actions. No workflow receives wallet signing secrets.
+- 109 Python tests (108 passed and one optional local Docker image probe skipped),
+  6 JavaScript wallet tests and 9 native Rust tests passed locally. `./demo.sh`
+  runs 8 mapped judge verification checks without accounts, wallets, model keys
+  or Docker (`AGENTS.md` / `CLAUDE.md`). The Rust contract was built to WASM,
+  deployed to a separate testnet account, and its live code hash independently
+  matched the recorded deployment.
+- A single-bounty agent runner (`tools/agent_demo.py`), Docker network/secret
+  isolation probe (`bountyguard/sandbox.py`, exercised on a GitHub-hosted Linux
+  runner) and fork CI revision-binding job (`.github/workflows/ci.yml`,
+  `bountyguard/github.py`) are implemented and covered by deterministic tests.
+  No separate second-GitHub-account live bounty was executed (`docs/AGENT_DEMO.md`).
 - A real assigned bounty completed: Issue #1, contributor identity/wallet proofs,
   funding, PR #3, exact-revision CI and NEAR AI review, maintainer merge, then
   0.005 tNEAR payment. A separate expired bounty returned 0.005 tNEAR principal.
