@@ -1,21 +1,329 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BountyGuard</title><meta name="bg-csp-nonce" content="__CSP_NONCE__"><link rel="stylesheet" href="/assets/style.css"><script src="/assets/wallet-bundle.js" defer nonce="__CSP_NONCE__"></script><script src="/assets/app.js" defer nonce="__CSP_NONCE__"></script></head>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>BountyGuard · Verifiable GitHub Bounty Escrow on NEAR</title>
+  <meta name="bg-csp-nonce" content="__CSP_NONCE__">
+  <link rel="stylesheet" href="/assets/style.css">
+  <script src="/assets/wallet-bundle.js" defer nonce="__CSP_NONCE__"></script>
+  <script src="/assets/app.js" defer nonce="__CSP_NONCE__"></script>
+</head>
 <body>
-<div class="orb one"></div><div class="orb two"></div>
-<header><a class="brand" href="/">◈ <span>BountyGuard</span></a><nav><span id="network" class="pill">NEAR TESTNET</span><button id="language" class="quiet">中文</button><span id="actor" class="muted"></span></nav></header>
-<main>
-<section class="hero"><div><p class="eyebrow" data-en="FOR THE WORK THAT SHIPS" data-zh="让完成的工作，得到应有的报酬">FOR THE WORK THAT SHIPS</p><h1 data-en="Good code.<br>Clear rewards." data-zh="代码有交付。<br>赏金有着落。">Good code.<br>Clear rewards.</h1><p class="subtitle" data-en="A real Issue. A reviewed revision. A bounty paid after merge." data-zh="真实 Issue，版本绑定审查，合并后结算赏金。">A real Issue. A reviewed revision. A bounty paid after merge.</p></div><aside class="hero-note"><span class="spark">↗</span><strong data-en="Evidence before payment." data-zh="先核对证据，再结算。">Evidence before payment.</strong><p data-en="GitHub identity · Wallet ownership · Trusted CI · Maintainer merge" data-zh="GitHub 身份 · 钱包控制权 · 可信 CI · 维护者合并">GitHub identity · Wallet ownership · Trusted CI · Maintainer merge</p></aside></section>
-<div id="notice" role="status" hidden></div>
-<p><a href="/assets/demo.html" data-en="See four real payout decisions → No sign-in" data-zh="查看四个真实验收结果 → 无需登录">See four real payout decisions → No sign-in</a></p>
-<section class="glass auth"><div><strong data-en="Your GitHub identity" data-zh="你的 GitHub 身份">Your GitHub identity</strong><p id="auth-note" class="muted" data-en="Connect to maintain a bounty or claim work. Tokens stay in this server's memory for the session." data-zh="登录后发布或认领任务。令牌仅在服务进程内存中用于本次会话。">Connect to maintain a bounty or claim work. Tokens stay in this server's memory for the session.</p></div><details id="token-access"><summary data-en="Advanced: use your GitHub token" data-zh="高级：使用自己的 GitHub 令牌">Advanced: use your GitHub token</summary><form id="login-form"><input id="token" type="password" autocomplete="off" placeholder="GitHub token" aria-label="GitHub token"><button type="submit" data-en="Connect GitHub" data-zh="连接 GitHub">Connect GitHub</button></form></details><button id="local-login" hidden data-en="Use local GitHub login" data-zh="使用本机 GitHub 登录">Use local GitHub login</button><button id="logout" class="quiet" hidden data-en="Sign out" data-zh="退出">Sign out</button></section>
-<section class="glass wallet-bar"><div><strong data-en="Your testnet wallet" data-zh="你的测试网钱包">Your testnet wallet</strong><p id="wallet-status" class="small muted" data-en="Connect an account. Identity signing does not transfer funds." data-zh="连接账户，身份签名不会转账。">Connect an account. Identity signing does not transfer funds.</p></div><div class="wallet-actions"><select id="wallet-provider" aria-label="Testnet wallet"><option value="" data-en="Choose a testnet wallet" data-zh="选择测试网钱包">Choose a testnet wallet</option></select><button id="connect-wallet" data-en="Connect wallet" data-zh="连接钱包">Connect wallet</button><button id="disconnect-wallet" class="quiet" hidden data-en="Disconnect" data-zh="断开连接">Disconnect</button></div><p class="small muted" data-en="Meteor and Intear declare testnet message signing support. The current OKX adapter does not declare testnet support." data-zh="Meteor 和 Intear 声明支持测试网消息签名；当前 OKX 适配器未声明支持测试网。">Meteor and Intear declare testnet message signing support. The current OKX adapter does not declare testnet support.</p></section><div class="layout">
-<section class="glass create"><p class="eyebrow" data-en="01 / SET THE TERMS" data-zh="01 / 约定任务">01 / SET THE TERMS</p><h2 data-en="Fund a fix." data-zh="为修复设赏金。">Fund a fix.</h2><form id="create-form"><label data-en="GitHub Issue" data-zh="GitHub Issue">GitHub Issue</label><input id="issue-url" type="url" required placeholder="https://github.com/owner/repo/issues/12"><div class="two-col"><div><label data-en="Reward · tNEAR" data-zh="赏金 · tNEAR">Reward · tNEAR</label><input id="amount" type="number" min="0.000001" max="0.01" step="0.000001" value="0.005" required></div><div><label data-en="Deadline" data-zh="截止时间">Deadline</label><input id="deadline" type="datetime-local" required></div></div><details><summary data-en="Acceptance conditions" data-zh="验收条件">Acceptance conditions</summary><label data-en="Trusted workflow" data-zh="可信工作流">Trusted workflow</label><input id="workflow" value=".github/workflows/ci.yml" required><label data-en="Required check names, comma-separated" data-zh="必需的检查名称，用逗号分隔">Required check names, comma-separated</label><input id="checks" placeholder="test" required><label data-en="Source paths, comma-separated" data-zh="源码路径，用逗号分隔">Source paths, comma-separated</label><input id="source-paths" value="src/" required></details><p class="small muted" data-en="Creates a draft only. Assignment and exact funding confirmation follow. Testnet reward ≤ 0.01 tNEAR; storage charge 0.01 tNEAR + gas are separate." data-zh="此步仅建草稿，认领后再确认锁款。测试赏金上限 0.01 tNEAR；另收 0.01 tNEAR 存储费及 Gas。">Creates a draft only. Assignment and exact funding confirmation follow. Testnet reward ≤ 0.01 tNEAR; storage charge 0.01 tNEAR + gas are separate.</p><button type="submit" class="wide" data-en="Read Issue & create draft ↗" data-zh="读取 Issue 并创建草稿 ↗">Read Issue & create draft ↗</button></form></section>
-<section class="workspace"><div class="section-head"><div><p class="eyebrow" data-en="02 / FOLLOW THE WORK" data-zh="02 / 跟进交付">02 / FOLLOW THE WORK</p><h2 data-en="Your bounty board." data-zh="赏金工作台。">Your bounty board.</h2></div><button id="refresh" class="quiet" data-en="Refresh ↻" data-zh="刷新 ↻">Refresh ↻</button></div><div id="bounty-list"></div><div id="empty" class="glass empty"><span>⌁</span><h3 data-en="The next fix starts here." data-zh="下一次修复，从这里开始。">The next fix starts here.</h3><p data-en="Connect GitHub and create a bounty for a real, open Issue. No sample orders are added to your board." data-zh="连接 GitHub，为真实的开放 Issue 创建赏金。看板不会填入示例订单。">Connect GitHub and create a bounty for a real, open Issue. No sample orders are added to your board.</p></div>
-<article id="detail" class="glass" hidden><div class="section-head"><h3 id="bounty-title"></h3><span id="bounty-state" class="pill"></span></div><a id="issue-link" target="_blank" rel="noreferrer"></a><div id="metrics" class="metrics"></div><ol class="steps"><li data-en="Identity" data-zh="身份">Identity</li><li data-en="Assigned & funded" data-zh="认领与锁款">Assigned & funded</li><li data-en="Revision reviewed" data-zh="版本审查">Revision reviewed</li><li data-en="Merged & paid" data-zh="合并与付款">Merged & paid</li></ol>
-<section id="binding-area"><h4 data-en="Bind your testnet wallet" data-zh="绑定测试网钱包">Bind your testnet wallet</h4><p id="binding-status" class="small muted"></p><div class="actions"><select id="bind-purpose" aria-label="Wallet role"><option value="claimant" data-en="Contributor" data-zh="贡献者">Contributor</option><option value="maintainer" data-en="Maintainer" data-zh="维护者">Maintainer</option></select><button id="bind-wallet" data-en="Sign & bind account" data-zh="签名并绑定账户">Sign & bind account</button></div><p class="small muted" data-en="You will approve a message in your wallet. The server verifies the signature and current key ownership before enabling a claim." data-zh="你将在钱包中确认一条消息。服务器核对签名和当前公钥归属后，才允许认领。">You will approve a message in your wallet. The server verifies the signature and current key ownership before enabling a claim.</p><details id="manual-binding"><summary data-en="Advanced: import a signed proof" data-zh="高级：导入已签名的凭证">Advanced: import a signed proof</summary><form id="challenge-form" class="inline"><select id="purpose"><option value="claimant" data-en="Contributor" data-zh="贡献者">Contributor</option><option value="maintainer" data-en="Maintainer" data-zh="维护者">Maintainer</option></select><input id="wallet" required placeholder="your-account.testnet"><button data-en="Get signing request" data-zh="生成签名请求">Get signing request</button></form><div id="challenge-area" hidden><p class="small" data-en="Sign this request with your wallet's NEP-413 support, or use the local test-wallet signer described in the README. Never paste a private key." data-zh="使用钱包的 NEP-413 功能签名，或按 README 使用本地测试钱包签名工具。不要粘贴私钥。">Sign this request with your wallet's NEP-413 support, or use the local test-wallet signer described in the README. Never paste a private key.</p><button id="download-challenge" class="quiet" data-en="Download signing request" data-zh="下载签名请求">Download signing request</button><form id="proof-form"><textarea id="wallet-proof" rows="4" placeholder='{"challenge_id":"…","public_key":"ed25519:…","signature":"…"}' required></textarea><button data-en="Verify wallet ownership" data-zh="验证钱包控制权">Verify wallet ownership</button></form></div></details><button id="claim" class="quiet" data-en="Request this assignment" data-zh="申请认领">Request this assignment</button><div id="claims"></div></section>
-<section id="funding-area" hidden><h4 data-en="Confirm the assigned bounty" data-zh="确认已分配的赏金">Confirm the assigned bounty</h4><p id="funding-terms" class="small"></p><label class="consent"><input type="checkbox" id="fund-consent"><span data-en="I confirm this recipient, reward, deadline and terms. Funding spends free testnet tokens." data-zh="我确认收款人、赏金、截止时间和条款。锁款使用免费测试币。">I confirm this recipient, reward, deadline and terms. Funding spends free testnet tokens.</span></label><button id="fund" data-en="Lock tNEAR reward" data-zh="锁定 tNEAR 赏金">Lock tNEAR reward</button></section>
-<section id="delivery-area" hidden><h4 data-en="Deliver a real pull request" data-zh="提交真实 Pull Request">Deliver a real pull request</h4><form id="pr-form" class="inline"><input id="pr-url" type="url" required placeholder="https://github.com/owner/repo/pull/15"><button data-en="Submit PR" data-zh="提交 PR">Submit PR</button></form><label class="consent"><input id="allow-model" type="checkbox"><span data-en="Use existing NEAR AI credits for this revision (catalog estimate capped at $0.02; no automatic paid retry)." data-zh="使用现有 NEAR AI 额度审查此版本（目录估算上限 0.02 美元，不自动重复付费请求）。">Use existing NEAR AI credits for this revision (catalog estimate capped at $0.02; no automatic paid retry).</span></label><div class="actions"><button id="review" data-en="Check this revision" data-zh="核验当前版本">Check this revision</button><button id="sync" class="quiet" data-en="Refresh merge & settlement" data-zh="刷新合并与结算">Refresh merge & settlement</button><button id="refund" class="quiet" data-en="Refund expired principal" data-zh="退回到期本金">Refund expired principal</button></div><p id="auto-note" class="small muted"></p></section>
-<section id="review-area" hidden><h4 data-en="Acceptance evidence" data-zh="验收证据">Acceptance evidence</h4><div id="review-checks"></div><div id="ai-report"></div><p id="revision" class="small mono"></p></section><div id="receipts"></div><details><summary data-en="Audit record & recovery" data-zh="审计记录与恢复">Audit record & recovery</summary><pre id="audit"></pre><form id="reconcile-form" class="inline"><input id="operation-id" placeholder="Original operation ID"><button data-en="Reconcile original transaction" data-zh="核对原交易">Reconcile original transaction</button></form></details><p class="small muted" data-en="GitHub checks and AI review run off-chain. The contract fixes evidence hashes and enforces payout authority. Refunds return principal; storage and spent gas are not refunded." data-zh="GitHub 核验与 AI 审查在链下进行；合约固定证据摘要并约束放款权限。退款退还本金，存储费和已消耗 Gas 不退。">GitHub checks and AI review run off-chain. The contract fixes evidence hashes and enforces payout authority. Refunds return principal; storage and spent gas are not refunded.</p></article>
-</section></div><footer><span>BountyGuard <span id="version">0.1.0</span></span><span data-en="Assigned work. Bound evidence. Testnet settlement." data-zh="明确认领，绑定证据，测试网结算。">Assigned work. Bound evidence. Testnet settlement.</span></footer></main>
-</body></html>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="orb one" aria-hidden="true"></div>
+  <div class="orb two" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="/">
+      <span class="brand-mark">◈</span>
+      <span class="brand-text">BountyGuard</span>
+      <span class="brand-tag" data-en="VERIFIABLE ESCROW" data-zh="可验证赏金托管">VERIFIABLE ESCROW</span>
+    </a>
+    <nav class="topnav">
+      <a class="replay-pill" href="/assets/demo.html" data-en="★ 4 Recorded Payout Decisions → No sign-in" data-zh="★ 查看 4 个链上真实验收案例 → 免登录">★ 4 Recorded Payout Decisions → No sign-in</a>
+      <span id="network" class="pill pill-net">NEAR TESTNET</span>
+      <span id="actor" class="actor-badge" hidden></span>
+      <button id="language" class="quiet btn-sm" type="button">中文</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow" data-en="ASSIGNED GITHUB BOUNTIES · NEP-413 IDENTITY · GROUNDED AI REVIEW" data-zh="认领制 GITHUB 赏金 · NEP-413 身份绑定 · 证据绑定 AI 审查">ASSIGNED GITHUB BOUNTIES · NEP-413 IDENTITY · GROUNDED AI REVIEW</p>
+        <h1 data-en="Good code.<br>Clear rewards." data-zh="代码有交付。<br>赏金有着落。">Good code.<br>Clear rewards.</h1>
+        <p class="subtitle" data-en="Bind GitHub identity and NEAR wallet ownership before locking funds. Verify pinned GitHub Actions CI and grounded NEAR AI review on the exact commit the maintainer merges." data-zh="在锁款前绑定 GitHub 身份与 NEAR 钱包控制权；针对维护者合并的精确提交，核验受信任 CI 与绑定源码证据的 NEAR AI 审查。">Bind GitHub identity and NEAR wallet ownership before locking funds. Verify pinned GitHub Actions CI and grounded NEAR AI review on the exact commit the maintainer merges.</p>
+        <div class="hero-cta-row">
+          <a class="btn-evidence" href="/assets/demo.html" data-en="See four real payout decisions → No sign-in" data-zh="查看四个真实验收结果 → 无需登录">See four real payout decisions → No sign-in</a>
+          <span class="hero-hint" data-en="Includes Paid PR #3, Blocked Adversarial PR #4, TOCTOU Probe, Expired Refund & MCP Agent PR #6" data-zh="含已放款 PR #3、被拦截恶意 PR #4、审查后篡改探针、到期退款及 MCP Agent PR #6">Includes Paid PR #3, Blocked Adversarial PR #4, TOCTOU Probe, Expired Refund & MCP Agent PR #6</span>
+        </div>
+      </div>
+
+      <aside class="hero-note glass">
+        <div class="hero-note-head">
+          <span class="spark">🛡️</span>
+          <div>
+            <strong data-en="Evidence before payment." data-zh="先核对证据，再结算。">Evidence before payment.</strong>
+            <span class="small muted" data-en="4-Gate Deterministic & Advisory Guard" data-zh="四重确定性与证据门禁">4-Gate Deterministic & Advisory Guard</span>
+          </div>
+        </div>
+        <ol class="gate-list">
+          <li>
+            <span class="gate-num">01</span>
+            <div>
+              <b data-en="Dual Identity Binding" data-zh="双重身份绑定">Dual Identity Binding</b>
+              <small data-en="Numeric GitHub ID + NEP-413 FullAccess signature" data-zh="GitHub 数字 ID + NEP-413 FullAccess 签名">Numeric GitHub ID + NEP-413 FullAccess signature</small>
+            </div>
+          </li>
+          <li>
+            <span class="gate-num">02</span>
+            <div>
+              <b data-en="Pinned Workflow & CI" data-zh="固定工作流与可信 CI">Pinned Workflow & CI</b>
+              <small data-en="Exact workflow blob SHA, app ID, run & head commit" data-zh="锁定工作流文件哈希、App ID 与提交版本">Exact workflow blob SHA, app ID, run & head commit</small>
+            </div>
+          </li>
+          <li>
+            <span class="gate-num">03</span>
+            <div>
+              <b data-en="Grounded NEAR AI Review" data-zh="绑定源码证据的 AI 审查">Grounded NEAR AI Review</b>
+              <small data-en="AST implementation check + issued diff evidence IDs" data-zh="AST 实质变更检测 + 源码补丁证据编号绑定">AST implementation check + issued diff evidence IDs</small>
+            </div>
+          </li>
+          <li>
+            <span class="gate-num">04</span>
+            <div>
+              <b data-en="Merge Ancestry Settlement" data-zh="合并祖先核验与唯一放款">Merge Ancestry Settlement</b>
+              <small data-en="Any post-review commit invalidates approval (TOCTOU)" data-zh="审查后任何追加提交立即令原审批失效">Any post-review commit invalidates approval (TOCTOU)</small>
+            </div>
+          </li>
+        </ol>
+      </aside>
+    </section>
+
+    <section class="telemetry-bar glass" aria-label="System telemetry">
+      <div class="telemetry-item">
+        <small data-en="ESCROW CONTRACT" data-zh="托管合约">ESCROW CONTRACT</small>
+        <strong id="telemetry-contract" class="mono">bg-c7e1a78e-escrow.testnet</strong>
+      </div>
+      <div class="telemetry-item">
+        <small data-en="WALLET PROOF POLICY" data-zh="钱包验签策略">WALLET PROOF POLICY</small>
+        <strong id="telemetry-wallet" data-en="NEP-413 + On-Chain FullAccess" data-zh="NEP-413 + 链上 FullAccess 核验">NEP-413 + On-Chain FullAccess</strong>
+      </div>
+      <div class="telemetry-item">
+        <small data-en="FUNDING ALLOWANCE" data-zh="开发锁款额度">FUNDING ALLOWANCE</small>
+        <strong id="telemetry-funding">—</strong>
+      </div>
+      <div class="telemetry-item">
+        <small data-en="NEAR AI REVIEW QUOTA (24H)" data-zh="NEAR AI 审查配额 (24H)">NEAR AI REVIEW QUOTA (24H)</small>
+        <strong id="telemetry-ai">—</strong>
+      </div>
+    </section>
+
+    <div id="notice" role="status" hidden></div>
+
+    <div class="identity-deck">
+      <section class="glass auth">
+        <div class="deck-head">
+          <div class="deck-title">
+            <span class="status-dot" id="github-dot"></span>
+            <strong data-en="1. Your GitHub Identity" data-zh="1. 你的 GitHub 身份">1. Your GitHub Identity</strong>
+          </div>
+          <div class="deck-actions">
+            <button id="local-login" hidden data-en="Use local GitHub login" data-zh="使用本机 GitHub 登录">Use local GitHub login</button>
+            <button id="logout" class="quiet btn-sm" hidden data-en="Sign out" data-zh="退出">Sign out</button>
+          </div>
+        </div>
+        <p id="auth-note" class="muted" data-en="Connect to maintain a bounty or claim work. Tokens stay in this server's memory for the session." data-zh="登录后发布或认领任务。令牌仅在服务进程内存中用于本次会话。">Connect to maintain a bounty or claim work. Tokens stay in this server's memory for the session.</p>
+        <details id="token-access">
+          <summary data-en="Advanced: use your GitHub token" data-zh="高级：使用自己的 GitHub 令牌">Advanced: use your GitHub token</summary>
+          <form id="login-form">
+            <input id="token" type="password" autocomplete="off" placeholder="ghp_... or fine-grained PAT" aria-label="GitHub token">
+            <button type="submit" data-en="Connect GitHub" data-zh="连接 GitHub">Connect GitHub</button>
+          </form>
+        </details>
+      </section>
+
+      <section class="glass wallet-bar">
+        <div class="deck-head">
+          <div class="deck-title">
+            <span class="status-dot" id="wallet-dot"></span>
+            <strong data-en="2. Your Testnet Wallet (NEP-413)" data-zh="2. 你的测试网钱包 (NEP-413)">2. Your Testnet Wallet (NEP-413)</strong>
+          </div>
+          <div class="wallet-actions">
+            <select id="wallet-provider" aria-label="Testnet wallet">
+              <option value="" data-en="Choose a testnet wallet" data-zh="选择测试网钱包">Choose a testnet wallet</option>
+            </select>
+            <button id="connect-wallet" data-en="Connect wallet" data-zh="连接钱包">Connect wallet</button>
+            <button id="disconnect-wallet" class="quiet btn-sm" hidden data-en="Disconnect" data-zh="断开连接">Disconnect</button>
+          </div>
+        </div>
+        <p id="wallet-status" class="small muted" data-en="Connect an account. Identity signing does not transfer funds." data-zh="连接账户，身份签名不会转账。">Connect an account. Identity signing does not transfer funds.</p>
+        <p class="tiny muted" data-en="Meteor and Intear declare testnet message signing support. The current OKX adapter does not declare testnet support." data-zh="Meteor 和 Intear 声明支持测试网消息签名；当前 OKX 适配器未声明支持测试网。">Meteor and Intear declare testnet message signing support. The current OKX adapter does not declare testnet support.</p>
+      </section>
+    </div>
+
+    <div class="layout">
+      <section class="glass create">
+        <div class="panel-header">
+          <p class="eyebrow" data-en="01 / SET THE TERMS" data-zh="01 / 约定任务">01 / SET THE TERMS</p>
+          <h2 data-en="Fund a fix." data-zh="为修复设赏金。">Fund a fix.</h2>
+        </div>
+        <form id="create-form">
+          <label for="issue-url" data-en="GitHub Issue URL" data-zh="GitHub Issue 链接">GitHub Issue URL</label>
+          <input id="issue-url" type="url" required placeholder="https://github.com/owner/repo/issues/12">
+
+          <div class="two-col">
+            <div>
+              <label for="amount" data-en="Reward · tNEAR" data-zh="赏金 · tNEAR">Reward · tNEAR</label>
+              <input id="amount" type="number" min="0.000001" max="0.01" step="0.000001" value="0.005" required>
+            </div>
+            <div>
+              <label for="deadline" data-en="Deadline" data-zh="截止时间">Deadline</label>
+              <input id="deadline" type="datetime-local" required>
+            </div>
+          </div>
+
+          <details class="terms-details" open>
+            <summary data-en="Acceptance & Security Policy" data-zh="验收与安全策略">Acceptance & Security Policy</summary>
+            <label for="workflow" data-en="Trusted workflow path" data-zh="可信工作流路径">Trusted workflow path</label>
+            <input id="workflow" value=".github/workflows/ci.yml" required>
+            <label for="checks" data-en="Required check names (comma-separated)" data-zh="必需通过的检查名称（逗号分隔）">Required check names (comma-separated)</label>
+            <input id="checks" placeholder="Python checks, Contract checks" value="Python checks, Contract checks" required>
+            <label for="source-paths" data-en="Allowed implementation paths" data-zh="允许的实现源码路径">Allowed implementation paths</label>
+            <input id="source-paths" value="bountyguard/, tools/" required>
+          </details>
+
+          <p class="small muted policy-note" data-en="Creates a draft only. Assignment and exact funding confirmation follow. Testnet reward ≤ 0.01 tNEAR; storage charge 0.01 tNEAR + gas are separate." data-zh="此步仅建草稿，认领后再确认锁款。测试赏金上限 0.01 tNEAR；另收 0.01 tNEAR 存储费及 Gas。">Creates a draft only. Assignment and exact funding confirmation follow. Testnet reward ≤ 0.01 tNEAR; storage charge 0.01 tNEAR + gas are separate.</p>
+          <button type="submit" class="wide btn-primary" data-en="Read Issue & create draft ↗" data-zh="读取 Issue 并创建草稿 ↗">Read Issue & create draft ↗</button>
+        </form>
+      </section>
+
+      <section class="workspace">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow" data-en="02 / FOLLOW THE WORK" data-zh="02 / 跟进交付">02 / FOLLOW THE WORK</p>
+            <h2 data-en="Your bounty board." data-zh="赏金工作台。">Your bounty board.</h2>
+          </div>
+          <div class="board-toolbar">
+            <div class="filter-group" id="board-filters" role="group" aria-label="Filter bounties">
+              <button type="button" class="filter-btn active" data-filter="ALL" data-en="All" data-zh="全部">All</button>
+              <button type="button" class="filter-btn" data-filter="PAID" data-en="Paid" data-zh="已付款">Paid</button>
+              <button type="button" class="filter-btn" data-filter="ACTIVE" data-en="Draft & Active" data-zh="进行中/草稿">Draft & Active</button>
+              <button type="button" class="filter-btn" data-filter="REFUNDED" data-en="Refunded" data-zh="已退款">Refunded</button>
+            </div>
+            <button id="refresh" class="quiet btn-sm" type="button" data-en="Refresh ↻" data-zh="刷新 ↻">Refresh ↻</button>
+          </div>
+        </div>
+
+        <div id="bounty-list"></div>
+
+        <div id="empty" class="glass empty">
+          <span class="empty-icon">◈</span>
+          <h3 data-en="The next fix starts here." data-zh="下一次修复，从这里开始。">The next fix starts here.</h3>
+          <p data-en="Connect GitHub and create a bounty for a real, open Issue. No sample orders are added to your board." data-zh="连接 GitHub，为真实的开放 Issue 创建赏金。看板不会填入示例订单。">Connect GitHub and create a bounty for a real, open Issue. No sample orders are added to your board.</p>
+          <a class="quiet btn-link" href="/assets/demo.html" data-en="Or inspect the 4 recorded testnet decisions ↗" data-zh="或查看已记录的 4 个测试网验收案例 ↗">Or inspect the 4 recorded testnet decisions ↗</a>
+        </div>
+
+        <article id="detail" class="glass detail-card" hidden>
+          <div class="detail-header">
+            <div class="detail-title-group">
+              <div class="detail-meta-row">
+                <a id="issue-link" class="issue-pill" target="_blank" rel="noreferrer"></a>
+                <span id="detail-id" class="mono tiny muted"></span>
+              </div>
+              <h3 id="bounty-title"></h3>
+            </div>
+            <span id="bounty-state" class="pill state-pill"></span>
+          </div>
+
+          <div id="metrics" class="metrics"></div>
+
+          <ol class="steps">
+            <li data-en="1. Identity Bound" data-zh="1. 身份已绑定">1. Identity Bound</li>
+            <li data-en="2. Assigned & Funded" data-zh="2. 认领与锁款">2. Assigned & Funded</li>
+            <li data-en="3. Revision Reviewed" data-zh="3. 版本已审查">3. Revision Reviewed</li>
+            <li data-en="4. Merged & Paid" data-zh="4. 合并与放款">4. Merged & Paid</li>
+          </ol>
+
+          <div id="hash-summary" class="hash-grid"></div>
+
+          <section id="binding-area" class="sub-panel">
+            <h4 data-en="Bind your testnet wallet" data-zh="绑定测试网钱包">Bind your testnet wallet</h4>
+            <p id="binding-status" class="small muted"></p>
+            <div class="actions">
+              <select id="bind-purpose" aria-label="Wallet role">
+                <option value="claimant" data-en="Contributor" data-zh="贡献者">Contributor</option>
+                <option value="maintainer" data-en="Maintainer" data-zh="维护者">Maintainer</option>
+              </select>
+              <button id="bind-wallet" type="button" data-en="Sign & bind account" data-zh="签名并绑定账户">Sign & bind account</button>
+              <button id="claim" class="btn-accent" type="button" data-en="Request this assignment" data-zh="申请认领">Request this assignment</button>
+            </div>
+            <p class="small muted" data-en="You will approve a message in your wallet. The server verifies the signature and current key ownership before enabling a claim." data-zh="你将在钱包中确认一条消息。服务器核对签名和当前公钥归属后，才允许认领。">You will approve a message in your wallet. The server verifies the signature and current key ownership before enabling a claim.</p>
+            <details id="manual-binding">
+              <summary data-en="Advanced: import a signed proof" data-zh="高级：导入已签名的凭证">Advanced: import a signed proof</summary>
+              <form id="challenge-form" class="inline">
+                <select id="purpose">
+                  <option value="claimant" data-en="Contributor" data-zh="贡献者">Contributor</option>
+                  <option value="maintainer" data-en="Maintainer" data-zh="维护者">Maintainer</option>
+                </select>
+                <input id="wallet" required placeholder="your-account.testnet">
+                <button type="submit" data-en="Get signing request" data-zh="生成签名请求">Get signing request</button>
+              </form>
+              <div id="challenge-area" hidden>
+                <p class="small" data-en="Sign this request with your wallet's NEP-413 support, or use the local test-wallet signer described in the README. Never paste a private key." data-zh="使用钱包的 NEP-413 功能签名，或按 README 使用本地测试钱包签名工具。不要粘贴私钥。">Sign this request with your wallet's NEP-413 support, or use the local test-wallet signer described in the README. Never paste a private key.</p>
+                <button id="download-challenge" class="quiet" type="button" data-en="Download signing request" data-zh="下载签名请求">Download signing request</button>
+                <form id="proof-form">
+                  <textarea id="wallet-proof" rows="3" placeholder='{"challenge_id":"…","public_key":"ed25519:…","signature":"…"}' required></textarea>
+                  <button type="submit" data-en="Verify wallet ownership" data-zh="验证钱包控制权">Verify wallet ownership</button>
+                </form>
+              </div>
+            </details>
+            <div id="claims"></div>
+          </section>
+
+          <section id="funding-area" class="sub-panel" hidden>
+            <h4 data-en="Confirm the assigned bounty" data-zh="确认已分配的赏金">Confirm the assigned bounty</h4>
+            <p id="funding-terms" class="small mono code-box"></p>
+            <label class="consent">
+              <input type="checkbox" id="fund-consent">
+              <span data-en="I confirm this recipient, reward, deadline and terms. Funding spends free testnet tokens." data-zh="我确认收款人、赏金、截止时间和条款。锁款使用免费测试币。">I confirm this recipient, reward, deadline and terms. Funding spends free testnet tokens.</span>
+            </label>
+            <button id="fund" type="button" class="btn-primary" data-en="Lock tNEAR reward" data-zh="锁定 tNEAR 赏金">Lock tNEAR reward</button>
+          </section>
+
+          <section id="delivery-area" class="sub-panel" hidden>
+            <h4 data-en="Deliver & verify a real pull request" data-zh="提交并核验真实 Pull Request">Deliver & verify a real pull request</h4>
+            <form id="pr-form" class="inline">
+              <input id="pr-url" type="url" required placeholder="https://github.com/owner/repo/pull/15">
+              <button type="submit" data-en="Submit PR" data-zh="提交 PR">Submit PR</button>
+            </form>
+            <label class="consent">
+              <input id="allow-model" type="checkbox">
+              <span data-en="Use existing NEAR AI credits for this revision (catalog estimate capped at $0.02; no automatic paid retry)." data-zh="使用现有 NEAR AI 额度审查此版本（目录估算上限 0.02 美元，不自动重复付费请求）。">Use existing NEAR AI credits for this revision (catalog estimate capped at $0.02; no automatic paid retry).</span>
+            </label>
+            <div class="actions">
+              <button id="review" type="button" class="btn-primary" data-en="Check this revision" data-zh="核验当前版本">Check this revision</button>
+              <button id="sync" class="quiet" type="button" data-en="Refresh merge & settlement" data-zh="刷新合并与结算">Refresh merge & settlement</button>
+              <button id="refund" class="quiet" type="button" data-en="Refund expired principal" data-zh="退回到期本金">Refund expired principal</button>
+            </div>
+            <p id="auto-note" class="small muted"></p>
+          </section>
+
+          <section id="review-area" class="sub-panel" hidden>
+            <div class="review-header">
+              <h4 data-en="Acceptance evidence & gate checks" data-zh="验收证据与安全门禁核验">Acceptance evidence & gate checks</h4>
+              <p id="revision" class="small mono revision-badge"></p>
+            </div>
+            <div id="review-checks" class="checks-grid"></div>
+            <div id="ai-report"></div>
+          </section>
+
+          <div id="receipts" class="receipts-bar"></div>
+
+          <section id="timeline-area" class="sub-panel" hidden>
+            <h4 data-en="Verified event timeline" data-zh="审计事件时间线">Verified event timeline</h4>
+            <div id="event-timeline" class="timeline"></div>
+          </section>
+
+          <details class="audit-details">
+            <summary data-en="Raw audit record & transaction recovery" data-zh="原始审计 JSON 与交易对账恢复">Raw audit record & transaction recovery</summary>
+            <pre id="audit"></pre>
+            <form id="reconcile-form" class="inline">
+              <input id="operation-id" placeholder="Original operation ID (e.g. bounty_id:fund)">
+              <button type="submit" class="quiet" data-en="Reconcile original transaction" data-zh="核对原交易">Reconcile original transaction</button>
+            </form>
+          </details>
+
+          <p class="small muted boundary-footnote" data-en="GitHub checks and AI review run off-chain. The contract fixes evidence hashes and enforces payout authority. Refunds return principal; storage and spent gas are not refunded." data-zh="GitHub 核验与 AI 审查在链下进行；合约固定证据摘要并约束放款权限。退款退还本金，存储费和已消耗 Gas 不退。">GitHub checks and AI review run off-chain. The contract fixes evidence hashes and enforces payout authority. Refunds return principal; storage and spent gas are not refunded.</p>
+        </article>
+      </section>
+    </div>
+
+    <footer>
+      <span>◈ BountyGuard <span id="version">0.1.0</span> · NEAR Testnet Escrow (`bg-c7e1a78e-escrow.testnet`)</span>
+      <span data-en="Assigned work · Bound evidence · Exact-revision settlement" data-zh="明确认领 · 绑定证据 · 精确版本结算">Assigned work · Bound evidence · Exact-revision settlement</span>
+    </footer>
+  </main>
+</body>
+</html>

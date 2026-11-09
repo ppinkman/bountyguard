@@ -1,14 +1,281 @@
-let lang=localStorage.getItem('bg_language')||'en', session=null, current=null, challenge=null, status={}, walletConnection=null, walletBindings={}, bindingBusy=false;
+let lang=localStorage.getItem('bg_language')||'en', session=null, current=null, challenge=null, status={}, walletConnection=null, walletBindings={}, bindingBusy=false, activeFilter='ALL', allBounties=[];
 const $=id=>document.getElementById(id), t=(en,zh)=>lang==='zh'?zh:en;
-function stateLabel(state){const labels={DRAFT:['Draft','草稿'],ASSIGNED:['Assigned','已分配'],FUNDING_UNCERTAIN:['Funding needs attention','锁款待核对'],FUNDED:['Funds held','已锁款'],PR_SUBMITTED:['PR submitted','已提交 PR'],REVIEW_REQUIRED:['Review needed','需复核'],READY_TO_MERGE:['Ready for merge','待合并'],REVISION_CHANGED:['Revision changed','版本已变化'],SETTLEMENT_ATTENTION:['Settlement needs attention','结算待核对'],PAID:['Paid','已付款'],REFUNDED:['Refunded','已退款']};const label=labels[state];return label?t(...label):state;}
-function languages(){document.documentElement.lang=lang==='zh'?'zh-CN':'en';document.querySelectorAll('[data-en]').forEach(el=>{const value=el.dataset[lang];if(el.tagName==='H1'){el.replaceChildren();value.split('<br>').forEach((part,index)=>{if(index)el.append(document.createElement('br'));el.append(document.createTextNode(part));});}else el.textContent=value;});$('language').textContent=lang==='en'?'中文':'English';}
+
+function stateLabel(state){
+  const labels={
+    DRAFT:['Draft','草稿'],
+    ASSIGNED:['Assigned','已分配'],
+    FUNDING_UNCERTAIN:['Funding needs attention','锁款待核对'],
+    FUNDED:['Funds held','已锁款'],
+    PR_SUBMITTED:['PR submitted','已提交 PR'],
+    REVIEW_REQUIRED:['Review needed','需复核'],
+    READY_TO_MERGE:['Ready for merge','待合并'],
+    REVISION_CHANGED:['Revision changed','版本已变化'],
+    SETTLEMENT_ATTENTION:['Settlement needs attention','结算待核对'],
+    PAID:['Paid','已付款'],
+    REFUNDED:['Refunded','已退款']
+  };
+  const label=labels[state];
+  return label?t(...label):state;
+}
+
+function eventLabel(kind){
+  const labels={
+    draft_created:['Draft created','创建草稿'],
+    wallet_verified:['NEP-413 wallet bound','NEP-413 钱包已绑定'],
+    claim_requested:['Assignment requested','申请认领'],
+    claim_assigned:['Contributor assigned','维护者确认分配'],
+    bounty_funded:['Escrow funded on testnet','测试网合约已锁款'],
+    pr_submitted:['Pull request linked','已关联 PR'],
+    revision_reviewed:['Revision & CI verified','版本与可信 CI 核验完成'],
+    bounty_paid:['Merged & bounty paid','合并复核通过并放款'],
+    bounty_refunded:['Expired principal refunded','到期本金已退回']
+  };
+  return labels[kind]?t(...labels[kind]):kind;
+}
+
+function languages(){
+  document.documentElement.lang=lang==='zh'?'zh-CN':'en';
+  document.querySelectorAll('[data-en]').forEach(el=>{
+    const value=el.dataset[lang];
+    if(el.tagName==='H1'){
+      el.replaceChildren();
+      value.split('<br>').forEach((part,index)=>{
+        if(index)el.append(document.createElement('br'));
+        el.append(document.createTextNode(part));
+      });
+    }else el.textContent=value;
+  });
+  $('language').textContent=lang==='en'?'中文':'English';
+  updateTelemetry();
+}
+
 function notice(message){$('notice').textContent=message;$('notice').hidden=false;}
-async function api(path,body){const headers={'Content-Type':'application/json'};if(session)headers['X-CSRF-Token']=session.csrf;const response=await fetch('/api'+path,{method:body===undefined?'GET':'POST',headers,body:body===undefined?undefined:JSON.stringify(body)});const value=await response.json();if(!response.ok)throw new Error(typeof value.detail==='string'?value.detail:JSON.stringify(value.detail));return value;}
-async function action(button,fn){const old=button.disabled;button.disabled=true;try{await fn();}catch(error){const message=typeof error==='string'?error:error?.message||t('The request could not be completed.','请求暂时无法完成。');notice(/^(Wallet closed|User rejected)$/.test(message)?t('Wallet request cancelled. You can try again.','钱包请求已取消，你可以重新操作。'):message);}finally{button.disabled=old;walletControls();}}
-function signedIn(){ $('login-form').hidden=!!session;$('logout').hidden=!session;$('actor').textContent=session?session.actor.login:'';$('auth-note').textContent=session?t('Connected as GitHub user #','已连接 GitHub 用户 #')+session.actor.id:t("Connect to maintain a bounty or claim work. Tokens stay in this server's memory for the session.",'登录后发布或认领任务。令牌仅在服务进程内存中用于本次会话。');$('local-login').hidden=!!session||!status.local_github_enabled;$('token-access').hidden=!!session;walletControls();}
-async function reload(){status=await api('/status');const bounties=await api('/bounties');$('bounty-list').replaceChildren();$('empty').hidden=bounties.length>0;for(const b of bounties){const button=document.createElement('button');button.className='bounty-card'+(current?.id===b.id?' selected':'');const repo=document.createElement('small');repo.textContent=b.repo+' #'+b.issue_number;const title=document.createElement('strong');title.textContent=b.issue.title;const info=document.createElement('small');info.textContent=b.amount+' tNEAR · '+stateLabel(b.state);button.append(repo,title,info);button.onclick=()=>action(button,()=>select(b.id));$('bounty-list').append(button);}if(current)await select(current.id);}
-function textElement(tag,text,className){const el=document.createElement(tag);el.textContent=text;if(className)el.className=className;return el;}
-async function select(id){if(current?.id!==id){$('fund-consent').checked=false;$('challenge-area').hidden=true;challenge=null;}current=await api('/bounties/'+id);const b=current;walletBindings={};if(session&&b.state==='DRAFT'){try{walletBindings=await api('/bounties/'+id+'/wallet/status');}catch{walletBindings={};}}$('detail').hidden=false;$('bounty-title').textContent=b.issue.title;$('bounty-state').textContent=stateLabel(b.state);$('issue-link').textContent=b.repo+' · Issue #'+b.issue_number;$('issue-link').href=b.issue_url;$('metrics').replaceChildren();for(const [label,value]of[[t('REWARD','赏金'),b.amount+' tNEAR'],[t('DEADLINE','截止'),new Date(b.deadline*1000).toLocaleString()],[t('RECIPIENT','收款方'),b.claim?.near_account_id||t('Unassigned','待认领')]]){const item=document.createElement('div');item.append(textElement('small',label),textElement('span',value));$('metrics').append(item);}const stage=b.state==='DRAFT'?0:b.state==='ASSIGNED'||b.state==='FUNDING_UNCERTAIN'?1:b.state==='PAID'?4:b.state==='READY_TO_MERGE'?3:2;document.querySelectorAll('.steps li').forEach((el,i)=>el.classList.toggle('done',i<stage));$('binding-area').hidden=b.state!=='DRAFT';$('funding-area').hidden=!['ASSIGNED','FUNDING_UNCERTAIN'].includes(b.state);$('funding-terms').textContent=t('Recipient: ','收款人：')+(b.claim?.near_account_id||'')+' · '+b.amount+' tNEAR\n'+t('Assigned terms: ','分配条款：')+(b.assigned_terms_hash||'');$('funding-terms').classList.add('mono');$('fund').disabled=status.funding_intents_remaining===0;$('fund').title=status.funding_intents_remaining===0?t('Development funding allowance is used; existing settlement/refunds are still available.','本轮开发锁款名额已用完；已有订单仍可结算或退款。'):'';$('delivery-area').hidden=!b.funding_receipt||['PAID','REFUNDED'].includes(b.state);$('auto-note').textContent=t('While this page is open, a signed-in maintainer can automatically settle a reviewed, merged PR when testnet signing is enabled.','页面开启期间，已登录的维护者可在测试网签名启用时自动结算已审查并合并的 PR。');$('claims').replaceChildren();for(const claim of b.claims||[]){const row=document.createElement('div');row.className='claim-row';row.append(textElement('span',claim.login+' (#'+claim.actor_id+') → '+claim.near_account_id));if(session?.actor.id===b.creator_id){const button=textElement('button',t('Assign','分配'));button.onclick=()=>action(button,async()=>{await api('/bounties/'+b.id+'/assign',{claim_id:claim.id});await reload();});row.append(button);}$('claims').append(row);}$('review-area').hidden=!b.review;if(b.review){$('review-checks').replaceChildren();for(const check of b.review.hard.checks){const row=document.createElement('div');row.className='check'+(check.passed?'':' bad');const body=document.createElement('div');body.append(textElement('strong',check.name),textElement('p',check.detail));row.append(textElement('b',check.passed?'✓':'!'),body);$('review-checks').append(row);}$('ai-report').replaceChildren();if(b.review.ai){const box=document.createElement('div');box.className='ai-summary';box.append(textElement('strong','NEAR AI · '+b.review.ai.verdict),textElement('p',b.review.ai.summary));for(const finding of b.review.ai.findings){const item=document.createElement('div');item.className='finding';item.append(textElement('strong',finding.path+' · '+finding.severity),textElement('code',finding.quote),textElement('p',finding.reason));box.append(item);}$('ai-report').append(box);}else $('ai-report').append(textElement('p',t('No model verdict is recorded. Static checks alone do not authorize payment.','尚无模型审查结论。仅静态检查通过不会授权放款。'),'small'));$('revision').textContent='HEAD '+b.review.head_sha+'\n'+t('REPORT ','报告 ')+b.review.report_hash;}$('receipts').replaceChildren();for(const[key,label]of[['funding_receipt',t('Funding','锁款')],['payment_receipt',t('Payment','付款')],['refund_receipt',t('Refund','退款')]])if(b[key]?.explorer_url){const a=textElement('a',label+' ↗','receipt');a.href=b[key].explorer_url;a.target='_blank';a.rel='noreferrer';$('receipts').append(a);}$('audit').textContent=JSON.stringify(b,null,2);walletControls();}
+
+async function api(path,body){
+  const headers={'Content-Type':'application/json'};
+  if(session)headers['X-CSRF-Token']=session.csrf;
+  const response=await fetch('/api'+path,{method:body===undefined?'GET':'POST',headers,body:body===undefined?undefined:JSON.stringify(body)});
+  const value=await response.json();
+  if(!response.ok)throw new Error(typeof value.detail==='string'?value.detail:JSON.stringify(value.detail));
+  return value;
+}
+
+async function action(button,fn){
+  const old=button.disabled;button.disabled=true;
+  try{await fn();}
+  catch(error){
+    const message=typeof error==='string'?error:error?.message||t('The request could not be completed.','请求暂时无法完成。');
+    notice(/^(Wallet closed|User rejected)$/.test(message)?t('Wallet request cancelled. You can try again.','钱包请求已取消，你可以重新操作。'):message);
+  }finally{button.disabled=old;walletControls();}
+}
+
+function updateTelemetry(){
+  if($('telemetry-funding')&&status.max_funding_intents!==undefined){
+    const sig=status.signing_enabled?t('Signer Ready','签名已就绪'):t('Read-Only','只读模式');
+    $('telemetry-funding').textContent=`${status.funding_intents_used}/${status.max_funding_intents} ${t('used','已用')} · ${sig}`;
+  }
+  if($('telemetry-ai')&&status.max_model_intents_per_day!==undefined){
+    const mode=status.model_enabled?t('NEAR AI Ready','NEAR AI 已启用'):t('Cached / Off','缓存/未启用');
+    $('telemetry-ai').textContent=`${status.model_intents_used}/${status.max_model_intents_per_day} ${t('used (24h)','24h 已用')} · ${mode}`;
+  }
+}
+
+function signedIn(){
+  $('login-form').hidden=!!session;
+  $('logout').hidden=!session;
+  $('actor').textContent=session?'@'+session.actor.login:'';
+  $('actor').hidden=!session;
+  if($('github-dot'))$('github-dot').classList.toggle('online',!!session);
+  $('auth-note').textContent=session?t('Connected as GitHub user #','已连接 GitHub 用户 #')+session.actor.id+' (@'+session.actor.login+')':t("Connect to maintain a bounty or claim work. Tokens stay in this server's memory for the session.",'登录后发布或认领任务。令牌仅在服务进程内存中用于本次会话。');
+  $('local-login').hidden=!!session||!status.local_github_enabled;
+  $('token-access').hidden=!!session;
+  walletControls();
+}
+
+function textElement(tag,text,className){
+  const el=document.createElement(tag);el.textContent=text;
+  if(className)el.className=className;
+  return el;
+}
+
+function matchesFilter(b){
+  if(activeFilter==='ALL')return true;
+  if(activeFilter==='PAID')return b.state==='PAID';
+  if(activeFilter==='REFUNDED')return b.state==='REFUNDED';
+  return !['PAID','REFUNDED'].includes(b.state);
+}
+
+function renderBoard(){
+  $('bounty-list').replaceChildren();
+  const visible=allBounties.filter(matchesFilter);
+  $('empty').hidden=allBounties.length>0;
+  for(const b of visible){
+    const button=document.createElement('button');
+    button.type='button';
+    button.className=`bounty-card card-${b.state}`+(current?.id===b.id?' selected':'');
+    const top=document.createElement('div');
+    top.className='card-top';
+    top.append(textElement('small',b.repo+' #'+b.issue_number),textElement('span',stateLabel(b.state),`pill state-${b.state}`));
+    const title=textElement('strong',b.issue.title);
+    const bottom=document.createElement('div');
+    bottom.className='card-bottom';
+    const recipient=b.claim?.near_account_id||t('Unassigned','待认领');
+    bottom.append(textElement('small',b.amount+' tNEAR','reward-tag'),textElement('small',recipient));
+    button.append(top,title,bottom);
+    button.onclick=()=>action(button,()=>select(b.id));
+    $('bounty-list').append(button);
+  }
+}
+
+async function reload(){
+  status=await api('/status');
+  updateTelemetry();
+  allBounties=await api('/bounties');
+  if(!current&&allBounties.length>0){
+    const preferred=allBounties.find(b=>b.state==='PAID')||allBounties[0];
+    current=preferred;
+  }
+  renderBoard();
+  if(current)await select(current.id);
+}
+
+async function select(id){
+  if(current?.id!==id){$('fund-consent').checked=false;$('challenge-area').hidden=true;challenge=null;}
+  current=await api('/bounties/'+id);
+  const b=current;
+  renderBoard();
+  walletBindings={};
+  if(session&&b.state==='DRAFT'){
+    try{walletBindings=await api('/bounties/'+id+'/wallet/status');}catch{walletBindings={};}
+  }
+  $('detail').hidden=false;
+  $('bounty-title').textContent=b.issue.title;
+  $('bounty-state').textContent=stateLabel(b.state);
+  $('bounty-state').className=`pill state-pill state-${b.state}`;
+  $('issue-link').textContent=b.repo+' · Issue #'+b.issue_number+' ↗';
+  $('issue-link').href=b.issue_url;
+  if($('detail-id'))$('detail-id').textContent='ID '+b.id.slice(0,12)+'…';
+
+  $('metrics').replaceChildren();
+  for(const [label,value]of[
+    [t('REWARD','赏金'),b.amount+' tNEAR'],
+    [t('DEADLINE','截止'),new Date(b.deadline*1000).toLocaleString()],
+    [t('RECIPIENT','收款方'),b.claim?.near_account_id||t('Unassigned','待认领')]
+  ]){
+    const item=document.createElement('div');
+    item.append(textElement('small',label),textElement('span',value));
+    $('metrics').append(item);
+  }
+
+  const stage=b.state==='DRAFT'?0:b.state==='ASSIGNED'||b.state==='FUNDING_UNCERTAIN'?1:b.state==='PAID'?4:b.state==='READY_TO_MERGE'?3:2;
+  document.querySelectorAll('.steps li').forEach((el,i)=>el.classList.toggle('done',i<stage));
+
+  if($('hash-summary')){
+    $('hash-summary').replaceChildren();
+    const hashes=[
+      [t('TERMS SHA-256','条款摘要 SHA-256'),b.terms_hash],
+      [t('ASSIGNED TERMS SHA-256','认领绑定摘要 SHA-256'),b.assigned_terms_hash],
+      [t('DELIVERY DIFF SHA-256','交付补丁摘要 SHA-256'),b.review?.delivery_hash],
+      [t('REVIEW REPORT SHA-256','审查报告摘要 SHA-256'),b.review?.report_hash]
+    ].filter(([,val])=>Boolean(val));
+    for(const [label,val] of hashes){
+      const chip=document.createElement('div');
+      chip.className='hash-chip';
+      chip.append(textElement('small',label),textElement('code',val));
+      $('hash-summary').append(chip);
+    }
+  }
+
+  $('binding-area').hidden=b.state!=='DRAFT';
+  $('funding-area').hidden=!['ASSIGNED','FUNDING_UNCERTAIN'].includes(b.state);
+  $('funding-terms').textContent=t('Recipient: ','收款人：')+(b.claim?.near_account_id||'')+' · '+b.amount+' tNEAR\n'+t('Assigned terms: ','分配条款：')+(b.assigned_terms_hash||'');
+  $('funding-terms').classList.add('mono');
+  $('fund').disabled=status.funding_intents_remaining===0;
+  $('fund').title=status.funding_intents_remaining===0?t('Development funding allowance is used; existing settlement/refunds are still available.','本轮开发锁款名额已用完；已有订单仍可结算或退款。'):'';
+  $('delivery-area').hidden=!b.funding_receipt||['PAID','REFUNDED'].includes(b.state);
+  $('auto-note').textContent=t('While this page is open, a signed-in maintainer can automatically settle a reviewed, merged PR when testnet signing is enabled.','页面开启期间，已登录的维护者可在测试网签名启用时自动结算已审查并合并的 PR。');
+
+  $('claims').replaceChildren();
+  for(const claim of b.claims||[]){
+    const row=document.createElement('div');
+    row.className='claim-row';
+    row.append(textElement('span',claim.login+' (#'+claim.actor_id+') → '+claim.near_account_id));
+    if(session?.actor.id===b.creator_id){
+      const button=textElement('button',t('Assign','分配'));
+      button.type='button';
+      button.onclick=()=>action(button,async()=>{await api('/bounties/'+b.id+'/assign',{claim_id:claim.id});await reload();});
+      row.append(button);
+    }
+    $('claims').append(row);
+  }
+
+  $('review-area').hidden=!b.review;
+  if(b.review){
+    $('review-checks').replaceChildren();
+    for(const check of b.review.hard.checks){
+      const row=document.createElement('div');
+      row.className='check'+(check.passed?'':' bad');
+      const body=document.createElement('div');
+      body.append(textElement('strong',check.name),textElement('p',check.detail));
+      row.append(textElement('b',check.passed?'✓':'!'),body);
+      $('review-checks').append(row);
+    }
+    $('ai-report').replaceChildren();
+    if(b.review.ai){
+      const box=document.createElement('div');
+      box.className='ai-summary';
+      box.append(textElement('strong','NEAR AI · '+b.review.ai.verdict),textElement('p',b.review.ai.summary));
+      for(const finding of b.review.ai.findings){
+        const item=document.createElement('div');
+        item.className='finding';
+        item.append(textElement('strong',finding.path+' · '+finding.severity),textElement('code',finding.quote),textElement('p',finding.reason));
+        box.append(item);
+      }
+      $('ai-report').append(box);
+    }else $('ai-report').append(textElement('p',t('No model verdict is recorded. Static checks alone do not authorize payment.','尚无模型审查结论。仅静态检查通过不会授权放款。'),'small'));
+    $('revision').textContent='HEAD '+b.review.head_sha+'\n'+t('REPORT ','报告 ')+b.review.report_hash;
+  }
+
+  $('receipts').replaceChildren();
+  for(const[key,label]of[
+    ['funding_receipt',t('NEAR Escrow Funding Tx','NEAR 锁款交易凭证')],
+    ['payment_receipt',t('NEAR Bounty Payout Tx','NEAR 赏金放款凭证')],
+    ['refund_receipt',t('NEAR Expiry Refund Tx','NEAR 到期退款凭证')]
+  ]){
+    if(b[key]?.explorer_url){
+      const a=textElement('a','⛓ '+label+' ↗','receipt');
+      a.href=b[key].explorer_url;
+      a.target='_blank';
+      a.rel='noreferrer';
+      $('receipts').append(a);
+    }
+  }
+
+  if($('timeline-area')&&$('event-timeline')){
+    const events=b.events||[];
+    $('timeline-area').hidden=events.length===0;
+    $('event-timeline').replaceChildren();
+    for(const ev of events){
+      const row=document.createElement('div');
+      row.className='timeline-row';
+      row.append(textElement('b',eventLabel(ev.kind)),textElement('span',new Date(ev.created_at*1000).toLocaleString()));
+      $('event-timeline').append(row);
+    }
+  }
+
+  $('audit').textContent=JSON.stringify(b,null,2);
+  walletControls();
+}
+
+document.querySelectorAll('#board-filters .filter-btn').forEach(btn=>{
+  btn.onclick=()=>{
+    activeFilter=btn.dataset.filter;
+    document.querySelectorAll('#board-filters .filter-btn').forEach(b=>b.classList.toggle('active',b===btn));
+    renderBoard();
+  };
+});
+
 $('language').onclick=()=>{lang=lang==='en'?'zh':'en';localStorage.setItem('bg_language',lang);languages();signedIn();walletControls();reload().catch(e=>notice(e.message));};
 $('login-form').onsubmit=e=>{e.preventDefault();action(e.submitter,async()=>{session=await api('/session',{token:$('token').value});$('token').value='';signedIn();await reload();});};
 $('local-login').onclick=e=>action(e.target,async()=>{session=await api('/session/local',{});signedIn();await reload();});
@@ -25,11 +292,34 @@ $('review').onclick=e=>action(e.target,async()=>{await api('/bounties/'+current.
 $('sync').onclick=e=>action(e.target,async()=>{await api('/bounties/'+current.id+'/sync',{});await reload();});
 $('refund').onclick=e=>action(e.target,async()=>{await api('/bounties/'+current.id+'/refund',{});await reload();});
 $('reconcile-form').onsubmit=e=>{e.preventDefault();action(e.submitter,async()=>{await api('/bounties/'+current.id+'/reconcile',{operation_id:$('operation-id').value.trim()});await reload();});};
-let polling=false;setInterval(async()=>{if(polling||!current||current.state!=='READY_TO_MERGE'||session?.actor.id!==current.creator_id||!status.signing_enabled)return;polling=true;try{await api('/bounties/'+current.id+'/sync',{});await reload();}catch(error){if(!error.message.startsWith('Waiting for'))notice(error.message);}finally{polling=false;}},30000);
-(async()=>{languages();const date=new Date(Date.now()+86400000);date.setMinutes(date.getMinutes()-date.getTimezoneOffset());$('deadline').value=date.toISOString().slice(0,16);try{status=await api('/status');$('version').textContent=status.version;try{session=await api('/session');}catch{}signedIn();await reload();}catch(error){notice(error.message);}})();
+
+let polling=false;
+setInterval(async()=>{
+  if(polling||!current||current.state!=='READY_TO_MERGE'||session?.actor.id!==current.creator_id||!status.signing_enabled)return;
+  polling=true;
+  try{await api('/bounties/'+current.id+'/sync',{});await reload();}
+  catch(error){if(!error.message.startsWith('Waiting for'))notice(error.message);}
+  finally{polling=false;}
+},30000);
+
+(async()=>{
+  languages();
+  const date=new Date(Date.now()+86400000);
+  date.setMinutes(date.getMinutes()-date.getTimezoneOffset());
+  $('deadline').value=date.toISOString().slice(0,16);
+  try{
+    status=await api('/status');
+    $('version').textContent=status.version;
+    updateTelemetry();
+    try{session=await api('/session');}catch{}
+    signedIn();
+    await reload();
+  }catch(error){notice(error.message);}
+})();
 
 function walletControls(){
   if(!$('wallet-status'))return;
+  if($('wallet-dot'))$('wallet-dot').classList.toggle('online',!!walletConnection);
   $('wallet-status').textContent=walletConnection?walletConnection.wallet+' · '+walletConnection.account:t('Connect an account. Identity signing does not transfer funds.','连接账户，身份签名不会转账。');
   $('disconnect-wallet').hidden=!walletConnection;
   $('connect-wallet').hidden=!!walletConnection;
@@ -40,6 +330,7 @@ function walletControls(){
   for(const [role,label] of [['maintainer',t('Maintainer','维护者')],['claimant',t('Contributor','贡献者')]])if(walletBindings[role])descriptions.push(label+': '+walletBindings[role].account+' ✓');
   $('binding-status').textContent=descriptions.join(' · ')||t('Connect GitHub and a testnet wallet, then sign to bind this bounty.','先连接 GitHub 与测试网钱包，再签名绑定这份任务。');
 }
+
 window.addEventListener('bg-wallet-change',event=>{walletConnection=event.detail;if(walletConnection)$('wallet').value=walletConnection.account;walletControls();});
 $('connect-wallet').onclick=e=>action(e.target,async()=>{
   const id=$('wallet-provider').value;
@@ -61,6 +352,7 @@ $('bind-wallet').onclick=e=>action(e.target,async()=>{
     await reload();
   }finally{bindingBusy=false;walletControls();}
 });
+
 (async()=>{
   try{
     const options=await window.BountyGuardWallet.options();
