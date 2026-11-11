@@ -3,318 +3,91 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="See why BountyGuard paid one GitHub pull request and held another with passing CI on NEAR testnet.">
-  <title>BountyGuard · Recorded Testnet Payout & Security Evidence</title>
+  <meta name="description" content="BountyGuard manages GitHub bounty payments through NEAR escrow. Explore recorded testnet payments, reviews and refunds.">
+  <title>BountyGuard · GitHub bounty payments on NEAR</title>
   <link rel="stylesheet" href="demo.css">
 </head>
 <body>
-  <input type="checkbox" id="lang-switch" class="lang-switch-input" aria-label="Toggle Chinese / English">
+  <input type="checkbox" id="lang-switch" class="lang-switch-input" aria-label="中文 / English">
   <div class="bg-grid" aria-hidden="true"></div>
-  <div class="ambient one" aria-hidden="true"></div>
-  <div class="ambient two" aria-hidden="true"></div>
-
   <header class="site-header">
     <div class="header-inner">
-      <div class="brand">
-        <span class="brand-icon">◈</span>
-        <strong>BountyGuard</strong>
-        <span class="badge-net">NEAR TESTNET EVIDENCE</span>
-      </div>
-      <nav class="header-nav">
-        <a href="https://testnet.nearblocks.io/address/bg-c7e1a78e-escrow.testnet" target="_blank" rel="noreferrer">
-          <span class="en">Contract: bg-c7e1a78e-escrow.testnet ↗</span>
-          <span class="zh">合约：bg-c7e1a78e-escrow.testnet ↗</span>
-        </a>
-        <a href="https://github.com/ppinkman/bountyguard" target="_blank" rel="noreferrer">
-          <span class="en">GitHub Repository ↗</span>
-          <span class="zh">GitHub 源码仓库 ↗</span>
-        </a>
-        <label for="lang-switch" class="lang-btn">
-          <span class="en">切换中文</span>
-          <span class="zh">English</span>
-        </label>
+      <div class="brand"><span class="brand-icon" aria-hidden="true">◈</span><strong>BountyGuard</strong><span class="badge-net">NEAR TESTNET</span></div>
+      <nav class="header-nav" aria-label="Project links">
+        <a href="https://testnet.nearblocks.io/address/bg-c7e1a78e-escrow.testnet" target="_blank" rel="noreferrer"><span class="en" lang="en">Escrow contract ↗</span><span class="zh" lang="zh-CN">托管合约 ↗</span></a>
+        <a href="https://github.com/ppinkman/bountyguard" target="_blank" rel="noreferrer"><span class="en" lang="en">GitHub ↗</span><span class="zh" lang="zh-CN">GitHub 源码 ↗</span></a>
+        <label for="lang-switch" class="lang-btn"><span class="en" lang="en">中文</span><span class="zh" lang="zh-CN">English</span></label>
       </nav>
     </div>
   </header>
-
   <main>
-    <section class="hero">
-      <p class="eyebrow">
-        <span class="en">VERIFIABLE GITHUB BOUNTY ESCROW · NEP-413 WALLET BINDING · EXACT-REVISION SETTLEMENT</span>
-        <span class="zh">可验证 GITHUB 赏金托管 · NEP-413 钱包签名绑定 · 精确提交版本结算</span>
-      </p>
-      <h1>
-        <span class="en">Both PRs passed CI.<br><span class="accent">Only one earned the bounty.</span></span>
-        <span class="zh">两个 PR 都通过了 CI。<br><span class="accent">只有一个拿到了赏金。</span></span>
-      </h1>
-      <p class="intro">
-        <span class="en">Green CI alone is not enough to release escrow funds. BountyGuard binds the contributor's GitHub identity and NEP-413 wallet proof, verifies pinned GitHub Actions and grounded NEAR AI review on one exact commit, and pays only when the maintainer merges that reviewed revision.</span>
-        <span class="zh">仅有绿色 CI 远远不足以自动放款。BountyGuard 在锁款前绑定贡献者 GitHub 数字 ID 与 NEP-413 钱包签名，对精确 Commit 核验受信任工作流与绑定源码证据的 NEAR AI 审查，仅在维护者合并该精确版本后释放链上赏金。</span>
-      </p>
-
-      <div class="kpi-strip">
-        <div class="kpi-card">
-          <small><span class="en">ON-CHAIN PAYOUTS</span><span class="zh">链上真实放款</span></small>
-          <strong>2 Paid · 0.01 tNEAR</strong>
-          <span><span class="en">PR #3 + MCP Agent PR #6</span><span class="zh">PR #3 与 MCP Agent PR #6</span></span>
-        </div>
-        <div class="kpi-card">
-          <small><span class="en">ADVERSARIAL PR BLOCKED</span><span class="zh">拦截恶意绿色 CI 提交</span></small>
-          <strong>PR #4 Held</strong>
-          <span><span class="en">Workflow tamper + prompt injection</span><span class="zh">篡改受保护工作流 + 提示词注入</span></span>
-        </div>
-        <div class="kpi-card">
-          <small><span class="en">POST-REVIEW TAMPER (TOCTOU)</span><span class="zh">审查后追加提交拦截</span></small>
-          <strong>REVISION_CHANGED</strong>
-          <span><span class="en">Old approval invalidated on push</span><span class="zh">新 Commit 立即令原审批失效</span></span>
-        </div>
-        <div class="kpi-card">
-          <small><span class="en">IDENTITY SIGNATURES</span><span class="zh">链上身份签名核验</span></small>
-          <strong>6 / 6 NEP-413</strong>
-          <span><span class="en">FullAccess key membership verified</span><span class="zh">全部通过链上 FullAccess 核验</span></span>
-        </div>
-      </div>
-
-      <div class="pipeline-bar" aria-label="4-Gate Verification Pipeline">
-        <div class="pipe-step">
-          <span class="pipe-idx">GATE 01</span>
-          <strong><span class="en">GitHub ID + NEP-413</span><span class="zh">GitHub 身份 + NEP-413</span></strong>
-          <small><span class="en">Single-use challenge &amp; on-chain FullAccess check</span><span class="zh">一次性挑战签名与链上公钥核验</span></small>
-        </div>
-        <span class="pipe-arrow" aria-hidden="true">→</span>
-        <div class="pipe-step">
-          <span class="pipe-idx">GATE 02</span>
-          <strong><span class="en">Pinned CI Workflow</span><span class="zh">固定可信 CI 工作流</span></strong>
-          <small><span class="en">Pins workflow blob SHA, app ID &amp; head commit</span><span class="zh">锁定工作流文件 SHA、App ID 与提交哈希</span></small>
-        </div>
-        <span class="pipe-arrow" aria-hidden="true">→</span>
-        <div class="pipe-step">
-          <span class="pipe-idx">GATE 03</span>
-          <strong><span class="en">Grounded NEAR AI Review</span><span class="zh">证据绑定 NEAR AI 审查</span></strong>
-          <small><span class="en">AST implementation check + diff evidence IDs</span><span class="zh">AST 实质变更分析 + 源码证据编号绑定</span></small>
-        </div>
-        <span class="pipe-arrow" aria-hidden="true">→</span>
-        <div class="pipe-step">
-          <span class="pipe-idx">GATE 04</span>
-          <strong><span class="en">Merge Ancestry &amp; Payout</span><span class="zh">合并祖先复核与放款</span></strong>
-          <small><span class="en">Rechecks head/diff at merge; pays once via callback</span><span class="zh">合并时复核版本一致性，回调确认唯一放款</span></small>
-        </div>
-      </div>
+    <section class="hero" aria-labelledby="hero-title">
+      <p class="eyebrow"><span class="en" lang="en">GITHUB ISSUES · NEAR ESCROW</span><span class="zh" lang="zh-CN">GITHUB 任务 · NEAR 赏金托管</span></p>
+      <h1 id="hero-title"><span class="en" lang="en">GitHub bounty payments<br><span class="accent">on NEAR.</span></span><span class="zh" lang="zh-CN">用 NEAR 管理<br><span class="accent">GitHub 任务赏金。</span></span></h1>
+      <p class="intro"><span class="en" lang="en">Assign a contributor, fund a bounty, and review their work. BountyGuard releases payment through NEAR escrow after you merge the reviewed code.</span><span class="zh" lang="zh-CN">为 GitHub Issue 指定贡献者、存入赏金并审核交付。合并已审核的代码后，BountyGuard 核对提交和审核记录，通过 NEAR 托管合约支付赏金。</span></p>
+      <div class="links hero-links"><a class="primary" href="#examples"><span class="en" lang="en">Explore the examples ↓</span><span class="zh" lang="zh-CN">查看运行案例 ↓</span></a><a class="secondary" href="https://github.com/ppinkman/bountyguard#run-locally" target="_blank" rel="noreferrer"><span class="en" lang="en">Run locally ↗</span><span class="zh" lang="zh-CN">本地运行 ↗</span></a></div>
+      <p class="demo-note"><span class="en" lang="en">Recorded testnet examples. No account or wallet needed to view.</span><span class="zh" lang="zh-CN">本页展示测试网运行记录，无需登录或连接钱包。</span></p>
+      <div class="pipeline-bar" aria-label="Bounty workflow"><div class="pipe-step"><strong><span class="en" lang="en">Assign a contributor</span><span class="zh" lang="zh-CN">分配任务</span></strong><small><span class="en" lang="en">Choose an Issue and agree on the reward and deadline.</span><span class="zh" lang="zh-CN">选择 Issue，约定赏金和截止时间。</span></small></div>
+<span class="pipe-arrow" aria-hidden="true">→</span>
+<div class="pipe-step"><strong><span class="en" lang="en">Fund the bounty</span><span class="zh" lang="zh-CN">存入赏金</span></strong><small><span class="en" lang="en">Verify wallets and deposit the reward in NEAR escrow.</span><span class="zh" lang="zh-CN">验证双方钱包，将赏金存入 NEAR 托管合约。</span></small></div>
+<span class="pipe-arrow" aria-hidden="true">→</span>
+<div class="pipe-step"><strong><span class="en" lang="en">Review the work</span><span class="zh" lang="zh-CN">审核代码</span></strong><small><span class="en" lang="en">Check the PR with GitHub Actions and NEAR AI.</span><span class="zh" lang="zh-CN">通过 GitHub Actions 和 NEAR AI 检查 PR。</span></small></div>
+<span class="pipe-arrow" aria-hidden="true">→</span>
+<div class="pipe-step"><strong><span class="en" lang="en">Merge and pay</span><span class="zh" lang="zh-CN">合并后付款</span></strong><small><span class="en" lang="en">Merge the reviewed code and release payment.</span><span class="zh" lang="zh-CN">合并已审核的代码，核对通过后支付赏金。</span></small></div></div>
     </section>
-
-    <div class="cases">
-      <article class="case paid" aria-labelledby="paid-title">
-        <div class="case-top">
-          <span class="case-num">01 / <span class="en">Accepted fix (PR #3)</span><span class="zh">合格修复合并结算 (PR #3)</span></span>
-          <span class="status">✓ Paid · 0.005 tNEAR</span>
-        </div>
-        <h2 id="paid-title">
-          <span class="en">0.005 tNEAR paid after verified merge</span>
-          <span class="zh">核验合并后自动放款 0.005 tNEAR</span>
-        </h2>
-        <p>
-          <span class="en">GitHub Actions passed, NEAR AI review cleared the change with grounded evidence, and the maintainer merged the exact reviewed revision.</span>
-          <span class="zh">可信 GitHub Actions 通过，NEAR AI 完成证据绑定审查并通过，维护者合并该精确审查版本后合约完成唯一放款。</span>
-        </p>
-
-        <div class="gate-chips">
-          <span class="chip ok">✓ NEP-413 Claimant</span>
-          <span class="chip ok">✓ Pinned CI #41959096811</span>
-          <span class="chip ok">✓ NEAR AI: PASS</span>
-          <span class="chip ok">✓ Merged &amp; Paid</span>
-        </div>
-
-        <ul>
-          <li><span class="en">Contributor matched the assigned GitHub identity (<code>#100271001</code> → <code>bg-c7e1a78e-worker.testnet</code>).</span><span class="zh">贡献者匹配已分配的 GitHub 身份（<code>#100271001</code> → <code>bg-c7e1a78e-worker.testnet</code>）。</span></li>
-          <li><span class="en">Reviewed commit matched the merged delivery; repeated settlement calls returned the same receipt.</span><span class="zh">合并版本与受审版本完全一致；重复触发结算均返回同一原始收据，无重复放款。</span></li>
-        </ul>
-
-        <div class="links">
-          <a class="primary" href="https://testnet.nearblocks.io/txns/B35cMBZLzvYjpBVEF24isUd9HAr4tTa596fGv771XYQt" target="_blank" rel="noreferrer">
-            <span class="en">Open NEAR payment ↗</span><span class="zh">查看 NEAR 链上放款交易 ↗</span>
-          </a>
-          <a class="secondary" href="https://github.com/ppinkman/bountyguard/pull/3" target="_blank" rel="noreferrer">PR #3 ↗</a>
-          <a class="secondary" href="https://github.com/ppinkman/bountyguard/actions/runs/41959096811" target="_blank" rel="noreferrer">CI run ↗</a>
-        </div>
-        <details>
-          <summary><span class="en">Show reviewed commit &amp; on-chain hashes</span><span class="zh">查看受审 Commit 与链上证据哈希</span></summary>
-          <div class="hash-box">
-            <div><small>REVIEWED HEAD SHA</small><code>17e1da79b199fcaf5890ac5f725c501e1b3548f8</code></div>
-            <div><small>TX HASH</small><code>B35cMBZLzvYjpBVEF24isUd9HAr4tTa596fGv771XYQt</code></div>
-          </div>
-        </details>
-      </article>
-
-      <article class="case held" aria-labelledby="held-title">
-        <div class="case-top">
-          <span class="case-num">02 / <span class="en">Adversarial fix (PR #4)</span><span class="zh">恶意篡改与提示注入拦截 (PR #4)</span></span>
-          <span class="status">⚠ Needs review · Blocked</span>
-        </div>
-        <h2 id="held-title">
-          <span class="en">Payment blocked despite green CI</span>
-          <span class="zh">CI 全绿但放款被安全门禁拦截</span>
-        </h2>
-        <p>
-          <span class="en">GitHub Actions also passed here. BountyGuard flagged a modification to the protected CI workflow and text attempting to manipulate the AI review verdict.</span>
-          <span class="zh">该 PR 的 GitHub Actions 同样全绿通过，但 BountyGuard 揪出了对受保护工作流的篡改以及企图操控 AI 审查结论的注入注释，拒绝自动放款。</span>
-        </p>
-
-        <div class="gate-chips">
-          <span class="chip ok">✓ CI Run #41955683567 Green</span>
-          <span class="chip bad">✕ Protected Workflow Modified</span>
-          <span class="chip bad">✕ Manipulation Signal</span>
-        </div>
-
-        <ul>
-          <li><span class="en">Protected path changed: <code>.github/workflows/ci.yml</code></span><span class="zh">篡改受保护路径：<code>.github/workflows/ci.yml</code></span></li>
-          <li><span class="en">Review manipulation signal detected in newly added comments; verdict locked to <code>NEEDS_REVIEW</code>.</span><span class="zh">在新增注释中检出审查操纵信号；结论强制锁定为 <code>NEEDS_REVIEW</code>，禁止结算。</span></li>
-        </ul>
-
-        <div class="links">
-          <a class="primary warn-btn" href="https://github.com/ppinkman/bountyguard/pull/4/files" target="_blank" rel="noreferrer">
-            <span class="en">Inspect flagged changes ↗</span><span class="zh">查看被拦截的篡改代码 ↗</span>
-          </a>
-          <a class="secondary" href="https://github.com/ppinkman/bountyguard/pull/4" target="_blank" rel="noreferrer">PR #4 ↗</a>
-          <a class="secondary" href="https://github.com/ppinkman/bountyguard/actions/runs/41955683567" target="_blank" rel="noreferrer">Passing CI ↗</a>
-        </div>
-        <details>
-          <summary><span class="en">Show flagged commit &amp; CI run</span><span class="zh">查看被拦截的 Commit 与 CI 编号</span></summary>
-          <div class="hash-box">
-            <div><small>FLAGGED HEAD SHA</small><code>0b6538d54a276a13eddafcd93fda52845037989e</code></div>
-            <div><small>PASSING CI RUN ID</small><code>41955683567</code></div>
-          </div>
-        </details>
-      </article>
-
-      <article class="case held" aria-labelledby="changed-title">
-        <div class="case-top">
-          <span class="case-num">03 / <span class="en">New commit after review (TOCTOU)</span><span class="zh">审查通过后追加提交 (TOCTOU 拦截)</span></span>
-          <span class="status">⚠ Revision changed · Held</span>
-        </div>
-        <h2 id="changed-title">
-          <span class="en">Old approval could not pay a new commit</span>
-          <span class="zh">旧的通过报告无法为新 Commit 放款</span>
-        </h2>
-        <p>
-          <span class="en">After PR #3 passed review, a different commit was pushed before merge. BountyGuard returned <code>REVISION_CHANGED</code> and held settlement for that attempt.</span>
-          <span class="zh">在 PR #3 通过审查后、合并前推送了一个新 Commit。BountyGuard 立即判定 <code>REVISION_CHANGED</code> 并冻结该版本的放款请求。</span>
-        </p>
-
-        <div class="gate-chips">
-          <span class="chip ok">✓ Reviewed: 17e1da79…</span>
-          <span class="chip bad">✕ New Head: c7863c13…</span>
-          <span class="chip bad">✕ Settlement Refused</span>
-        </div>
-
-        <ul>
-          <li><span class="en">Approval is cryptographically bound to <code>pr_number + head_sha + diff_hash</code>.</span><span class="zh">审批证据通过哈希严格绑定至 <code>pr_number + head_sha + diff_hash</code>。</span></li>
-          <li><span class="en">PR #3 was restored to the exact reviewed commit before the payment shown in Case 01.</span><span class="zh">PR #3 随后恢复至经过审查的精确版本，才完成案例 01 中的合并放款。</span></li>
-        </ul>
-
-        <div class="links">
-          <a class="primary warn-btn" href="https://github.com/ppinkman/bountyguard/compare/17e1da79b199fcaf5890ac5f725c501e1b3548f8...c7863c13362c411055d2662c83edcb3d014eb5fd" target="_blank" rel="noreferrer">
-            <span class="en">Compare the commits ↗</span><span class="zh">对比审查前后两个 Commit ↗</span>
-          </a>
-          <a class="secondary" href="https://github.com/ppinkman/bountyguard/tree/codex/toctou-probe" target="_blank" rel="noreferrer">Archived probe ↗</a>
-        </div>
-        <details>
-          <summary><span class="en">Show the revision that was blocked</span><span class="zh">查看被阻止结算的篡改版本哈希</span></summary>
-          <div class="hash-box">
-            <div><small>BLOCKED PROBE HEAD SHA</small><code>c7863c13362c411055d2662c83edcb3d014eb5fd</code></div>
-            <div><small>APPROVED HEAD SHA</small><code>17e1da79b199fcaf5890ac5f725c501e1b3548f8</code></div>
-          </div>
-        </details>
-      </article>
-
-      <article class="case refund" aria-labelledby="refund-title">
-        <div class="case-top">
-          <span class="case-num">04 / <span class="en">Expired bounty (Issue #2)</span><span class="zh">超期未交付退回本金 (Issue #2)</span></span>
-          <span class="status">↺ Refunded · 0.005 tNEAR</span>
-        </div>
-        <h2 id="refund-title">
-          <span class="en">0.005 tNEAR principal returned on-chain</span>
-          <span class="zh">到期显式触发退回 0.005 tNEAR 本金</span>
-        </h2>
-        <p>
-          <span class="en">No work was accepted before the deadline on Issue #2. An explicit expiry transaction returned the bounty principal to the maintainer on NEAR testnet.</span>
-          <span class="zh">Issue #2 在截止时间前无合格交付。通过显式调用合约到期退款方法，赏金本金在 NEAR 测试网上原路退回维护者账户。</span>
-        </p>
-
-        <div class="gate-chips">
-          <span class="chip info">⌚ Deadline Passed</span>
-          <span class="chip info">✓ Callback Finalized</span>
-          <span class="chip info">↺ Principal Returned</span>
-        </div>
-
-        <ul>
-          <li><span class="en">The refund covered the 0.005 tNEAR reward principal; the 0.01 tNEAR storage reserve and spent gas stay separate.</span><span class="zh">退回 0.005 tNEAR 赏金本金；0.01 tNEAR 存储费及已消耗 Gas 按规则不退。</span></li>
-          <li><span class="en">Repeated refund calls return the original receipt without creating a second transfer.</span><span class="zh">重复退款请求直接返回原始链上收据，不会发起二次转账。</span></li>
-        </ul>
-
-        <div class="links">
-          <a class="primary info-btn" href="https://testnet.nearblocks.io/txns/GWtzhGA7PTGgBK8CXLnkkeqV1pKRUedT2xVZ3VZyrDq9" target="_blank" rel="noreferrer">
-            <span class="en">Open NEAR refund ↗</span><span class="zh">查看 NEAR 链上退款交易 ↗</span>
-          </a>
-          <a class="secondary" href="https://github.com/ppinkman/bountyguard/issues/2" target="_blank" rel="noreferrer">Issue #2 ↗</a>
-        </div>
-        <details>
-          <summary><span class="en">Show refund transaction details</span><span class="zh">查看退款交易详情与边界说明</span></summary>
-          <div class="hash-box">
-            <div><small>REFUND TX HASH</small><code>GWtzhGA7PTGgBK8CXLnkkeqV1pKRUedT2xVZ3VZyrDq9</code></div>
-            <div><small>BOUNTY ID</small><code>9d457f0925c64e5a8571501058a58820</code></div>
-          </div>
-        </details>
-      </article>
-    </div>
-
-    <section class="agent-showcase">
-      <div class="agent-top">
-        <div>
-          <p class="eyebrow">05 / <span class="en">CODING-AGENT MCP RUN (ISSUE #5 → PR #6)</span><span class="zh">CODING AGENT 通过 MCP 赚取赏金实录 (ISSUE #5 → PR #6)</span></p>
-          <h2>
-            <span class="en">An AI coding agent claimed Issue #5 via MCP, shipped PR #6, and collected 0.005 tNEAR.</span>
-            <span class="zh">AI 编程 Agent 通过 MCP 认领 Issue #5、提交修复 PR #6 并获得 0.005 tNEAR 链上放款。</span>
-          </h2>
-        </div>
-        <span class="status paid-badge">✓ MCP Agent Paid · 0.005 tNEAR</span>
-      </div>
-      <p class="agent-desc">
-        <span class="en">Codex used the real MCP stdio client (<code>tools/agent_client.py</code>) to read and claim Issue #5, fixed expired-session recovery in <code>bountyguard/mcp_server.py</code> with 7 regression tests, submitted PR #6, passed GitHub Actions CI and grounded NEAR AI review (<code>Qwen/Qwen3.6-35B-A3B-FP8</code>), and read its finalized payment receipt through MCP after maintainer merge.</span>
-        <span class="zh">Codex 通过真实 MCP stdio 客户端（<code>tools/agent_client.py</code>）读取并认领 Issue #5，编写 7 项回归测试并修复 <code>bountyguard/mcp_server.py</code> 会话过期恢复问题，提交 PR #6 并通过可信 CI 与独立的 NEAR AI 模型审查（<code>Qwen/Qwen3.6-35B-A3B-FP8</code>），在维护者合并后通过 MCP 读取最终链上放款收据。</span>
-      </p>
-      <div class="links">
-        <a class="primary" href="https://testnet.nearblocks.io/txns/EHb7dgpu3ZTJdp5edLdPd5fq7yYkr3tkRrdKXR76A6Yg" target="_blank" rel="noreferrer">
-          <span class="en">Open Agent NEAR payment ↗</span><span class="zh">查看 Agent 链上收款交易 ↗</span>
-        </a>
-        <a class="secondary" href="https://github.com/ppinkman/bountyguard/pull/6" target="_blank" rel="noreferrer">PR #6 ↗</a>
-        <a class="secondary" href="https://github.com/ppinkman/bountyguard/issues/5" target="_blank" rel="noreferrer">Issue #5 ↗</a>
-        <a class="secondary" href="https://github.com/ppinkman/bountyguard/actions/runs/41984133420" target="_blank" rel="noreferrer">CI run #41984133420 ↗</a>
-      </div>
+    <section class="agent-showcase" id="examples" aria-labelledby="agent-title">
+      <div class="agent-top"><div>
+        <p class="eyebrow"><span class="en" lang="en">CODING AGENT · ISSUE #5 → PR #6</span><span class="zh" lang="zh-CN">编程 AGENT · ISSUE #5 → PR #6</span></p>
+        <h2 id="agent-title"><span class="en" lang="en">A session-recovery fix, from claim to payment</span><span class="zh" lang="zh-CN">从认领任务到修复会话过期，再到收到赏金</span></h2>
+      </div><span class="status paid-badge"><span class="en" lang="en">Paid · 0.005 tNEAR</span><span class="zh" lang="zh-CN">已支付 · 0.005 tNEAR</span></span></div>
+      <p class="agent-desc"><span class="en" lang="en">Codex used MCP to read and claim Issue #5, fixed an expired-session bug, and submitted PR #6 with seven regression tests. After CI and NEAR AI review passed, the maintainer merged the change. Codex then read the payment receipt through MCP.</span><span class="zh" lang="zh-CN">Codex 通过 MCP 读取并认领 Issue #5，修复会话过期问题，并在 PR #6 中提交修复及七项回归测试。CI 和 NEAR AI 审核通过后，维护者合并代码，Codex 再通过 MCP 读取付款记录。</span></p>
+      <div class="links"><a class="primary" href="https://testnet.nearblocks.io/txns/EHb7dgpu3ZTJdp5edLdPd5fq7yYkr3tkRrdKXR76A6Yg" target="_blank" rel="noreferrer"><span class="en" lang="en">View payment ↗</span><span class="zh" lang="zh-CN">查看付款 ↗</span></a><a class="secondary" href="https://github.com/ppinkman/bountyguard/pull/6" target="_blank" rel="noreferrer"><span class="en" lang="en">PR #6 ↗</span><span class="zh" lang="zh-CN">PR #6 ↗</span></a><a class="secondary" href="https://github.com/ppinkman/bountyguard/issues/5" target="_blank" rel="noreferrer"><span class="en" lang="en">Issue #5 ↗</span><span class="zh" lang="zh-CN">Issue #5 ↗</span></a><a class="secondary" href="https://github.com/ppinkman/bountyguard/blob/main/docs/AGENT_WALKTHROUGH.md" target="_blank" rel="noreferrer"><span class="en" lang="en">Read walkthrough ↗</span><span class="zh" lang="zh-CN">查看流程说明 ↗</span></a></div>
     </section>
-
-    <section class="verify-box">
-      <div class="verify-copy">
-        <h3>
-          <span class="en">Reproduce &amp; verify in 30 seconds</span>
-          <span class="zh">30 秒本地一键复核</span>
-        </h3>
-        <p>
-          <span class="en">Run the offline 8-check behavioral suite with <code>./demo.sh</code>, or verify live NEAR testnet contract state, NEP-413 signatures, and GitHub revisions with <code>tools/verify_acceptance.py</code>. No wallet, private key, or paid model call required.</span>
-          <span class="zh">运行 <code>./demo.sh</code> 执行免密钥 8 项核心行为自检，或运行 <code>tools/verify_acceptance.py</code> 直接向 NEAR 测试网与 GitHub 复核链上状态、6 份 NEP-413 签名与受审代码版本。无需私钥或消耗模型额度。</span>
-        </p>
+    <section aria-labelledby="results-title">
+      <h2 id="results-title"><span class="en" lang="en">Payment and review records</span><span class="zh" lang="zh-CN">付款与审核记录</span></h2>
+      <p class="section-intro"><span class="en" lang="en">The project operator ran these tests using one GitHub account and separate maintainer and contributor wallets. All amounts are testnet tokens.</span><span class="zh" lang="zh-CN">以下测试由项目开发者使用同一个 GitHub 账号和两个不同的钱包完成。所有金额均为测试网代币。</span></p>
+      <div class="kpi-strip"><div class="kpi-card"><small><span class="en" lang="en">TESTNET PAYMENTS</span><span class="zh" lang="zh-CN">测试网付款</span></small><strong>2 · 0.01 tNEAR</strong><span><span class="en" lang="en">PR #3 and PR #6</span><span class="zh" lang="zh-CN">PR #3 和 PR #6</span></span></div>
+<div class="kpi-card"><small><span class="en" lang="en">WORKFLOW CHANGE</span><span class="zh" lang="zh-CN">工作流被修改</span></small><strong>PR #4</strong><span><span class="en" lang="en">Payment held for review</span><span class="zh" lang="zh-CN">暂停付款，等待复核</span></span></div>
+<div class="kpi-card"><small><span class="en" lang="en">CODE CHANGED AFTER REVIEW</span><span class="zh" lang="zh-CN">审核后代码发生变化</span></small><strong>REVISION_CHANGED</strong><span><span class="en" lang="en">A new review is required</span><span class="zh" lang="zh-CN">需要重新审核</span></span></div>
+<div class="kpi-card"><small><span class="en" lang="en">EXPIRED BOUNTY</span><span class="zh" lang="zh-CN">赏金任务已到期</span></small><strong>0.005 tNEAR</strong><span><span class="en" lang="en">Principal refunded on Issue #2</span><span class="zh" lang="zh-CN">Issue #2 的赏金本金已退回</span></span></div></div>
+      <div class="cases"><article class="case paid" aria-labelledby="paid-title">
+      <div class="case-top"><span class="case-num"><span class="en" lang="en">Accepted fix · PR #3</span><span class="zh" lang="zh-CN">修复已合并 · PR #3</span></span><span class="status"><span class="en" lang="en">Paid · 0.005 tNEAR</span><span class="zh" lang="zh-CN">已支付 · 0.005 tNEAR</span></span></div>
+      <h3 id="paid-title"><span class="en" lang="en">Payment after merge</span><span class="zh" lang="zh-CN">合并代码后支付赏金</span></h3>
+      <p><span class="en" lang="en">The PR passed the configured CI checks and NEAR AI review. The maintainer merged the reviewed commit, and the contract paid the assigned wallet.</span><span class="zh" lang="zh-CN">PR 通过了约定的 CI 检查和 NEAR AI 审核。维护者合并审核过的提交后，合约向指定钱包支付了赏金。</span></p><ul><li><span class="en" lang="en">The contributor’s GitHub identity and wallet signature matched the assignment.</span><span class="zh" lang="zh-CN">贡献者的 GitHub 身份和钱包签名与任务分配一致。</span></li><li><span class="en" lang="en">Repeated settlement requests returned the same receipt.</span><span class="zh" lang="zh-CN">重复请求结算返回同一笔付款记录。</span></li></ul>
+      <div class="links"><a class="primary" href="https://testnet.nearblocks.io/txns/B35cMBZLzvYjpBVEF24isUd9HAr4tTa596fGv771XYQt" target="_blank" rel="noreferrer"><span class="en" lang="en">View payment ↗</span><span class="zh" lang="zh-CN">查看付款 ↗</span></a><a class="secondary" href="https://github.com/ppinkman/bountyguard/pull/3" target="_blank" rel="noreferrer"><span class="en" lang="en">PR #3 ↗</span><span class="zh" lang="zh-CN">PR #3 ↗</span></a><a class="secondary" href="https://github.com/ppinkman/bountyguard/actions/runs/41959096811" target="_blank" rel="noreferrer"><span class="en" lang="en">CI run ↗</span><span class="zh" lang="zh-CN">CI 记录 ↗</span></a></div>
+      <details><summary><span class="en" lang="en">Record details</span><span class="zh" lang="zh-CN">记录详情</span></summary><div class="hash-box"><div><small><span class="en" lang="en">Reviewed commit</span><span class="zh" lang="zh-CN">审核的提交</span></small><code>17e1da79b199fcaf5890ac5f725c501e1b3548f8</code></div><div><small><span class="en" lang="en">Payment transaction</span><span class="zh" lang="zh-CN">付款交易</span></small><code>B35cMBZLzvYjpBVEF24isUd9HAr4tTa596fGv771XYQt</code></div></div></details>
+    </article><article class="case held" aria-labelledby="held-title">
+      <div class="case-top"><span class="case-num"><span class="en" lang="en">Review required · PR #4</span><span class="zh" lang="zh-CN">需要复核 · PR #4</span></span><span class="status"><span class="en" lang="en">Payment held</span><span class="zh" lang="zh-CN">暂停付款</span></span></div>
+      <h3 id="held-title"><span class="en" lang="en">Workflow changes require review</span><span class="zh" lang="zh-CN">工作流修改需要复核</span></h3>
+      <p><span class="en" lang="en">CI passed, but the PR changed the protected workflow and added comments intended to influence the AI review. BountyGuard held the payment.</span><span class="zh" lang="zh-CN">CI 检查通过，但 PR 修改了受保护的工作流，还添加了试图影响 AI 审核结论的注释。BountyGuard 因此暂停付款。</span></p><ul><li><span class="en" lang="en">Modified file: <code>.github/workflows/ci.yml</code>.</span><span class="zh" lang="zh-CN">修改的文件：<code>.github/workflows/ci.yml</code>。</span></li><li><span class="en" lang="en">Review result: <code>NEEDS_REVIEW</code>.</span><span class="zh" lang="zh-CN">审核结果：<code>NEEDS_REVIEW</code>。</span></li></ul>
+      <div class="links"><a class="primary warn-btn" href="https://github.com/ppinkman/bountyguard/pull/4/files" target="_blank" rel="noreferrer"><span class="en" lang="en">View changes ↗</span><span class="zh" lang="zh-CN">查看代码变更 ↗</span></a><a class="secondary" href="https://github.com/ppinkman/bountyguard/pull/4" target="_blank" rel="noreferrer"><span class="en" lang="en">PR #4 ↗</span><span class="zh" lang="zh-CN">PR #4 ↗</span></a><a class="secondary" href="https://github.com/ppinkman/bountyguard/actions/runs/41955683567" target="_blank" rel="noreferrer"><span class="en" lang="en">Passing CI run ↗</span><span class="zh" lang="zh-CN">已通过的 CI 记录 ↗</span></a></div>
+      <details><summary><span class="en" lang="en">Record details</span><span class="zh" lang="zh-CN">记录详情</span></summary><div class="hash-box"><div><small><span class="en" lang="en">Flagged commit</span><span class="zh" lang="zh-CN">需要复核的提交</span></small><code>0b6538d54a276a13eddafcd93fda52845037989e</code></div><div><small><span class="en" lang="en">CI run ID</span><span class="zh" lang="zh-CN">CI 运行编号</span></small><code>41955683567</code></div></div></details>
+    </article><article class="case held" aria-labelledby="changed-title">
+      <div class="case-top"><span class="case-num"><span class="en" lang="en">Updated PR</span><span class="zh" lang="zh-CN">PR 新增提交</span></span><span class="status"><span class="en" lang="en">New review required</span><span class="zh" lang="zh-CN">需要重新审核</span></span></div>
+      <h3 id="changed-title"><span class="en" lang="en">A new commit invalidates the review</span><span class="zh" lang="zh-CN">新增提交后，原审核结果失效</span></h3>
+      <p><span class="en" lang="en">After PR #3 passed review, a new commit was pushed before merge. Settlement returned <code>REVISION_CHANGED</code>.</span><span class="zh" lang="zh-CN">PR #3 通过审核后，在合并前又推送了一个新提交。结算检查返回 <code>REVISION_CHANGED</code>，没有付款。</span></p><ul><li><span class="en" lang="en">The report records the PR number, commit and diff hash.</span><span class="zh" lang="zh-CN">审核报告记录 PR 编号、提交和代码差异的哈希。</span></li><li><span class="en" lang="en">PR #3 was restored to the reviewed commit before its eventual merge and payment.</span><span class="zh" lang="zh-CN">PR #3 恢复到已审核的提交后，才完成合并和付款。</span></li></ul>
+      <div class="links"><a class="primary warn-btn" href="https://github.com/ppinkman/bountyguard/compare/17e1da79b199fcaf5890ac5f725c501e1b3548f8...c7863c13362c411055d2662c83edcb3d014eb5fd" target="_blank" rel="noreferrer"><span class="en" lang="en">Compare commits ↗</span><span class="zh" lang="zh-CN">对比两个提交 ↗</span></a><a class="secondary" href="https://github.com/ppinkman/bountyguard/tree/codex/toctou-probe" target="_blank" rel="noreferrer"><span class="en" lang="en">Test branch ↗</span><span class="zh" lang="zh-CN">测试分支 ↗</span></a></div>
+      <details><summary><span class="en" lang="en">Record details</span><span class="zh" lang="zh-CN">记录详情</span></summary><div class="hash-box"><div><small><span class="en" lang="en">New commit</span><span class="zh" lang="zh-CN">新增提交</span></small><code>c7863c13362c411055d2662c83edcb3d014eb5fd</code></div><div><small><span class="en" lang="en">Reviewed commit</span><span class="zh" lang="zh-CN">审核的提交</span></small><code>17e1da79b199fcaf5890ac5f725c501e1b3548f8</code></div></div></details>
+    </article><article class="case refund" aria-labelledby="refund-title">
+      <div class="case-top"><span class="case-num"><span class="en" lang="en">Expired bounty · Issue #2</span><span class="zh" lang="zh-CN">任务已到期 · Issue #2</span></span><span class="status"><span class="en" lang="en">Refunded · 0.005 tNEAR</span><span class="zh" lang="zh-CN">已退款 · 0.005 tNEAR</span></span></div>
+      <h3 id="refund-title"><span class="en" lang="en">Unclaimed reward returned</span><span class="zh" lang="zh-CN">到期后退回赏金本金</span></h3>
+      <p><span class="en" lang="en">No work was accepted before the deadline. A refund call returned the 0.005 tNEAR reward to the maintainer.</span><span class="zh" lang="zh-CN">截止时间前没有验收通过的交付。调用退款后，0.005 tNEAR 赏金退回维护者的钱包。</span></p><ul><li><span class="en" lang="en">The 0.01 tNEAR storage charge and spent gas were not refunded.</span><span class="zh" lang="zh-CN">0.01 tNEAR 存储费和已消耗的 Gas 不退还。</span></li><li><span class="en" lang="en">Repeated refund requests returned the original receipt.</span><span class="zh" lang="zh-CN">重复退款请求返回原交易记录。</span></li></ul>
+      <div class="links"><a class="primary info-btn" href="https://testnet.nearblocks.io/txns/GWtzhGA7PTGgBK8CXLnkkeqV1pKRUedT2xVZ3VZyrDq9" target="_blank" rel="noreferrer"><span class="en" lang="en">View refund ↗</span><span class="zh" lang="zh-CN">查看退款 ↗</span></a><a class="secondary" href="https://github.com/ppinkman/bountyguard/issues/2" target="_blank" rel="noreferrer"><span class="en" lang="en">Issue #2 ↗</span><span class="zh" lang="zh-CN">Issue #2 ↗</span></a></div>
+      <details><summary><span class="en" lang="en">Record details</span><span class="zh" lang="zh-CN">记录详情</span></summary><div class="hash-box"><div><small><span class="en" lang="en">Refund transaction</span><span class="zh" lang="zh-CN">退款交易</span></small><code>GWtzhGA7PTGgBK8CXLnkkeqV1pKRUedT2xVZ3VZyrDq9</code></div><div><small><span class="en" lang="en">Bounty ID</span><span class="zh" lang="zh-CN">赏金任务编号</span></small><code>9d457f0925c64e5a8571501058a58820</code></div></div></details>
+    </article></div>
+    </section>
+    <section class="verify-box" aria-labelledby="verify-title">
+      <div class="verify-copy"><h2 id="verify-title"><span class="en" lang="en">Check the records</span><span class="zh" lang="zh-CN">验证运行记录</span></h2>
+        <p><span class="en" lang="en">Run eight focused tests with <code>./demo.sh</code>, or check the recorded transactions, wallet signatures and GitHub commits with the verifier. Python 3.11+ is required; the first setup downloads dependencies. Public verification needs network access, but no private key or model request.</span><span class="zh" lang="zh-CN">使用 <code>./demo.sh</code> 运行八项核心测试，或通过验证工具检查交易、钱包签名和 GitHub 提交。需要 Python 3.11+，首次配置会下载依赖。公开记录验证需要联网，无需私钥或调用模型。</span></p>
       </div>
       <pre class="cmd-block"><code>./demo.sh
 python tools/verify_acceptance.py --receipt deployments/agent-acceptance.json</code></pre>
     </section>
-
     <footer>
-      <p>
-        <span class="en">These are recorded outcomes from a controlled run by the project operator using real GitHub PRs, GitHub Actions, NEAR AI Cloud, and NEAR testnet. This page displays evidence and performs no actions.</span>
-        <span class="zh">以上为项目维护者在受控验收中使用真实 GitHub PR、GitHub Actions、NEAR AI Cloud 与 NEAR 测试网产生的真实记录。本页面仅作只读证据展示。</span>
-      </p>
+      <p><span class="en" lang="en">Testnet development release. GitHub checks and AI review run off-chain; the maintainer controls merge and the transaction signer. This page displays recorded results.</span><span class="zh" lang="zh-CN">测试网开发版本。GitHub 检查和 AI 审核在链下执行，维护者控制代码合并和交易签名。本页仅展示已有记录。</span></p>
       <div class="footer-links">
-        <a href="https://github.com/ppinkman/bountyguard/blob/e994e434e78e3a218796c89e0e2c83fd8cf825d7/deployments/live-acceptance.json" target="_blank" rel="noreferrer">Open original evidence JSON ↗</a>
-        <a href="https://github.com/ppinkman/bountyguard/blob/main/deployments/agent-acceptance.json" target="_blank" rel="noreferrer">Open MCP agent evidence JSON ↗</a>
+        <a href="https://github.com/ppinkman/bountyguard/blob/main/deployments/agent-acceptance.json" target="_blank" rel="noreferrer"><span class="en" lang="en">Evidence JSON ↗</span><span class="zh" lang="zh-CN">原始记录 JSON ↗</span></a>
+        <a href="https://github.com/ppinkman/bountyguard/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noreferrer"><span class="en" lang="en">Architecture and limits ↗</span><span class="zh" lang="zh-CN">架构与当前限制 ↗</span></a>
       </div>
     </footer>
   </main>
