@@ -2,6 +2,7 @@ param(
     [int]$Port = 8766,
     [switch]$UseGitHubLogin,
     [switch]$UseExistingAiCredits,
+    [string]$AiKeyFile,
     [switch]$EnableTestnet,
     [switch]$DirectNetwork,
     [ValidateRange(2,4)][int]$FundingIntentLimit = 2,
@@ -28,10 +29,9 @@ try {
         $env:BOUNTYGUARD_LOCAL_GITHUB='1'
     }
     if ($UseExistingAiCredits) {
-        $taskKeyPath = Join-Path $PSScriptRoot '..\ProofPay\data\near_ai\api-key.dpapi'
         if (-not $env:NEAR_AI_API_KEY) {
-            if (-not (Test-Path -LiteralPath $taskKeyPath)) { throw 'Set NEAR_AI_API_KEY in this launching process.' }
-            $taskSecureKey = ConvertTo-SecureString -String ([IO.File]::ReadAllText($taskKeyPath))
+            if (-not $AiKeyFile -or -not (Test-Path -LiteralPath $AiKeyFile -PathType Leaf)) { throw 'Set NEAR_AI_API_KEY or provide -AiKeyFile with an encrypted provider key.' }
+            $taskSecureKey = ConvertTo-SecureString -String ([IO.File]::ReadAllText((Resolve-Path -LiteralPath $AiKeyFile).Path))
             $taskPointer = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($taskSecureKey)
             $env:NEAR_AI_API_KEY = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($taskPointer)
         }
@@ -45,7 +45,7 @@ try {
         $env:BOUNTYGUARD_VAULT=Join-Path $PSScriptRoot 'data\testnet\maintainer.dpapi'
     }
     Write-Host "BountyGuard: http://127.0.0.1:$Port/"
-    Write-Host "Startup sends no completion or transaction. Configured limits: $FundingIntentLimit funding intents; $ModelIntentLimit model intents per rolling day. Existing usage is retained."
+    Write-Host "Ready. Limits: $FundingIntentLimit funding intents; $ModelIntentLimit model intents per rolling day. Existing usage is retained."
     & (Join-Path $PSScriptRoot '.venv\Scripts\python.exe') -m bountyguard serve --port $Port
 } finally {
     if ($taskPointer -ne [IntPtr]::Zero) { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($taskPointer) }

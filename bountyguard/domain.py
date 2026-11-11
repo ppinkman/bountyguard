@@ -1,4 +1,4 @@
-"""Bounty-specific types; these do not import or mutate ProofPay."""
+"""Bounty types, terms hashing and revision identifiers."""
 from __future__ import annotations
 
 from decimal import Decimal, InvalidOperation

@@ -1,95 +1,50 @@
 # BountyGuard
 
-**Both pull requests passed CI. Only one earned the bounty.** BountyGuard
-releases a GitHub bounty on NEAR testnet when the assigned contributor's
-reviewed commit is the one the maintainer merges. It holds payment on a
-protected-workflow change or when the reviewed revision changes.
+GitHub bounty payments on NEAR. Assign a contributor to an Issue, fund a bounty,
+and review their pull request. BountyGuard releases payment through NEAR escrow
+after the maintainer merges the reviewed code.
 
-## Try it in 30 seconds
+**[View the testnet demo](https://ppinkman.github.io/bountyguard/)** ·
+[Coding-agent example](docs/AGENT_WALKTHROUGH.md) ·
+[Local setup](docs/SETUP.md)
 
-1. Open the [public read-only demo](https://ppinkman.github.io/bountyguard/).
-   The four cases need no account, wallet, model key, or Docker. You can also open
-   [the same page](bountyguard/web/demo.html) from a checkout or the repository ZIP.
-2. Click **Open NEAR payment** on the left to see the actual testnet payment.
-   Click **Inspect flagged changes** on the right to see why green CI was
-   insufficient for the other PR. Below, compare the two commits from the
-   post-review change and open the expired bounty's refund transaction.
+The demo shows recorded payments, held payments and a refund. It requires no
+account or wallet. To create and manage bounties, run the local application.
+This release uses NEAR testnet and a local transaction signer.
 
-Run `./demo.sh` for the judge checks. Expect **8/8 verification checks as
-expected**. Python 3.11+ and Bash are required. The command prepares a virtual
-environment and may download dependencies on the first run. See the
-[behavior-to-test map](AGENTS.md).
+## How it works
 
-For public GitHub and on-chain verification, run
-`python tools/verify_acceptance.py` with network access. Expect
-`verified: true` and both `Paid` and `Refunded` on-chain states.
+1. **Create a bounty.** Choose an open GitHub Issue, reward, deadline and required
+   checks. The application saves these terms as a draft.
+2. **Assign and fund.** Both participants verify their GitHub identity and NEAR
+   wallet. The maintainer selects a contributor and deposits the reward in escrow.
+3. **Review the pull request.** BountyGuard checks the configured GitHub Actions
+   workflow and requests an advisory review through NEAR AI. The report records
+   the commit and code changes it reviewed.
+4. **Merge and pay.** The maintainer merges the accepted change. Before sending
+   payment, BountyGuard checks that the merged code matches the review. Changed
+   code requires a new review. An expired bounty can be refunded to its maintainer.
 
-The testnet funding workflow below is for operators who want to create a new
-bounty. Maintainers and contributors use their existing GitHub identities.
-**Development preview, not an audited service.** This repository is a new project;
-[NOTICE](NOTICE.md) describes its relationship to the earlier ProofPay prototype.
-The submission plan is to select one final project.
+Coding agents can read bounties, request assignment, submit a PR and request a
+review through MCP. Assignment, funding and merge remain maintainer actions.
 
-The [official prompt alignment review](docs/OFFICIAL_PROMPT_ALIGNMENT.md)
-records the track examples we read, how the current implementation fits, and
-the remaining agent-workflow and signing-authority gaps.
+## Testnet examples
 
-## Live demonstration
+| Example | Result | Record |
+| --- | --- | --- |
+| Session recovery fix by Codex, Issue #5 → PR #6 | Paid 0.005 tNEAR after merge | [Walkthrough](docs/AGENT_WALKTHROUGH.md), [payment](https://testnet.nearblocks.io/txns/EHb7dgpu3ZTJdp5edLdPd5fq7yYkr3tkRrdKXR76A6Yg) |
+| Accepted fix, PR #3 | Paid 0.005 tNEAR after merge | [PR](https://github.com/ppinkman/bountyguard/pull/3), [payment](https://testnet.nearblocks.io/txns/B35cMBZLzvYjpBVEF24isUd9HAr4tTa596fGv771XYQt) |
+| Workflow modification and review-manipulation text, PR #4 | Payment held for review despite passing CI | [Changes](https://github.com/ppinkman/bountyguard/pull/4/files) |
+| New commit after review | Previous approval rejected with `REVISION_CHANGED` | [Commit comparison](https://github.com/ppinkman/bountyguard/compare/17e1da79b199fcaf5890ac5f725c501e1b3548f8...c7863c13362c411055d2662c83edcb3d014eb5fd) |
+| Expired bounty, Issue #2 | Refunded 0.005 tNEAR principal | [Refund](https://testnet.nearblocks.io/txns/GWtzhGA7PTGgBK8CXLnkkeqV1pKRUedT2xVZ3VZyrDq9) |
 
-The public, project-operated demonstration completed on November 5, 2026:
+These are controlled tests operated by the project developer using one GitHub
+account and separate maintainer and contributor wallets. The transactions use
+testnet tokens. Raw records are in [deployments](deployments/).
 
-**Coding-agent run:** Codex read and claimed [Issue #5](https://github.com/ppinkman/bountyguard/issues/5)
-through MCP, fixed the expired-session bug in [PR #6](https://github.com/ppinkman/bountyguard/pull/6),
-submitted it through MCP, obtained passing CI and advisory review, then read its
-**0.005 tNEAR [payment receipt](https://testnet.nearblocks.io/txns/EHb7dgpu3ZTJdp5edLdPd5fq7yYkr3tkRrdKXR76A6Yg)**
-through MCP after the maintainer merged the reviewed revision. The [walkthrough](docs/AGENT_WALKTHROUGH.md)
-identifies the coding agent, separate review model and every maintainer action.
-The [extended evidence bundle](deployments/agent-acceptance.json) includes all five
-MCP calls and the earlier acceptance cases. Verify it with
-`python tools/verify_acceptance.py --receipt deployments/agent-acceptance.json`.
+## Run locally
 
-| Scenario | Observed result |
-| --- | --- |
-| [Issue #1](https://github.com/ppinkman/bountyguard/issues/1) → [PR #3](https://github.com/ppinkman/bountyguard/pull/3) → trusted CI → NEAR AI review → merge | **Paid 0.005 tNEAR** to the assigned contributor ([transaction](https://testnet.nearblocks.io/txns/B35cMBZLzvYjpBVEF24isUd9HAr4tTa596fGv771XYQt)) |
-| [Adversarial PR #4](https://github.com/ppinkman/bountyguard/pull/4), with genuinely green CI | **NEEDS_REVIEW**, no payment: protected workflow modification and review-manipulation text |
-| A new commit pushed after a successful review | **REVISION_CHANGED**, no settlement against the old report; probe retained on `codex/toctou-probe` |
-| [Issue #2](https://github.com/ppinkman/bountyguard/issues/2), intentionally without delivery | **Refunded 0.005 tNEAR principal** ([transaction](https://testnet.nearblocks.io/txns/GWtzhGA7PTGgBK8CXLnkkeqV1pKRUedT2xVZ3VZyrDq9)); storage/gas not returned |
-| Repeated settlement/refund requests | Original receipts returned; only one pay and one refund intent |
-| Real MCP stdio review of the same accepted revision | Cached result reused; model request count stayed at three |
-
-Both GitHub roles were operated by **the same project developer**, with distinct
-NEP-413-verified testnet wallets. These are controlled acceptance tests, not
-independent customers or paid production activity. No mainnet funds or recharge
-were used. The initial three NEAR AI requests reported 25,190 total tokens; one
-response failed grounding validation and did not authorize payment. Token usage
-and catalog estimates do not establish the provider's actual bill.
-The subsequent coding-agent run used one additional request (5,862 tokens),
-bringing the recorded total to four requests and 31,052 tokens. There was no
-recharge. The local Python suite runs 109 tests (108 passed and one optional
-Docker probe skipped); the Rust suite has nine.
-
-The [public evidence bundle](deployments/live-acceptance.json) includes wallet
-proofs, revision-bound reports, CI identifiers, operation receipts and rejection
-records. Check current chain state and public GitHub facts without private keys
-or another model call:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements-dev.txt
-python tools/verify_acceptance.py
-python tools/verify_acceptance.py --receipt deployments/agent-acceptance.json
-python -m unittest discover -s tests
-```
-
-The verifier needs public GitHub/testnet RPC access. An optional `GITHUB_TOKEN`
-increases GitHub's rate allowance. It verifies recorded signatures and **current**
-key membership; it cannot independently reconstruct historical challenge use,
-prove the model's conclusions, or prove commercial adoption.
-
-## Start locally
-
-Python 3.11+:
+Requires Python 3.11 or later. On Linux or macOS:
 
 ```bash
 python3 -m venv .venv
@@ -97,191 +52,51 @@ python3 -m venv .venv
 bash start.sh
 ```
 
+On Windows PowerShell:
+
 ```powershell
 python -m venv .venv
 .venv/Scripts/python -m pip install -r requirements.txt
 .\start.ps1
 ```
 
-Open **http://127.0.0.1:8766/**. English is the default; the top-right button
-switches to Chinese. The board starts empty. No model call or transaction is
-sent at startup. This is a loopback development application, not a hosted OAuth
-service; do not expose it to the public internet.
+Open **http://127.0.0.1:8766/**. The board starts empty and supports English and
+Chinese. Startup sends no model requests or transactions. The API is intended
+for local use; hosted authentication is not implemented. Testnet transactions
+currently require the Windows DPAPI signer. See [setup](docs/SETUP.md) for
+GitHub login, model configuration, deployment and limits.
 
-The key-free inspection/verification path is cross-platform; the current local
-development transaction signer requires Windows DPAPI.
+## Verify the examples
 
-For the existing local development machine:
-
-```powershell
-.\start_dev.ps1 -UseGitHubLogin -UseExistingAiCredits -DirectNetwork
+```bash
+python -m pip install -r requirements-dev.txt
+python -m unittest discover -s tests
+python tools/verify_acceptance.py --receipt deployments/agent-acceptance.json
 ```
 
-This uses the existing `gh` login in process memory and can optionally read the
-existing encrypted NEAR AI key without copying it. Alternatively set
-`NEAR_AI_API_KEY` in the launching process. No token or private key belongs in
-chat, Git, screenshots, command arguments or browser local storage.
+The last command reads public GitHub and NEAR testnet data. It checks recorded
+wallet signatures, current key membership, PR revisions and payment states;
+it requires network access, but no signing key or model request.
 
-## Assigned-bounty flow
+`./demo.sh` runs eight focused checks with Python 3.11+ and Bash. Its first run
+installs dependencies. See [testing](docs/TESTING.md) for the check map, wallet
+tests and contract tests.
 
-1. **Maintainer signs in.** A GitHub token is verified with `GET /user`.
-   Numeric user IDs are authoritative; login names are display values. Tokens
-   are retained only in server memory for a one-hour session. Public repository
-   bounties require verified repository write/maintain/admin permission.
-2. **Create a draft for a real, open Issue.** The Issue text, repository ID,
-   amount, deadline, source paths and trusted workflow/check requirements are
-   fixed in hashed terms. Draft creation does not fund anything.
-3. **Bind both wallets.** Each participant obtains a five-minute, single-use
-   NEP-413 challenge. Its context includes the numeric GitHub ID, account, role,
-   bounty, repository, Issue, network and terms. Verification also queries the
-   current testnet access key and requires FullAccess. A valid signature from
-   an unrelated, locally generated key is rejected.
-4. **Claim, assign and confirm funding.** The contributor requests assignment;
-   the maintainer selects that claim and confirms the exact assigned terms hash.
-   Distinct maintainer/claimant wallets are fixed before the chain call.
-5. **Submit an existing PR as its authenticated author.** Its base repository
-   and author IDs must match. A fork is allowed. GitHub closing-Issue references
-   establish linkage; merely mentioning an Issue is insufficient.
-6. **Review one exact revision.** Collect complete bounded file patches, trusted
-   workflow/run/job/check evidence, and optional real NEAR AI review. Ordinary
-   test changes are listed; sensitive configuration changes, removed-assertion
-   signals and configured manipulation signals require review and cannot pass
-   automatically in this release.
-7. **Merge, recheck, settle.** The maintainer's merge is the acceptance action.
-   Current PR author/repository/head/diff, Issue terms, CI and merge ancestry are
-   rechecked. Changed code invalidates the old review. With the page open and
-   the maintainer signed in, the browser checks a ready bounty every 30 seconds;
-   there is no unattended keeper when that page is closed. The API/refresh button
-   can also trigger the same check. Only a matching final transfer callback is
-   marked paid. Repeated syncs return the same paid bounty.
-8. **Expiry.** A caller explicitly triggers the contract's refund method. The
-   principal returns to the original maintainer; storage and spent gas do not.
+## Documentation
 
-### Wallet signing in this preview
+- [Setup and configuration](docs/SETUP.md)
+- [Wallet connection and signing](docs/WALLET_ONBOARDING.md)
+- [MCP usage and recorded coding-agent example](docs/AGENT_WALKTHROUGH.md)
+- [Standalone agent runner](docs/AGENT_DEMO.md)
+- [Architecture and security boundaries](docs/ARCHITECTURE.md)
+- [Tests and evidence verification](docs/TESTING.md)
 
-The browser can connect Meteor/Intear testnet accounts and request a NEP-413
-identity signature, using the locally built NEAR Connect 0.12.0 bundle. The real
-Intear connection chooser and cancellation were checked; **a full personal-wallet
-signature round trip remains unverified**. Meteor is included based on its
-declared capabilities. The current OKX adapter does not declare testnet support.
-See [wallet onboarding](docs/WALLET_ONBOARDING.md) for steps and test boundaries.
+The contract enforces escrow terms and payment authority. GitHub verification
+and AI review happen off-chain, with the maintainer's signer submitting the
+result. CI and AI review assist the maintainer; they do not prove code correct.
+See the architecture document for trust assumptions and current limitations.
 
-This connection signs identity messages only. Funding/settlement still use the
-configured local development signer; hosted OAuth is not implemented. GitHub
-offers one-click local login when enabled and an advanced own-token option.
+## License
 
-Advanced proof import remains available. The UI downloads a standard NEP-413
-challenge and accepts a signed proof, never a private key. A local test account
-can sign via:
-
-```powershell
-.venv/Scripts/python -m bountyguard sign-challenge challenge.json --vault data/testnet/claimant.dpapi
-```
-
-Paste the returned public proof into the advanced wallet-verification form.
-This is not a claim of tested OKX support.
-FullAccess signing must occur locally in a trusted wallet/signing environment.
-
-## Testnet development
-
-New BountyGuard accounts and journals are isolated from ProofPay. Windows DPAPI
-is used for the development signer; the application never imports ProofPay code.
-Reading and verifying public data is cross-platform.
-
-```powershell
-# Requires the testnet faucet to be available; saves keys encrypted before use.
-.venv/Scripts/python tools/setup_testnet.py create-free-accounts
-
-# Rust + wasm32-unknown-unknown required. A preinstalled tool bundle can be selected.
-.venv/Scripts/python tools/contract.py build
-.venv/Scripts/python tools/setup_testnet.py deploy
-.\start_dev.ps1 -UseGitHubLogin -UseExistingAiCredits -EnableTestnet -DirectNetwork
-```
-
-| Guard | Development value |
-| --- | --- |
-| Network | Named `.testnet` accounts only; runtime network check |
-| Maximum reward | 0.01 tNEAR per bounty |
-| Storage charge | 0.01 tNEAR per funded bounty, separate from reward |
-| Funding intents | 2, persisted in this project's journal |
-| Model intents | 3 per rolling 24 hours, persisted in the same application DB |
-| Model estimate | Conservative public-catalog estimate ≤ $0.02 per request |
-| Unknown outcome | Retain the original intent/hash; query it, never replace payment |
-
-Defaults above can be explicitly raised by the local operator through
-`start_dev.ps1 -FundingIntentLimit 3 -ModelIntentLimit 4`, for one additional
-acceptance run after the initial two funded orders and three model calls.
-Usage stays in the same journal; restarting or lowering a limit does not reset
-it. The helper permits at most four funding intents and six rolling-day model
-intents. Reward/storage bounds and the $0.02 estimate check remain unchanged.
-
-The price estimate is not a provider-enforced billing cap. Model usage is
-separate from tNEAR payments and is not reversed by a bounty refund. No mainnet
-transaction, currency conversion, recharge or live paid bounty is claimed.
-
-## Evidence and verification
-
-```powershell
-.venv/Scripts/python -m pip install -r requirements-dev.txt
-.venv/Scripts/python -m unittest discover -s tests
-.venv/Scripts/python tools/contract.py test
-
-# Read-only inspection: no bounty/funding/transaction; uses existing gh login.
-.venv/Scripts/python tools/inspect_github.py --pr https://github.com/pallets/flask/pull/6176
-```
-
-The Python fixtures are explicitly labelled unit-test adapters. They are not
-third-party suppliers or real chain receipts. Local inspection evidence is saved
-under ignored `artifacts/`; review intents live in ignored `data/`.
-See [DEVELOPMENT_STATUS](DEVELOPMENT_STATUS.md) for what has actually been run.
-
-## MCP
-
-Start `.venv/Scripts/python -m bountyguard.mcp_server` with the web/API service
-already running. Tools list/read bounties, request a verified claim, submit an
-existing PR and review its revision. Writes require operator environment flag
-`BOUNTYGUARD_MCP_ALLOW_WRITES=1` and the participant's `GITHUB_TOKEN`.
-Model use additionally requires `BOUNTYGUARD_MCP_ALLOW_MODEL=1` and backend
-credit permission. Funding and payment are not exposed as MCP tools in v0.1.
-This server does not write GitHub issues, comments or PRs.
-
-`tools/agent_client.py` is a real stdio client for coding agents. It can read
-terms, claim, submit an existing PR, request review and read the paid receipt.
-For example, after participant wallet binding, with `GITHUB_TOKEN` in the process
-environment: `python tools/agent_client.py claim BOUNTY_ID --allow-writes`.
-Use `get` or `receipt` without write permission. An optional `--output` path
-records public tool arguments/results, never a session or signing key. Code
-editing, GitHub PR creation, maintainer assignment/merge and funding remain
-separate steps; this client does not itself implement an autonomous coder.
-
-## Security boundaries
-
-- The contract cannot read GitHub or verify AI reasoning. The maintainer-owned
-  signer attests to off-chain evidence; hashes prevent substituting that evidence.
-- CI success and an AI PASS do not prove correctness or absence of a backdoor.
-  Model findings select server-issued evidence IDs that resolve to exact patch
-  text; uncertainty or invalid evidence does not authorize pay.
-- An app name/green badge is insufficient: policy binds app ID, workflow ID/path,
-  workflow blob, run head/base association, suite, named jobs and check status.
-  After merge, GitHub may clear a run's PR association. Only the previously
-  accepted association for the identical run, attempt, head/base and checks can
-  be reused; current CI success and merge ancestry are still required.
-- Review size is bounded (40 files, 48 KB JSON patches, 24 KB per patch); missing,
-  binary or incomplete patches stop automatic acceptance. No PR code is executed
-  by this server, and no signing secret is sent to a CI job.
-- Protected paths and assertion/injection signals are conservative heuristics.
-  False positives and missed attacks remain possible. Exceptions/independent
-  arbitration are not implemented. Maintainer refusal to merge is not solved.
-- Merge/squash ancestry must match the reviewed base; complex rebases or changed
-  bases require another review. Sessions and automatic browser polling expire.
-- Issues/patches sent for AI review are public. Private repositories, hosted auth,
-  account recovery, unattended scheduling and external commercial adoption are
-  outside this release.
-
-## References
-
-- [NEP-413](https://github.com/near/NEPs/blob/master/neps/nep-0413.md)
-- [GitHub workflow runs](https://docs.github.com/en/rest/actions/workflow-runs)
-- [GitHub Actions security](https://docs.github.com/en/actions/reference/security/secure-use)
-- [NEAR AI verification](https://docs.near.ai/cloud/verification) — TEE verification
-  is not yet implemented here; using the API alone is not presented as attestation.
+[MIT](LICENSE). Adapted components and third-party dependencies are credited in
+[NOTICE.md](NOTICE.md).

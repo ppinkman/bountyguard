@@ -1,4 +1,4 @@
-"""Run one explicitly approved BountyGuard bounty as a separate GitHub actor."""
+"""Run one BountyGuard task using a dedicated GitHub account and testnet wallet."""
 import argparse
 import asyncio
 import json

@@ -1,5 +1,5 @@
 {
-  "scope": "Read-only inspection of an existing public third-party PR; not a funded bounty, endorsement, independent customer or security certification.",
+  "scope": "Read-only review of a public third-party PR. No bounty or payment was associated with this inspection.",
   "pr_url": "https://github.com/pallets/flask/pull/6176",
   "linked_issue_url": null,
   "repo_id": 596892,

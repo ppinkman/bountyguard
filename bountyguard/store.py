@@ -107,7 +107,7 @@ class Store:
                     return dict(row), True
                 return dict(row), False
             if kind == "fund_assigned" and db.execute("SELECT COUNT(*) FROM operations WHERE kind='fund_assigned'").fetchone()[0] >= development_limit("funding"):
-                raise GuardError("This project's configured funding-intent development limit was reached.")
+                raise GuardError("The configured funding attempt limit was reached.")
             pending = db.execute("SELECT id FROM operations WHERE state IN ('PREPARED','SUBMITTED','UNKNOWN') AND json_extract(document,'$.intent.signer')=?", (intent.get("signer"),)).fetchone()
             if pending:
                 raise GuardError("Reconcile the signer's original pending operation first: " + pending[0])

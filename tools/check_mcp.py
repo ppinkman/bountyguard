@@ -1,4 +1,4 @@
-"""Exercise the real stdio protocol; read-only and explicitly denied write only."""
+"""Check MCP stdio lookup and write-permission enforcement."""
 import asyncio
 import json
 import os

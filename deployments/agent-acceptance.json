@@ -1,6 +1,6 @@
 {
   "recorded_at": 1793862378,
-  "scope": "Project-owned, single GitHub operator playing both roles; separate verified testnet wallets. No independent commercial adopter is claimed.",
+  "scope": "Controlled testnet run using one GitHub account and separate verified maintainer and contributor wallets.",
   "deployment": {
     "contract": "bg-c7e1a78e-escrow.testnet",
     "code_hash": "9Mrqq51mqD24PKTaBDRwdz5tVf6JE2L2qp4StTmecfzN",
@@ -1509,7 +1509,7 @@
   "agent_journey": {
     "coding_agent": "Codex development session",
     "review_model": "NEAR AI Cloud / Qwen/Qwen3.6-35B-A3B-FP8",
-    "scope": "Same GitHub operator, two verified testnet wallets. Operator authorized maintainer creation/binding/assignment/funding/merge; Codex performed code edits and MCP claim/delivery/review/receipt calls. This is not an independent customer or unattended coding-agent runtime.",
+    "scope": "Controlled run using one GitHub account and two verified testnet wallets. Codex implemented the fix and used MCP for claim, delivery, review and receipt lookup. The project operator also managed assignment, funding and merge.",
     "steps": [
       {
         "transport": "MCP stdio",

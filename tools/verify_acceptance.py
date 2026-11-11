@@ -112,7 +112,7 @@ def main():
             issue=github.issue(repo,bounty['issue_number'])
             require(digest(issue_context(issue,bounty['repo_id']))==bounty['issue_hash'],'Issue terms changed')
             verified_revisions.append({'github_pr':bounty['pr_url'],'head_sha':report['head_sha']})
-    print(json.dumps({'verified':True,'contract':deployment['contract'],'code_hash':account['code_hash'],'chain_states':chains,**verified_revisions[0],'github_revisions':verified_revisions,'wallet_signatures_verified':2*len(targets),'scope':'Pinned code, on-chain terms/states, recorded wallet signatures/current key membership and GitHub revision. Not proof of code correctness, AI correctness, historical key membership, nonce consumption, authorship by a particular model or independent commercial participation.'}))
+    print(json.dumps({'verified':True,'contract':deployment['contract'],'code_hash':account['code_hash'],'chain_states':chains,**verified_revisions[0],'github_revisions':verified_revisions,'wallet_signatures_verified':2*len(targets),'scope':'Verifies deployed code, on-chain terms and state, recorded signatures, current key membership and GitHub revisions. Verification limits are described in docs/TESTING.md.'}))
 
 
 if __name__=='__main__':main()

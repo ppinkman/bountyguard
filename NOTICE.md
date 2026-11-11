@@ -1,25 +1,16 @@
-# Attribution and project boundary
+# Attribution and third-party components
 
-BountyGuard is a new assigned-GitHub-bounty application. Its GitHub identities,
-NEP-413 challenge lifecycle, workflow/run/job verification, revision-bound review,
-assigned bounty schema, web interface and Rust bounty contract are implemented here.
+BountyGuard is licensed under the MIT License. See [LICENSE](LICENSE).
 
-The basic NEAR V0 transaction serialization / CurrentUser DPAPI approach in
-`bountyguard/near.py`, and optional Windows native Rust test-tool setup in
+NEAR V0 transaction serialization and Windows CurrentUser DPAPI handling in
+`bountyguard/near.py`, and the optional Windows Rust test-tool setup in
 `tools/contract.py`, are adapted from ProofPay (MIT, Copyright 2026 ProofPay
-contributors). That copyright and permission notice are retained in LICENSE.
-Common NEAR callback safety patterns are acknowledged; they are not presented as
-novel cryptographic techniques.
+contributors). Its copyright and permission notice are retained in LICENSE.
 
-ProofPay remains at the sibling `ProofPay/` directory as an archived alternative.
-The current plan is to choose one final hackathon submission, not claim these as
-two unrelated entries. BountyGuard has no runtime Python import from ProofPay.
-`start_dev.ps1 -UseExistingAiCredits` can optionally read its existing encrypted
-provider key; this is a local convenience, not a portable setup requirement.
+The browser wallet bundle includes HOT Labs' `@hot-labs/near-connect` 0.12.0
+(MIT). Build tooling uses esbuild 0.28.2. Versions and integrity values are
+recorded in `package-lock.json`. The build adds CSP nonces at two stylesheet
+insertion points; see `tools/build_wallet.mjs`.
 
-The browser wallet bundle includes `@hot-labs/near-connect` 0.12.0, published by
-HOT Labs with MIT license metadata. Build tooling uses esbuild 0.28.2. Versions
-and registry integrity values are recorded in package-lock.json. The build makes
-two documented CSP-nonce additions to the connector's style insertion points.
-Meteor/Intear wallet executors remain hosted by their authors and are not
-redistributed as BountyGuard source or assigned BountyGuard's MIT license.
+Meteor and Intear wallet executors are hosted by their authors and retain their
+own licensing. They are not redistributed as BountyGuard source.

@@ -1,4 +1,4 @@
-"""Call BountyGuard through real MCP stdio; never loads a wallet or model key."""
+"""MCP stdio client for bounty lookup, claims, submissions and reviews."""
 import argparse
 import asyncio
 import json

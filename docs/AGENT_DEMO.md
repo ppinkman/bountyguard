@@ -1,11 +1,10 @@
 # Single-bounty agent demo
 
-This runner is for one explicit BountyGuard testnet task. The project operator
-prepares a GitHub machine account and separate testnet wallet. A successful demo
-would show separate credentials and automated execution under the same project
-operator. The previously published [walkthrough](AGENT_WALKTHROUGH.md) records a
-different run in a development session. A fixture test does not establish a new
-live payment.
+The standalone runner reads one testnet bounty, requests a code change from
+NEAR AI, tests it in Docker and opens a pull request from a machine account.
+It requires a separate GitHub credential and testnet wallet. The runner has
+fixture coverage; a complete live run with the machine account is still pending.
+The [recorded example](AGENT_WALKTHROUGH.md) used Codex in a development session.
 
 ## Responsibilities
 
@@ -15,14 +14,11 @@ live payment.
 | Agent | Read one bounty, bind a testnet identity, claim, wait for funding, ask the coding model for file changes, run isolated tests, publish one fork PR, submit it via MCP, wait for trusted CI, request review, and read the final receipt |
 | NEAR contract | Enforce the existing escrow terms and the recorded delivery and review hashes |
 
-Use the planned Issue about showing full terms in the stdout of
-`tools/agent_client.py get`. Allow that file and one new regression test such as
-`tests/test_agent_get_terms.py`. Pin the maintained repository's current CI and
-set `tools/` as an accepted source path. Preserve the original `--output` behavior.
-Publish the baseline containing the revision-binding job before creating the
-demo bounty. The bounty pins the workflow blob at creation. Sync the machine
-fork to that baseline as well. Keep `Python checks` and `Contract checks` as
-the required CI names.
+Choose a small Issue with clear acceptance criteria and specify the exact files
+the agent may edit. Before creating the bounty, publish the workflow containing
+the revision-binding job and sync the machine account's fork to that baseline.
+The bounty pins that workflow at creation. For this repository, required checks
+are `Python checks` and `Contract checks`.
 
 ## Prepare the machine account
 
@@ -62,6 +58,8 @@ the required CI names.
 ### Bash
 
 Run these from the repository root with the Python environment installed.
+Set the bounty ID, agent login, testnet account and allowed source/test paths
+to match your task before running the commands.
 
 ```bash
 source .venv/bin/activate
@@ -75,14 +73,13 @@ BOUNTYGUARD_TEST_IMAGE="$image_id" python -m unittest discover -s tests -p test_
 python -m tools.agent_demo "$bounty_id" --dry-run
 ```
 
-After the agreed GitHub and testnet approvals, run from the Agent shell with the
-machine credentials loaded. The separate maintainer terminal is required for the
+Run from the agent shell with the machine credentials loaded. The separate maintainer terminal is required for the
 settlement command.
 
 ```bash
 python -m tools.agent_demo "$bounty_id" --execute --login "$agent_login" \
   --account "$agent_account" --key-file data/agent/machine-key.json --image "$image_id" \
-  --allow-file tools/agent_client.py --allow-file tests/test_agent_get_terms.py
+  --allow-file "$source_file" --allow-file "$test_file"
 python -m tools.maintainer_settle --bounty "$bounty_id" --expect-head "$reviewed_head"
 ```
 
@@ -104,7 +101,7 @@ Remove-Item Env:BOUNTYGUARD_TEST_IMAGE
 ```powershell
 .venv/Scripts/python -m tools.agent_demo $bountyId --execute --login $agentLogin `
   --account $agentAccount --key-file data/agent/machine-key.json --image $imageId `
-  --allow-file tools/agent_client.py --allow-file tests/test_agent_get_terms.py
+  --allow-file $sourceFile --allow-file $testFile
 .venv/Scripts/python -m tools.maintainer_settle --bounty $bountyId --expect-head $reviewedHead
 ```
 
@@ -139,13 +136,10 @@ parameter on the existing API.
   on both sides. The job has no checkout step or repository permissions. The
   required test jobs must also pass. With neither form of association, the
   runner records `ci_association_missing` and stops before requesting review.
-  An [open fork PR](https://github.com/astral-sh/ruff/pull/30069) with a
-  [successful run](https://github.com/astral-sh/ruff/actions/runs/42055654929)
-  exhibited the missing association in the public API. The BountyGuard fork
-  path still needs its own live run.
+
 - The private checkpoint is under `data/agent/`. After a confirmed receipt the
   runner writes a separate sanitized evidence record there. Review that file
-  before copying it into `deployments/`. Only record a live run after it happens.
+  before copying it into `deployments/`. Keep fixture output separate from live receipts.
   Public verification checks the PR revision, its recorded CI attempt and the
   final on-chain payment. Runner events, model authorship and operator roles are
   disclosed from local records.

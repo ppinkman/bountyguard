@@ -1,4 +1,4 @@
-"""Loopback-only development API; no public hosting or OAuth app is assumed."""
+"""Local development API for authentication, bounties and wallet binding."""
 import base64
 import json
 import os

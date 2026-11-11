@@ -36,7 +36,7 @@ class Reviewer:
                 raise GuardError("The original model request is uncertain or invalid. It will not be repeated automatically.")
             return json.loads(existing["document"])
         if os.getenv("BOUNTYGUARD_ENABLE_AI") != "1" or not os.getenv("NEAR_AI_API_KEY"):
-            raise GuardError("Real NEAR AI review is disabled or its key is missing. No model request was sent.")
+            raise GuardError("NEAR AI review is disabled or its API key is missing.")
         model = os.getenv("NEAR_AI_MODEL", "Qwen/Qwen3.6-35B-A3B-FP8")
         spans = {}
         for file_index, file in enumerate(context["files"], 1):
@@ -61,7 +61,7 @@ class Reviewer:
         with self.store.connection() as db:
             db.execute("BEGIN IMMEDIATE")
             if db.execute("SELECT COUNT(*) FROM ai_calls WHERE created_at>=?", (int(time.time()) - 86400,)).fetchone()[0] >= development_limit("model"):
-                raise GuardError("The configured rolling-day model-intent development limit was reached.")
+                raise GuardError("The model request limit for the last 24 hours was reached.")
             if db.execute("SELECT 1 FROM ai_calls WHERE fingerprint=?", (fingerprint,)).fetchone():
                 raise GuardError("The same review is already in progress.")
             db.execute("INSERT INTO ai_calls VALUES (?,?,'STARTED',?)", (fingerprint, int(time.time()), canonical({"model": model, "estimate_usd": str(estimate)})))

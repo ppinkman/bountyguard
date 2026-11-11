@@ -1,79 +1,67 @@
-# Browser wallet identity binding
+# Wallet connection and identity signing
 
-The page now uses `@hot-labs/near-connect` 0.12.0 to connect a named testnet
-account and request a NEP-413 identity signature. It does **not** request a
-transaction, deploy a contract, add an access key or replace the server's
-development transaction signer.
+BountyGuard uses `@hot-labs/near-connect` 0.12.0 to connect a named testnet
+account and request a NEP-413 message signature. This establishes wallet
+ownership for a bounty. Transactions use the separately configured local
+development signer.
 
-## Try the connection
+## Connect and bind a wallet
 
-1. Start the app and open http://127.0.0.1:8766/. Use local GitHub login when
-   explicitly enabled, or expand the advanced token option for your own identity.
-2. Choose Meteor or Intear, then click **Connect wallet**. These two adapters
-   declare testnet and message-signing support in the upstream manifest. The
-   current OKX adapter does not declare testnet support and is not offered here.
-3. In your wallet, choose a named `.testnet` account you control. Complete any
-   account setup yourself; do not share a seed phrase or private key with this app.
-4. Select an unassigned draft bounty, choose Contributor or Maintainer, then
-   click **Sign & bind account**. Read and approve the exact task/role/account
-   message in the wallet. This message signature does not transfer funds.
-5. The backend verifies the signature, single-use challenge and current
-   FullAccess-key membership. Only after a contributor binding is recorded does
-   **Request this assignment** become available. Assignment and funding remain
-   maintainer actions. A recorded identity proof does not by itself move money.
+1. Start the application and open http://127.0.0.1:8766/. Sign in with GitHub.
+2. Choose Meteor or Intear and select **Connect wallet**.
+3. Select a named `.testnet` account in the wallet.
+4. Open an unassigned bounty draft, choose Contributor or Maintainer, and select
+   **Sign & bind account**. Check the bounty, role and account in the message
+   before signing. The message signature does not transfer funds.
+5. The server checks the signature, single-use challenge and current on-chain
+   FullAccess-key membership. Contributors can then select
+   **Request this assignment**. The maintainer assigns and funds the bounty.
 
-On the project development machine, Issue #7 has an **unfunded** draft for trying
-this flow. It has no bound wallet, claim, funding or model result at the time of
-the UI check. This is an identity-entry test, not another paid demonstration.
-Its terms pin the workflow at creation; do not fund this UI-only draft after
-changing the workflow without reviewing/recreating its terms.
+The app accepts public signed proofs, never wallet private keys. To change the
+recipient after binding, create a new draft.
 
-Advanced challenge download and signed-proof import remain available. Wallet
-private keys are neither requested nor accepted by the API. A previously bound
-account cannot be silently changed; use a new draft for a different recipient.
+## Import a signed proof
 
-## Observed versus still unverified
+Use **Advanced: import a signed proof** to download a challenge and sign it in
+a compatible wallet. A local test wallet can also sign with the CLI:
 
-Observed in the actual browser on November 5, 2026:
+```powershell
+.venv/Scripts/python -m bountyguard sign-challenge challenge.json --vault data/testnet/claimant.dpapi
+```
 
-- Local GitHub login verified numeric GitHub user 100271001.
-- The real Intear wallet connection frame loaded its Web/App choices.
-- Cancelling returned to the page without a bound account or claim.
-- English/Chinese labels, disabled unverified claim controls and the draft
-  details were inspected. Existing paid/refunded orders remained visible.
+Paste the returned public proof into the form and select **Verify wallet
+ownership**. Keep the encrypted vault and private key local.
 
-No compatible personal testnet wallet was connected or used to sign during this
-check. **A complete real-wallet signature round trip remains unverified.** Meteor
-was offered based on upstream capabilities but its connection was not exercised.
-Browser adapters can depend on wallet-host availability and pop-up settings.
-The deterministic client tests use labelled adapters; backend tests verify actual
-Ed25519 signatures against explicit RPC fixtures. Neither proves compatibility
-with an untested wallet version or a real owner's account.
+## Compatibility and test coverage
 
-## Build and dependency boundary
+Both included adapters declare testnet message-signing support. Browser
+integration testing on November 5, 2026 confirmed that Intear's connection
+chooser loads and cancellation returns to the app. A complete browser-wallet
+signature round trip has not been verified. Meteor's connection remains
+untested. Wallet availability can also depend on its host and browser settings.
 
-The generated local bundle is committed so Python users do not need Node to run
-the page. To rebuild and test it:
+Client tests use wallet adapters with controlled responses. Backend tests verify
+Ed25519 signatures against RPC fixtures. These tests cover application behavior
+without establishing compatibility with every wallet version.
 
-```sh
+## Build the wallet bundle
+
+```bash
 npm ci --ignore-scripts --no-fund
 npm test
 npm run build
 ```
 
-`package-lock.json` pins the connector and esbuild. `tools/build_wallet.mjs`
-adds CSP nonces to the connector's parent stylesheet and iframe stylesheet at
-build time; it fails if the expected upstream insertion points change. The
-backend generates a fresh nonce per HTML response. Inline script/eval permission
-is not globally enabled. Wallet frames are allowed only for the selected wallet
-hosts; connector network sources are explicitly listed in the page policy.
+The generated bundle is committed so running the Python application does not
+require Node.js. `package-lock.json` pins the connector and esbuild versions.
+`tools/build_wallet.mjs` adds CSP nonces to the connector's parent and iframe
+stylesheets, failing if their expected insertion points change. The server
+generates a fresh nonce per HTML response.
 
-The two wallet executors are fetched from the wallet authors' upstream URLs and
-run in the connector's sandbox. They are not bundled, redistributed or claimed
-to be immutable here. The curated manifest records those URLs and declared
-capabilities; future wallet updates remain an external dependency. The connector
-selection UI is implemented by BountyGuard; no custom/debug-wallet option is
-exposed. Server signature and account ownership checks remain authoritative.
+Wallet executors load from the authors' URLs in the connector's sandbox. They
+remain external dependencies; the local manifest records their declared
+capabilities and URLs. Server-side signature and account checks determine
+whether a binding is accepted.
 
 Sources: [connector package](https://www.npmjs.com/package/@hot-labs/near-connect),
 [upstream repository](https://github.com/hot-dao/near-selector),

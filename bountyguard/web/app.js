@@ -27,7 +27,7 @@ function eventLabel(kind){
     claim_assigned:['Contributor assigned','维护者确认分配'],
     bounty_funded:['Escrow funded on testnet','测试网合约已锁款'],
     pr_submitted:['Pull request linked','已关联 PR'],
-    revision_reviewed:['Revision & CI verified','版本与可信 CI 核验完成'],
+    revision_reviewed:['Revision reviewed','版本审核完成'],
     bounty_paid:['Merged & bounty paid','合并复核通过并放款'],
     bounty_refunded:['Expired principal refunded','到期本金已退回']
   };
@@ -175,8 +175,8 @@ async function select(id){
     $('hash-summary').replaceChildren();
     const hashes=[
       [t('TERMS SHA-256','条款摘要 SHA-256'),b.terms_hash],
-      [t('ASSIGNED TERMS SHA-256','认领绑定摘要 SHA-256'),b.assigned_terms_hash],
-      [t('DELIVERY DIFF SHA-256','交付补丁摘要 SHA-256'),b.review?.delivery_hash],
+      [t('ASSIGNED TERMS SHA-256','分配条款摘要 SHA-256'),b.assigned_terms_hash],
+      [t('DELIVERY DIFF SHA-256','代码差异摘要 SHA-256'),b.review?.delivery_hash],
       [t('REVIEW REPORT SHA-256','审查报告摘要 SHA-256'),b.review?.report_hash]
     ].filter(([,val])=>Boolean(val));
     for(const [label,val] of hashes){
@@ -192,9 +192,9 @@ async function select(id){
   $('funding-terms').textContent=t('Recipient: ','收款人：')+(b.claim?.near_account_id||'')+' · '+b.amount+' tNEAR\n'+t('Assigned terms: ','分配条款：')+(b.assigned_terms_hash||'');
   $('funding-terms').classList.add('mono');
   $('fund').disabled=status.funding_intents_remaining===0;
-  $('fund').title=status.funding_intents_remaining===0?t('Development funding allowance is used; existing settlement/refunds are still available.','本轮开发锁款名额已用完；已有订单仍可结算或退款。'):'';
+  $('fund').title=status.funding_intents_remaining===0?t('Funding limit reached. Existing bounties can still be settled or refunded.','锁款次数已达上限，已有任务仍可结算或退款。'):'';
   $('delivery-area').hidden=!b.funding_receipt||['PAID','REFUNDED'].includes(b.state);
-  $('auto-note').textContent=t('While this page is open, a signed-in maintainer can automatically settle a reviewed, merged PR when testnet signing is enabled.','页面开启期间，已登录的维护者可在测试网签名启用时自动结算已审查并合并的 PR。');
+  $('auto-note').textContent=t('With this page open, the app checks for a merge every 30 seconds and settles eligible bounties. Maintainer login and testnet signing are required.','页面打开期间，应用每 30 秒检查合并状态，并结算符合条件的任务。需要维护者登录并启用测试网签名。');
 
   $('claims').replaceChildren();
   for(const claim of b.claims||[]){
@@ -239,9 +239,9 @@ async function select(id){
 
   $('receipts').replaceChildren();
   for(const[key,label]of[
-    ['funding_receipt',t('NEAR Escrow Funding Tx','NEAR 锁款交易凭证')],
-    ['payment_receipt',t('NEAR Bounty Payout Tx','NEAR 赏金放款凭证')],
-    ['refund_receipt',t('NEAR Expiry Refund Tx','NEAR 到期退款凭证')]
+    ['funding_receipt',t('Funding transaction','锁款交易')],
+    ['payment_receipt',t('Payment transaction','付款交易')],
+    ['refund_receipt',t('Refund transaction','退款交易')]
   ]){
     if(b[key]?.explorer_url){
       const a=textElement('a','⛓ '+label+' ↗','receipt');

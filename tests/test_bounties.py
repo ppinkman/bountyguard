@@ -1,4 +1,4 @@
-"""Adversarial unit fixtures, explicitly not independent commercial participants."""
+"""Bounty lifecycle tests with GitHub and NEAR RPC fixtures."""
 import base64
 import copy
 import json

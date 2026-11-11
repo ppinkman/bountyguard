@@ -1,7 +1,7 @@
 """Build this project's contract, using an explicitly selected Rust tool bundle.
 
 The optional Windows pthread compatibility setup is adapted from ProofPay's
-MIT-licensed development helper. No ProofPay application module is imported.
+MIT-licensed development helper. See NOTICE.md for attribution.
 """
 import argparse
 import os
